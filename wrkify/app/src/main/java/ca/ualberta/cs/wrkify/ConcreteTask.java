@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 import javax.tools.DocumentationTool.Location;
 
-public class ConcreteTask {
+public class ConcreteTask implements Task {
     private String title;
     private String description;
     private ArrayList<Image> imageList;
