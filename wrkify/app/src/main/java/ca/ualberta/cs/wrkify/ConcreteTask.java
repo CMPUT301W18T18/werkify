@@ -99,7 +99,7 @@ public class ConcreteTask {
         sortBidList();
     }
     public void sortBidList() {
-        this.bidList.sort(new BidComparator());
+        Collections.sort(this.bidList);
     }
 
     public Double getPrice() {
