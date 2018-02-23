@@ -42,29 +42,6 @@ public class CheckListTest {
     }
 
     @Test
-    public void testGetSetStatus() {
-        ArrayList<String> items = new ArrayList<String>();
-
-        items.add("zero");
-        items.add("one");
-        items.add("two");
-        items.add("three");
-
-        CheckList check = new CheckList(items);
-
-        check.setStatus(0, true);
-        check.setStatus(2, true);
-        check.setStatus(2, false);
-        check.setStatus(3, true);
-
-        assertTrue(check.getStatus(0));
-        assertFalse(check.getStatus(1));
-        assertFalse(check.getStatus(2));
-        assertTrue(check.getStatus(3));
-
-    }
-
-    @Test
     public void testSetItem() {
         ArrayList<String> items = new ArrayList<String>();
 
@@ -82,5 +59,79 @@ public class CheckListTest {
         assertEquals(check.getItem(1), "not one");
         assertEquals(check.getItem(2), "two");
         assertEquals(check.getItem(3), "three");
+    }
+
+    @Test
+    public void testSetGetStatus() {
+        ArrayList<String> items = new ArrayList<String>();
+
+        items.add("zero");
+        items.add("one");
+        items.add("two");
+        items.add("three");
+
+        CheckList check = new CheckList(items);
+
+        check.setStatus(0, true);
+        check.setStatus(1, false);
+        check.setStatus(2, true);
+        check.setStatus(2, false);
+        check.setStatus(3, false);
+        check.setStatus(3, true);
+
+        assertTrue(check.getStatus(0));
+        assertFalse(check.getStatus(1));
+        assertFalse(check.getStatus(2));
+        assertTrue(check.getStatus(3));
+    }
+
+    @Test
+    public void testAddItem() {
+        ArrayList<String> items = new ArrayList<String>();
+
+        items.add("zero");
+        items.add("one");
+        items.add("two");
+        items.add("three");
+
+        CheckList check = new CheckList(items);
+
+        check.addItem("four");
+        check.addItem("five", true);
+        check.addItem("six", false);
+
+        assertFalse(check.getStatus(4));
+        assertTrue(check.getStatus(5));
+        assertFalse(check.getStatus(6));
+    }
+
+    @Test
+    public void testRemoveItem() {
+        CheckList check = new CheckList();
+
+        check.addItem("zero");
+        check.addItem("one");
+
+        check.removeItem(0);
+        assertEquals(check.getItem(0), "one");
+
+        boolean remove = false;
+        try {
+            check.removeItem(1);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            remove = true;
+        }
+
+        assertTrue(remove);
+        check.removeItem(0);
+
+        boolean get = false;
+        try {
+            check.getItem(0);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            get = true;
+        }
+
+        assertTrue(get);
     }
 }
