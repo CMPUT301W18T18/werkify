@@ -20,7 +20,9 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 /**
- * Created by peter on 23/02/18.
+ * CheckListTest provides unit tests for CheckList
+ *
+ * @see CheckList
  */
 
 public class CheckListTest {
