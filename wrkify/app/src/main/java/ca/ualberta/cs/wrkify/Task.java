@@ -14,10 +14,13 @@
  */
 package ca.ualberta.cs.wrkify;
 
-import java.awt.Image;
+
+import android.graphics.Bitmap;
+import android.location.Location;
+
 import java.util.ArrayList;
 
-import javax.tools.DocumentationTool.Location;
+
 
 public interface Task {
     public String getTitle();
@@ -26,8 +29,8 @@ public interface Task {
     public String getDescription();
     public void setDescription(String description);
 
-    public ArrayList<Image> getImageList();
-    public void setImageList(ArrayList<Image> imageList);
+    public ArrayList<Bitmap> getImageList();
+    public void setImageList(ArrayList<Bitmap> imageList);
 
     public Location getLocation();
     public void setLocation(Location location);

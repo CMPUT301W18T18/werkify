@@ -18,15 +18,18 @@ package ca.ualberta.cs.wrkify;
 *
 */
 
-import java.awt.Image;
-import java.util.ArrayList;
 
-import javax.tools.DocumentationTool.Location;
+import android.graphics.Bitmap;
+import android.location.Location;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
 
 public class ConcreteTask implements Task {
     private String title;
     private String description;
-    private ArrayList<Image> imageList;
+    private ArrayList<Bitmap> imageList;
     private Location location;
     private CheckList checkList;
     private ArrayList<Bid> bidList;
@@ -47,10 +50,10 @@ public class ConcreteTask implements Task {
     public void setDescription(String description) {
         this.description = description;
     }
-    public ArrayList<Image> getImageList() {
+    public ArrayList<Bitmap> getImageList() {
         return imageList;
     }
-    public void setImageList(ArrayList<Image> imageList) {
+    public void setImageList(ArrayList<Bitmap> imageList) {
         this.imageList = imageList;
     }
     public Location getLocation() {
