@@ -38,7 +38,7 @@ public class Bid implements Comparable<Bid> {
         if(this.getValue().compareTo(bid.getValue())<0){
             return 1;
         }
-        if(this.getValue().compareTo(bid.getValue()>0)){
+        if(this.getValue().compareTo(bid.getValue())>0){
             return -1;
         }
         return 0;
