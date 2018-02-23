@@ -25,5 +25,5 @@ public interface User {
 
     void setUsername(String username);
     void setEmail(String email);
-    void setPhoneNumber(String email);
+    void setPhoneNumber(String phoneNumber);
 }
