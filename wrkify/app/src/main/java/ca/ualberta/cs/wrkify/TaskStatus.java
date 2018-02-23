@@ -1,14 +1,16 @@
-/* TaskStatus
+/* Copyright 2018 CMPUT301W18T18
  *
- * Version 1.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Feb 23, 2018
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Copyright (c) 2018 CMPUT301W18T18, CMPUT301, University of Alberta - All
- * rights Reserved you may use, distribute or modify this code under terms and
- * conditions of Code of Student Behavior at University of Alberta you can find
- * a copy of the license in this project. Otherwise, please contact
- * pelliott@ualberta.ca
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package ca.ualberta.cs.wrkify;
 
