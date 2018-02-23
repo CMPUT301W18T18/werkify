@@ -1,6 +1,6 @@
-/* User
+/* TaskStatus
  *
- * Version 0.0
+ * Version 1.0
  *
  * Feb 23, 2018
  *
@@ -13,17 +13,11 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * User provides an interface for users
- *
- * @see ConcreteUser
+ * Task status enum according to US 02.02.01
  */
-
-public interface User {
-    String getUsername();
-    String getEmail();
-    String getPhoneNumber();
-
-    void setUsername(String username);
-    void setEmail(String email);
-    void setPhoneNumber(String email);
+public enum TaskStatus {
+    REQUESTED,
+    BIDDED,
+    ASSIGNED,
+    DONE
 }
