@@ -120,7 +120,7 @@ public class CheckListTest {
         boolean remove = false;
         try {
             check.removeItem(1);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             remove = true;
         }
 
@@ -130,7 +130,7 @@ public class CheckListTest {
         boolean get = false;
         try {
             check.getItem(0);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             get = true;
         }
 
