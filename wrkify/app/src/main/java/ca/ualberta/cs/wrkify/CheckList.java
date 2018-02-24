@@ -29,13 +29,23 @@ public class CheckList {
      * the empty construtcor for Checklist
      * creates an empty checklist
      */
-    public CheckList() {}
+    public CheckList() {
+        this.items = new ArrayList<String>();
+        this.checked = new ArrayList<Boolean>();
+    }
 
     /**
      * creates a checklist with everything unchecked
      * @param items the items of the checklist
      */
-    public CheckList(ArrayList<String> items) {}
+    public CheckList(ArrayList<String> items) {
+        this.items = items;
+        this.checked = new ArrayList<Boolean>();
+
+        for (int i = 0; i < this.items.size(); i++) {
+            this.checked.add(false);
+        }
+    }
 
     /**
      * gets the item at index
@@ -43,7 +53,7 @@ public class CheckList {
      * @return the item at index
      */
     public String getItem(int index) {
-        return "";
+        return this.items.get(index);
     }
 
     /**
@@ -52,7 +62,7 @@ public class CheckList {
      * @return the boolean status
      */
     public Boolean getStatus(int index) {
-        return false;
+        return this.checked.get(index);
     }
 
     /**
@@ -60,33 +70,46 @@ public class CheckList {
      * @param index the array index to set
      * @param item the description
      */
-    public void setItem(int index, String item) {}
+    public void setItem(int index, String item) {
+        this.items.set(index, item);
+    }
 
     /**
      * sets the checked status of the item
      * @param index the array index to set at
      * @param status the new status
      */
-    public void setStatus(int index, boolean status) {}
+    public void setStatus(int index, boolean status) {
+        this.checked.set(index, status);
+    }
 
     /**
      * add an item with a given status
      * @param item the string of the item
      * @param status whtehr or not the new item is checked
      */
-    public void addItem(String item, boolean status) {}
+    public void addItem(String item, boolean status) {
+        this.items.add(item);
+        this.checked.add(status);
+    }
 
     /**
      * add an item, defaulting to false
      * @param item the new item description
      */
-    public void addItem(String item) {}
+    public void addItem(String item) {
+        this.items.add(item);
+        this.checked.add(false);
+    }
 
     /**
      * removes the item at index
-     * WARNING: will invalidate other indexs you have lying
+     * WARNING: will invalidate other indexes you have lying
      * around
      * @param index the index to delete
      */
-    public void removeItem(int index) {}
+    public void removeItem(int index) {
+        this.items.remove(index);
+        this.checked.remove(index);
+    }
 }
