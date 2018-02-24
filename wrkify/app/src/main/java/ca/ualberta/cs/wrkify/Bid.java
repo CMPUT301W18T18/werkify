@@ -16,7 +16,7 @@ package ca.ualberta.cs.wrkify;
 
 public class Bid implements Comparable<Bid> {
     private Double value;
-    private ConcreteUser bidder;
+    private User bidder;
 
     public Double getValue() {
         return value;
@@ -26,11 +26,11 @@ public class Bid implements Comparable<Bid> {
         this.value = value;
     }
 
-    public ConcreteUser getBidder() {
+    public User getBidder() {
         return bidder;
     }
 
-    public void setBidder(ConcreteUser bidder) {
+    public void setBidder(User bidder) {
         this.bidder = bidder;
     }
 
