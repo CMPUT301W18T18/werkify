@@ -20,30 +20,29 @@ package ca.ualberta.cs.wrkify;
 import static junit.framework.Assert.assertEquals;
 
 public class ConcreteUserTest {
-
-    public void testConstructor() {
+    
+    public void testConstructor() throws Exception {
         String username = "UserNameHere";
         String email = "name@website.com";
         String phoneNumber = "780-123-4567";
 
         ConcreteUser user = new ConcreteUser(username, email, phoneNumber);
-
         String resultUsername = user.getUsername();
         String resultEmail = user.getEmail();
         String resultPhoneNumber = user.getPhoneNumber();
 
         assertEquals(resultUsername, username);
         assertEquals(resultEmail, email);
-        assertEquals(resultPhoneNumber, "(780) 123-4567");
+        assertEquals(resultPhoneNumber, "7801234567");
     }
-
 
     public void testUsernames() throws Exception {
         String allowed = "abcdefg1234567890hijklmn"; //This is 24 characters
         String disallowed = "abcdefg1234567890hijklmno"; //This is 25 characters
 
         String email = "name@website.com";
-        String phoneNumber = "587-987-7654";
+        String phoneNumber = "(587)-987-7654";
+
 
         ConcreteUser allowedUser = new ConcreteUser(allowed, email, phoneNumber);
 
@@ -58,12 +57,50 @@ public class ConcreteUserTest {
         assertEquals(failed, true);
     }
 
-    public void testGettersAndSetters(){
+    public void testGettersAndSetters() throws Exception {
+        String A_username = "AllowedName";
+        String A2_username = "AnotherName";
+        String D_username = "Disallowed Name";
+        String D2_username = "";
 
+        String email1 = "name@website.ca";
+        String email2 = "name2@website.gov";
+
+        String phoneNumber1 = "(780)-562-9801";
+        String phoneNumber2 = "123.456.7643";
+        String phoneNumber3 = "123-567-5232";
+
+        ConcreteUser user = new ConcreteUser(A_username, email1, phoneNumber1);
+
+        user.setUsername(A2_username);
+        assertEquals(user.getUsername(), A2_username);
+
+        boolean failed = false;
+        try {
+            user.setUsername(D_username);
+        } catch (IllegalArgumentException e) {
+            failed = true;
+        }
+
+        assertEquals(failed, true);
+        assertEquals(user.getUsername(), A2_username);
+        failed = false;
+
+        try {
+            user.setUsername(D2_username);
+        } catch (IllegalArgumentException e) {
+            failed = true;
+        }
+        assertEquals(failed, true);
+
+        user.setEmail(email2);
+        assertEquals(user.getEmail(), email2);
+
+        user.setPhoneNumber(phoneNumber2);
+        assertEquals(user.getPhoneNumber(), "1234567643");
+
+        user.setPhoneNumber(phoneNumber3);
+        assertEquals(user.getPhoneNumber(), "1235675232");
     }
-
-
-
-
 
 }
