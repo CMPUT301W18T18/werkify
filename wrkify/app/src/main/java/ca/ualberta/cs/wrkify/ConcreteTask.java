@@ -33,8 +33,8 @@ public class ConcreteTask implements Task {
     private Location location;
     private CheckList checkList;
     private ArrayList<Bid> bidList;
-    private ConcreteUser requester;
-    private ConcreteUser provider;
+    private User requester;
+    private User provider;
     private TaskStatus status;
     private Double price;
 
@@ -74,16 +74,16 @@ public class ConcreteTask implements Task {
     public void setBidList(ArrayList<Bid> bidList) {
         this.bidList = bidList;
     }
-    public ConcreteUser getRequester() {
+    public User getRequester() {
         return requester;
     }
-    public void setRequester(ConcreteUser requester) {
+    public void setRequester(User requester) {
         this.requester = requester;
     }
-    public ConcreteUser getProvider() {
+    public User getProvider() {
         return provider;
     }
-    public void setProvider(ConcreteUser provider) {
+    public void setProvider(User provider) {
         this.provider = provider;
     }
     public TaskStatus getStatus() {

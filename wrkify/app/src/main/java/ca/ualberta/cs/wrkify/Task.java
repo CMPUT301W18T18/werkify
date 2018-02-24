@@ -41,10 +41,10 @@ public interface Task {
     public ArrayList<Bid> getBidList();
     public void setBidList(ArrayList<Bid> bidList);
 
-    public ConcreteUser getRequester();
-    public void setRequester(ConcreteUser requester);
-    public ConcreteUser getProvider();
-    public void setProvider(ConcreteUser provider);
+    public User getRequester();
+    public void setRequester(User requester);
+    public User getProvider();
+    public void setProvider(User provider);
 
     public TaskStatus getStatus();
     public void setStatus(TaskStatus status);
