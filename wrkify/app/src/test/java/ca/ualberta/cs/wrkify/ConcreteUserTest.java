@@ -92,6 +92,7 @@ public class ConcreteUserTest {
             failed = true;
         }
         assertEquals(failed, true);
+        assertEquals(user.getUsername(), A2_username);
 
         user.setEmail(email2);
         assertEquals(user.getEmail(), email2);
