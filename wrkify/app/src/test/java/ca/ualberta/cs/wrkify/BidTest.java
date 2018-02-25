@@ -21,11 +21,11 @@ public class BidTest{
 
     public void testBid() throws Exception{
 	    Double value = 123.45;
-		Bid bidder = "ABCDEFG";
+		User bidder = "ABCDEFG";
 		
 		Bid user = new Bid(value, bidder);
 		Double resultvalue = user.getValue();
-		Bid resultbidder = user.getBidder();
+		User resultbidder = user.getBidder();
 		
 		assertEquals(resultvalue, value);
 		assertEquals(resultbidder, bidder);
@@ -37,8 +37,8 @@ public class BidTest{
 		Double B_value = 456.78;
 		Double C_value = 0.00;
 		
-		Bid A_bidder = "ABC";
-		Bid B_bidder = "DEF";
+		User A_bidder = "ABC";
+		User B_bidder = "DEF";
 		
 		Bid user = new Bid(A_value, A_bidder);
 		user.setValue(B_value);
