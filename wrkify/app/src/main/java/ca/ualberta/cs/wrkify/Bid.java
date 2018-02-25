@@ -18,6 +18,11 @@ public class Bid implements Comparable<Bid> {
     private Double value;
     private User bidder;
 
+    public Bid(Double value, User bidder) {
+        this.value = value;
+        this.bidder = bidder;
+    }
+
     public Double getValue() {
         return value;
     }
@@ -35,12 +40,6 @@ public class Bid implements Comparable<Bid> {
     }
 
     public int compareTo(Bid bid){
-        if(this.getValue().compareTo(bid.getValue())<0){
-            return 1;
-        }
-        if(this.getValue().compareTo(bid.getValue())>0){
-            return -1;
-        }
-        return 0;
+        return bid.getValue().compareTo(this.getValue());
     }
 }
