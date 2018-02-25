@@ -21,7 +21,7 @@ public class BidTest{
 
     public void testBid() throws Exception{
 	    Double value = 123.45;
-		User bidder = "ABCDEFG";
+		User bidder = new ConcreteUser("A", "A@example.com", "(555) 555-555");
 		
 		Bid user = new Bid(value, bidder);
 		Double resultvalue = user.getValue();
@@ -37,8 +37,8 @@ public class BidTest{
 		Double B_value = 456.78;
 		Double C_value = 0.00;
 		
-		User A_bidder = "ABC";
-		User B_bidder = "DEF";
+		User A_bidder = new ConcreteUser("ABC", "ABC@example.com", "(555) 555-555");
+		User B_bidder = new ConcreteUser("CDE", "CDE@example.com", "(666) 666-666");
 		
 		Bid user = new Bid(A_value, A_bidder);
 		user.setValue(B_value);
