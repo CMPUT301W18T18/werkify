@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 public class BidTest{
 
+	@Test
     public void testBid() throws Exception{
 	    Double value = 123.45;
 		User bidder = new ConcreteUser("A", "A@example.com", "(555) 555-555");
@@ -31,7 +32,8 @@ public class BidTest{
 		assertEquals(resultbidder, bidder);
 		
 	}
-	
+
+	@Test
 	public void testGettersAndSetters() throws Exception{
 	    Double A_value = 123.45;
 		Double B_value = 456.78;

@@ -15,10 +15,12 @@
 
 package ca.ualberta.cs.wrkify;
 
+import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 
 public class ConcreteUserTest {
-    
+
+    @Test
     public void testConstructor() throws Exception {
         String username = "UserNameHere";
         String email = "name@website.com";
@@ -34,6 +36,7 @@ public class ConcreteUserTest {
         assertEquals(resultPhoneNumber, "7801234567");
     }
 
+    @Test
     public void testUsernames() throws Exception {
         String allowed = "abcdefg1234567890hijklmn"; //This is 24 characters
         String disallowed = "abcdefg1234567890hijklmno"; //This is 25 characters
@@ -55,6 +58,7 @@ public class ConcreteUserTest {
         assertEquals(failed, true);
     }
 
+    @Test
     public void testGettersAndSetters() throws Exception {
         String A_username = "AllowedName";
         String A2_username = "AnotherName";
