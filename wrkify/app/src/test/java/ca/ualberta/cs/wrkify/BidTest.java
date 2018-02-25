@@ -23,7 +23,7 @@ public class BidTest{
 	    Double value = 123.45;
 		Bid bidder = "ABCDEFG";
 		
-		Bid user = new Bid(value,bidder);
+		Bid user = new Bid(value, bidder);
 		Double resultvalue = user.getValue();
 		Bid resultbidder = user.getBidder();
 		
@@ -40,12 +40,12 @@ public class BidTest{
 		Bid A_bidder = "ABC";
 		Bid B_bidder = "DEF";
 		
-		Bid user = new Bid(A_value,A_bidder);
+		Bid user = new Bid(A_value, A_bidder);
 		user.setValue(B_value);
-		assertEquals(user.getValue(),B_value);
+		assertEquals(user.getValue(), B_value);
 		
 		user.setBidder(B_bidder);
-		assertEquals(user.getBidder(),B_bidder);
+		assertEquals(user.getBidder(), B_bidder);
 		
 		boolean failed = false;
 		try{
