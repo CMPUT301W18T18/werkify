@@ -21,11 +21,11 @@ public class BidTest{
 
     public void testBid() throws Exception{
 	    Double value = 123.45;
-		String bidder = "ABCDEFG";
+		Bid bidder = "ABCDEFG";
 		
 		Bid user = new Bid(value,bidder);
 		Double resultvalue = user.getValue();
-		String resultbidder = user.getBidder();
+		Bid resultbidder = user.getBidder();
 		
 		assertEquals(resultvalue, value);
 		assertEquals(resultbidder, bidder);
@@ -37,23 +37,23 @@ public class BidTest{
 		Double B_value = 456.78;
 		Double C_value = 0.00;
 		
-		String A_bidder = "ABC";
-		String B_bidder = "DEF";
+		Bid A_bidder = "ABC";
+		Bid B_bidder = "DEF";
 		
 		Bid user = new Bid(A_value,A_bidder);
 		user.setValue(B_value);
-		assertEquals(user.getValue,B_value);
+		assertEquals(user.getValue(),B_value);
 		
 		user.setBidder(B_bidder);
-		assertEquals(user.getBidder,B_bidder);
+		assertEquals(user.getBidder(),B_bidder);
 		
 		boolean failed = false;
 		try{
 		    user.setValue(C_value);
-		}catch(IllegalIndexOfValueException e){
+		}catch(IllegalArgumentException e){
 		    failed = true;
 		}
 		
-		assertTure(failed);
+		assertTrue(failed);
 	}
 }
