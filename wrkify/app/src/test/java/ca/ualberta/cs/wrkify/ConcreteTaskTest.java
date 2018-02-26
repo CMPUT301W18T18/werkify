@@ -123,8 +123,8 @@ public class ConcreteTaskTest {
             if (number < lowbid) {
                 lowbid = number;
             }
-            Bid bid = new Bid();
-            bid.setValue(number);
+            User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
+            Bid bid = new Bid(number, bidder);
             bidList.add(bid);
         }
 
@@ -136,7 +136,8 @@ public class ConcreteTaskTest {
     @Test
     public void testAddBid () {
         ConcreteTask concTask = new ConcreteTask();
-        Bid bid = new Bid();
+        User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
+        Bid bid = new Bid(1.0, bidder);
 
         concTask.addBid(bid);
 
@@ -152,8 +153,8 @@ public class ConcreteTaskTest {
 
         for(int i=0; i < 10; i++){
             number = rand.nextDouble()*20;
-            Bid bid = new Bid();
-            bid.setValue(number);
+            User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
+            Bid bid = new Bid(number, bidder);
             bidList.add(bid);
         }
         concTask.setBidList(bidList);
@@ -177,8 +178,8 @@ public class ConcreteTaskTest {
     @Test
     public void testAcceptBid() {
         ConcreteTask concTask = new ConcreteTask();
-        Bid bid = new Bid();
-        bid.setValue(20.0);
+        User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
+        Bid bid = new Bid(20.0, bidder);
 
         concTask.acceptBid(bid);
 
