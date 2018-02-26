@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 /**
  * ConcreteUser is the java implementation of User
- * TODO: add restrictions to setters
  *
  * @see User
  */
@@ -39,8 +38,8 @@ public class ConcreteUser implements User {
     public ConcreteUser(String username, String email, String phoneNumber) throws IllegalArgumentException {
 
         InternalSetUsername(username);
-        this.email = email;
-        this.phoneNumber = phoneNumber;
+        InternalSetEmail(email);
+        InternalSetPhoneNumber(phoneNumber);
     }
 
     /**
@@ -89,6 +88,18 @@ public class ConcreteUser implements User {
         }
     }
 
+    /**
+     * InternalSetPhoneNumber provides a final implementation of setPhoneNumber that
+     * both the constructor and setPhoneNumber can use.
+     *
+     * this functions strips phonenumbers of any non numeric characters
+     *
+     * @param phoneNumber
+     */
+    private final void InternalSetPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber.replaceAll("[^\\d]", "");
+    }
+
     public String getUsername() {
         return this.username;
     }
@@ -129,7 +140,14 @@ public class ConcreteUser implements User {
         InternalSetEmail(email);
     }
 
+    /**
+     * sets the phone number via InternalSetPhoneNumber
+     *
+     * this functions strips phonenumbers of any non numeric characters
+     *
+     * @param phoneNumber
+     */
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        InternalSetPhoneNumber(phoneNumber);
     }
 }
