@@ -29,16 +29,18 @@ public class ConcreteUser implements User {
     private String email;
     private String phoneNumber;
 
+    // from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email
+    // (2018-02-26)
+    private final String emailRegex = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@"
+            + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\."
+            + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+
 
     public ConcreteUser(String username, String email, String phoneNumber) throws IllegalArgumentException {
 
         InternalSetUsername(username);
         this.email = email;
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getUsername() {
-        return this.username;
     }
 
     /**
@@ -69,6 +71,28 @@ public class ConcreteUser implements User {
         }
     }
 
+    /**
+     * InternalSetEmail provides a final implementation of setEmail that
+     * both the constructor and setEmail can use.
+     *
+     * the email verification used is from the w3c standard for
+     * html email fields.
+     *
+     * @param email
+     * @throws IllegalArgumentException when email is not an email
+     */
+    private final void InternalSetEmail(String email) throws IllegalArgumentException {
+        if (!email.matches(emailRegex)) {
+            throw new IllegalArgumentException("email does not appear to be valid");
+        } else {
+            this.email = email;
+        }
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
     public String getEmail() {
         return this.email;
     }
@@ -86,13 +110,23 @@ public class ConcreteUser implements User {
      * - username is not empty
      *
      * @param username
+     * @throws IllegalArgumentException when restrictions are violated.
      */
-    public void setUsername(String username) {
+    public void setUsername(String username) throws IllegalArgumentException {
         InternalSetUsername(username);
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    /**
+     * SetEmail sets the email via InternalSetEmail
+     *
+     * the email verification used is from the w3c standard for
+     * html email fields.
+     *
+     * @param email
+     * @throws IllegalArgumentException when email is not an email
+     */
+    public void setEmail(String email) throws IllegalArgumentException {
+        InternalSetEmail(email);
     }
 
     public void setPhoneNumber(String phoneNumber) {
