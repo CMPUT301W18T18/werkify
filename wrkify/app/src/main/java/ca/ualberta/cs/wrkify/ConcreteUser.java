@@ -14,6 +14,9 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * ConcreteUser is the java implementation of User
  * TODO: add restrictions to setters
@@ -26,14 +29,44 @@ public class ConcreteUser implements User {
     private String email;
     private String phoneNumber;
 
-    public ConcreteUser(String username, String email, String phoneNumber) {
-        this.username = username;
+
+    public ConcreteUser(String username, String email, String phoneNumber) throws IllegalArgumentException {
+
+        InternalSetUsername(username);
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
 
     public String getUsername() {
         return this.username;
+    }
+
+    /**
+     * InternalSetUsername provides a final implementation of SetUsername
+     * that both the constructor and setUsername can use.
+     *
+     * it enforces the following restrictions:
+     * - username contains no whitespace
+     * - username is less than 24 characters
+     * - username is not empty
+     *
+     * @param username
+     * @throws IllegalArgumentException when restrictions are violated.
+     */
+    private final void InternalSetUsername(String username) throws IllegalArgumentException {
+        // from https://stackoverflow.com/questions/4067809/ (2018-02-26)
+        Pattern pattern = Pattern.compile("\\s");
+        Matcher matcher = pattern.matcher(username);
+
+        if (matcher.find()) {
+            throw new IllegalArgumentException("username cannot contain whitespace");
+        } else if (username.length() > 24) {
+            throw new IllegalArgumentException("username too long");
+        } else if (username.isEmpty()) {
+            throw new IllegalArgumentException("username cannot be empty");
+        } else {
+            this.username = username;
+        }
     }
 
     public String getEmail() {
@@ -44,8 +77,18 @@ public class ConcreteUser implements User {
         return this.phoneNumber;
     }
 
+    /**
+     * SetUsername sets the username via InternalSetUsername
+     *
+     * it enforces the following restrictions:
+     * - username contains no whitespace
+     * - username is less than 24 characters
+     * - username is not empty
+     *
+     * @param username
+     */
     public void setUsername(String username) {
-        this.username = username;
+        InternalSetUsername(username);
     }
 
     public void setEmail(String email) {
