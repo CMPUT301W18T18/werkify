@@ -22,9 +22,9 @@ import java.util.ArrayList;
 /**
  * CheckListTest provides unit tests for CheckList
  *
+ * @author Peter Elliott
  * @see CheckList
  */
-
 public class CheckListTest {
     @Test
     public void testGetItem() {

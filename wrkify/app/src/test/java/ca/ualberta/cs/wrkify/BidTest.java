@@ -15,47 +15,54 @@
 package ca.ualberta.cs.wrkify;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-public class BidTest{
+/**
+ * unit tests for the Bid class
+ *
+ * @author Tao Huang
+ * @see Bid
+ */
+public class BidTest {
 
-	@Test
-    public void testBid() throws Exception{
-	    Double value = 123.45;
-		User bidder = new ConcreteUser("A", "A@example.com", "(555) 555-555");
-		
-		Bid user = new Bid(value, bidder);
-		Double resultvalue = user.getValue();
-		User resultbidder = user.getBidder();
-		
-		assertEquals(resultvalue, value);
-		assertEquals(resultbidder, bidder);
-		
-	}
+    @Test
+    public void testBid() throws Exception {
+        Double value = 123.45;
+        User bidder = new ConcreteUser("A", "A@example.com", "(555) 555-555");
 
-	@Test
-	public void testGettersAndSetters() throws Exception{
-	    Double A_value = 123.45;
-		Double B_value = 456.78;
-		Double C_value = 0.00;
-		
-		User A_bidder = new ConcreteUser("ABC", "ABC@example.com", "(555) 555-555");
-		User B_bidder = new ConcreteUser("CDE", "CDE@example.com", "(666) 666-666");
-		
-		Bid user = new Bid(A_value, A_bidder);
-		user.setValue(B_value);
-		assertEquals(user.getValue(), B_value);
-		
-		user.setBidder(B_bidder);
-		assertEquals(user.getBidder(), B_bidder);
-		
-		boolean failed = false;
-		try{
-		    user.setValue(C_value);
-		}catch(IllegalArgumentException e){
-		    failed = true;
-		}
-		
-		assertTrue(failed);
-	}
+        Bid user = new Bid(value, bidder);
+        Double resultvalue = user.getValue();
+        User resultbidder = user.getBidder();
+
+        assertEquals(resultvalue, value);
+        assertEquals(resultbidder, bidder);
+
+    }
+
+    @Test
+    public void testGettersAndSetters() throws Exception {
+        Double A_value = 123.45;
+        Double B_value = 456.78;
+        Double C_value = 0.00;
+
+        User A_bidder = new ConcreteUser("ABC", "ABC@example.com", "(555) 555-555");
+        User B_bidder = new ConcreteUser("CDE", "CDE@example.com", "(666) 666-666");
+
+        Bid user = new Bid(A_value, A_bidder);
+        user.setValue(B_value);
+        assertEquals(user.getValue(), B_value);
+
+        user.setBidder(B_bidder);
+        assertEquals(user.getBidder(), B_bidder);
+
+        boolean failed = false;
+        try {
+            user.setValue(C_value);
+        } catch (IllegalArgumentException e) {
+            failed = true;
+        }
+
+        assertTrue(failed);
+    }
 }

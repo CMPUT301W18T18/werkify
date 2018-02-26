@@ -18,6 +18,12 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * unit tests for the ConcreteUser class
+ *
+ * @author Taylor Folkersen
+ * @see ConcreteUser
+ */
 public class ConcreteUserTest {
 
     @Test
