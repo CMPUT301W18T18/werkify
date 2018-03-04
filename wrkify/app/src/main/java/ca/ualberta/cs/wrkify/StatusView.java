@@ -22,7 +22,11 @@ import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 /**
- * Created by peter on 03/03/18.
+ * StatusView provides a material design chip interface
+ * for displaying a Task Status
+ *
+ * @author Peter Elliott
+ * @see TaskStatus
  */
 
 public class StatusView extends AppCompatTextView {
@@ -39,6 +43,12 @@ public class StatusView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
     }
 
+    /**
+     * setStatus sets the background color and the text of the chip
+     *
+     * @param status the TaskStatus to display
+     * @param lowBid the lowest bid (used when bidded)
+     */
     public void setStatus(TaskStatus status, Double lowBid) {
         if (status == TaskStatus.REQUESTED) {
             this.setText("Requested");
