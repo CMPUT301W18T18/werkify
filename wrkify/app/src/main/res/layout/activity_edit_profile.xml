@@ -21,7 +21,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.ualberta.cs.wrkify.UserViewActivity">
+    tools:context="ca.ualberta.cs.wrkify.ViewProfileActivity">
 
     <TextView
         android:id="@+id/UserName"
