@@ -14,13 +14,15 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.io.Serializable;
+
 /**
  * User provides an interface for users
  *
  * @see ConcreteUser
  */
 
-public interface User {
+public interface User extends Serializable {
     String getUsername();
     String getEmail();
     String getPhoneNumber();
