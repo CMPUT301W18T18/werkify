@@ -45,7 +45,7 @@ public class ElasticObject {
 
         //TODO support proper index
         Index index = new Index.Builder(obj).index("testing").type(obj.getClass().getName()).build();
-        DocumentResult result = this.client.execute(index);
+        DocumentResult result = (DocumentResult) this.client.execute(index);
 
         if (!result.isSucceeded()) {
             //TODO choose a better exception
@@ -60,7 +60,7 @@ public class ElasticObject {
 
         //TODO support proper index
         Index index = new Index.Builder(obj).index("testing").type(obj.getClass().getName()).build();
-        DocumentResult result = this.client.execute(index);
+        DocumentResult result = (DocumentResult) this.client.execute(index);
 
         if (!result.isSucceeded()) {
             //TODO choose a better exception
