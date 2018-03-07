@@ -30,17 +30,29 @@ public class ViewTaskActivityTest {
     public ActivityTestRule<ViewTaskActivity> activityTestRule = new ActivityTestRule<>(
             ViewTaskActivity.class, false, false);
 
-
-
     @Test
     public void testViewTaskActivity() {
         Intent intent = new Intent();
         ConcreteTask task = new ConcreteTask();
-        task.setProvider(new ConcreteUser("Username", "test@email", "1234567890"));
-        task.setTitle("Test task title");
-        task.setDescription("Test task description");
+        task.setRequester(new ConcreteUser("Username", "test@email", "1234567890"));
+        task.setTitle("Example task");
+        task.setDescription("A task can have a description, and that description can be fairly" +
+                "long. It may or may not be likely for an actual description to be long enough" +
+                "to cause the view to scroll, but it is theoretically allowed, probably. Adding" +
+                "additional content like images and locations will probably make long tasks more" +
+                "common, but even with just a sufficiently long description, it could overflow." +
+                "A task can have a description, and that description can be fairly" +
+                "long. It may or may not be likely for an actual description to be long enough" +
+                "to cause the view to scroll, but it is theoretically allowed, probably. Adding" +
+                "additional content like images and locations will probably make long tasks more" +
+                "common, but even with just a sufficiently long description, it could overflow." +
+                "A task can have a description, and that description can be fairly" +
+                "long. It may or may not be likely for an actual description to be long enough" +
+                "to cause the view to scroll, but it is theoretically allowed, probably. Adding" +
+                "additional content like images and locations will probably make long tasks more" +
+                "common, but even with just a sufficiently long description, it could overflow.");
         task.setStatus(TaskStatus.REQUESTED);
-        intent.putExtra(ViewTaskActivity.EXTRA_TARGET_USER, task);
+        intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
         activityTestRule.launchActivity(intent);
     }
 }
