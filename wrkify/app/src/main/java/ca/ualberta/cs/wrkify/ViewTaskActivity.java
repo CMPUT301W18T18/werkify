@@ -80,15 +80,9 @@ public class ViewTaskActivity extends Activity {
             bottomSheet = new ViewTaskOpenBottomSheet(this);
             bottomSheet.setDetailString("No bids yet");
         } else if (status == TaskStatus.ASSIGNED) {
-            if (task.getProvider().equals(sessionUser)) {
-                bottomSheet = new ViewTaskAssignedProviderBottomSheet(this);
-            } else if (task.getRequester().equals(sessionUser)) {
-                bottomSheet = new ViewTaskAssignedRequesterBottomSheet(this);
-            } else {
-                bottomSheet = new ViewTaskAssignedBottomSheet(this);
-            }
+            bottomSheet = new ViewTaskAssignedBottomSheet(this);
         } else if (status == TaskStatus.DONE) {
-            bottomSheet = new ViewTaskClosedBottomSheet(this);
+            bottomSheet = new ViewTaskDoneBottomSheet(this);
         } else {
             throw new InvalidParameterException();
         }

@@ -93,7 +93,7 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
         View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, this, false);
 
         // Set background
-        this.setBackground(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
+        this.setBackground(new ColorDrawable(this.getBackgroundColor()));
         this.setElevation(10);
 
         // Set status text

@@ -6,6 +6,10 @@ import android.view.View;
 import android.widget.TextView;
 
 
+/**
+ * Bottom sheet to use for requested tasks.
+ * Contains controls to place a bid.
+ */
 public class ViewTaskOpenBottomSheet extends ViewTaskBottomSheet {
     public ViewTaskOpenBottomSheet(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -26,7 +30,7 @@ public class ViewTaskOpenBottomSheet extends ViewTaskBottomSheet {
 
     @Override
     protected int getBackgroundColor() {
-        return R.color.colorPrimary;
+        return R.color.colorStatusRequested;
     }
 
     @Override
