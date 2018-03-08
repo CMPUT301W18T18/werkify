@@ -18,7 +18,9 @@
 package ca.ualberta.cs.wrkify;
 
 import io.searchbox.core.DocumentResult;
+import io.searchbox.core.Get;
 import io.searchbox.core.Index;
+import io.searchbox.core.Search;
 
 /**
  * ElasticObject provides a heritable class for
@@ -64,6 +66,7 @@ public class ElasticObject {
      */
     public ElasticObject(Object obj) throws Exception {
         this.client = ElasticClient.getInstance();
+        this.obj = obj;
 
         //TODO support proper index
         Index index = new Index.Builder(obj).index("testing").type(obj.getClass().getName()).build();
@@ -86,6 +89,7 @@ public class ElasticObject {
      */
     public ElasticObject(Object obj, ElasticClient client) throws Exception {
         this.client = client;
+        this.obj = obj;
 
         //TODO support proper index
         Index index = new Index.Builder(obj).index("testing").type(obj.getClass().getName()).build();
@@ -97,5 +101,25 @@ public class ElasticObject {
         }
 
         this.elasticId = result.getId();
+    }
+
+    public void update() throws Exception {
+        //TODO support proper index
+        Index index = new Index.Builder(this.obj)
+                .index("testing").type(this.obj.getClass().getName())
+                .id(this.elasticId).build();
+        DocumentResult result = (DocumentResult) this.client.execute(index);
+    }
+
+    public Object getObj() {
+        if (this.obj == null) {
+            //TODO support proper index
+            Get get = new Get.Builder("testing", this.elasticId).build();
+
+            DocumentResult result = (DocumentResult) this.client.execute(get);
+
+            this.obj = result.getSourceAsObject(Object.class);
+        }
+        return this.obj;
     }
 }
