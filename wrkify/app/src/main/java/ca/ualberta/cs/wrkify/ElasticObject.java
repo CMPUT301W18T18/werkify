@@ -21,7 +21,12 @@ import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
 
 /**
- * Created by peter on 06/03/18.
+ * ElasticObject provides a heritable class for
+ * ElasticSearch aware implementations of Objects
+ *
+ * @see ElasticClient
+ * @see ElasticTask
+ * @see ElasticUser
  */
 
 public class ElasticObject {
@@ -30,16 +35,33 @@ public class ElasticObject {
     private String elasticId;
     private Object obj;
 
+    /**
+     * creates an ElasticObject from an elasticsearch id
+     * and the ElasticClient Singleton
+     * @param id the elasticsearch id
+     */
     public ElasticObject(String id) {
         this.client = ElasticClient.getInstance();
         this.elasticId = id;
     }
 
+    /**
+     * creates an ElasticObject from an elasticsearch id
+     * and a provided ElasticClient
+     * @param id the elasticsearch id
+     * @param client the ElasticClient
+     */
     public ElasticObject(String id, ElasticClient client) {
         this.client = client;
         this.elasticId = id;
     }
 
+    /**
+     * creates an elasticObject from a new object to
+     * be uploaded to eslasticsearch.
+     * and the ElasticClient Singleton
+     * @param obj the object to upload to elasticsearch
+     */
     public ElasticObject(Object obj) throws Exception {
         this.client = ElasticClient.getInstance();
 
@@ -55,6 +77,13 @@ public class ElasticObject {
         this.elasticId = result.getId();
     }
 
+    /**
+     * creates an elasticObject from a new object to
+     * be uploaded to eslasticsearch.
+     * and an ElasticClient
+     * @param obj the object to upload to elasticsearch
+     * @param client the ElasticClient
+     */
     public ElasticObject(Object obj, ElasticClient client) throws Exception {
         this.client = client;
 
