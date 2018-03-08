@@ -122,4 +122,8 @@ public class ElasticObject {
         }
         return this.obj;
     }
+
+    public void refresh() {
+        this.obj = null;
+    }
 }
