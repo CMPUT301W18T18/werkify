@@ -21,6 +21,7 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
@@ -47,7 +48,7 @@ class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
-    protected View getContentLayout() {
+    protected View getContentLayout(ViewGroup root) {
         TextView view = new TextView(getContext());
         view.setText("assigned");
         return view;

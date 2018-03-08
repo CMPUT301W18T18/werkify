@@ -87,9 +87,11 @@ public class ViewTaskActivity extends Activity {
             throw new InvalidParameterException();
         }
 
-
         // Add the bottom sheet
         CoordinatorLayout layout = findViewById(R.id.taskView);
         layout.addView(bottomSheet);
+
+        // Set up the app bar
+        setTitle("Task");
     }
 }

@@ -3,6 +3,7 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 
@@ -34,9 +35,7 @@ public class ViewTaskOpenBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
-    protected View getContentLayout() {
-        TextView view = new TextView(getContext());
-        view.setText("test");
-        return view;
+    protected View getContentLayout(ViewGroup root) {
+        return inflate(getContext(), R.layout.activity_view_task_bottom_sheet_bid, null);
     }
 }

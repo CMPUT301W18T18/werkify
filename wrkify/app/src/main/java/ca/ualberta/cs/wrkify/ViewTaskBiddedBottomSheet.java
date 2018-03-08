@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
@@ -49,7 +50,7 @@ public class ViewTaskBiddedBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
-    protected View getContentLayout() {
+    protected View getContentLayout(ViewGroup root) {
         TextView view = new TextView(getContext());
         view.setText("different test");
         return view;

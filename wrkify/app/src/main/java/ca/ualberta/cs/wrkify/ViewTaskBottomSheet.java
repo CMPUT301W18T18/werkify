@@ -27,6 +27,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -70,7 +71,7 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
      * with the bottom sheet, but hidden until revealed.)
      * @return View to be displayed when the sheet is opened
      */
-    abstract protected View getContentLayout();
+    abstract protected View getContentLayout(ViewGroup root);
 
     /**
      * Expands the bottom sheet, if it isn't already expanded.
@@ -105,7 +106,7 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
 
         // Set content view
         FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
-        frame.addView(this.getContentLayout());
+        frame.addView(this.getContentLayout(this));
 
         // Set click listener
         view.setOnClickListener(new View.OnClickListener() {

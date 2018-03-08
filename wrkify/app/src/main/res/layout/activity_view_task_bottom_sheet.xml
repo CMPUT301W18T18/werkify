@@ -46,14 +46,14 @@
             android:layout_marginStart="16dp"
             android:text="Detail line"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/taskViewBottomSheetStatus" />
+            app:layout_constraintTop_toBottomOf="@+id/taskViewBottomSheetStatus"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/taskViewBottomSheetContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/taskViewBottomSheetHeader">
 
