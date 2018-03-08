@@ -53,6 +53,8 @@ public class ViewTaskActivityTest {
                 "common, but even with just a sufficiently long description, it could overflow.");
         task.setStatus(TaskStatus.REQUESTED);
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
+        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, new ConcreteUser("Username",
+                "test@email", "1234567890"));
         activityTestRule.launchActivity(intent);
     }
 }

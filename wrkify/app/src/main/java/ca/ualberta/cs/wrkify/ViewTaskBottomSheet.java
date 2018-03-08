@@ -19,12 +19,15 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 /**
@@ -93,12 +96,16 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
         View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, this, false);
 
         // Set background
-        this.setBackground(new ColorDrawable(this.getBackgroundColor()));
+        this.setBackground(new ColorDrawable(getResources().getColor(this.getBackgroundColor())));
         this.setElevation(10);
 
         // Set status text
         TextView statusView = view.findViewById(R.id.taskViewBottomSheetStatus);
         statusView.setText(this.getStatusString());
+
+        // Set content view
+        FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
+        frame.addView(this.getContentLayout());
 
         // Set click listener
         view.setOnClickListener(new View.OnClickListener() {
@@ -110,18 +117,61 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
         this.addView(view);
     }
 
+    /**
+     * Set the peek height of the bottom sheet to only show the header.
+     */
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        BottomSheetBehavior behavior = BottomSheetBehavior.from(this);
+        behavior.setPeekHeight(findViewById(R.id.taskViewBottomSheetHeader).getHeight());
+    }
+
+    /**
+     * Initialize the view's behavior relative to its CoordinatorLayout on attach.
+     */
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) this.getLayoutParams();
-        params.setBehavior(new BottomSheetBehavior());
+        params.setBehavior(new BottomSheetBehavior(){
+            @Override
+            public float getScrimOpacity(CoordinatorLayout parent, View child) {
+                Log.i("-->", "getScrimOpacity");
+                Log.i("-->", String.valueOf(getState()));
+                if (getState() == STATE_COLLAPSED) {
+                    Log.i("-->", "collapsed");
+                    return 0.0f;
+                } else {
+                    Log.i("-->", "expanded");
+                    return 0.5f;
+                }
+            }
+        });
         params.width = CoordinatorLayout.LayoutParams.MATCH_PARENT;
-        this.setElevation(18);
+        params.insetEdge = LayoutParams.BOTTOM;
 
-        BottomSheetBehavior behavior = BottomSheetBehavior.from(this);
-        behavior.setPeekHeight(100);
+        final BottomSheetBehavior behavior = BottomSheetBehavior.from(this);
         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    setTranslationZ(0);
+                }
+                else {
+                    setTranslationZ(12);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
     }
 
     public void setDetailString(String detailString) {
