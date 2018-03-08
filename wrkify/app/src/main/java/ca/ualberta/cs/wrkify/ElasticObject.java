@@ -31,20 +31,22 @@ import io.searchbox.core.Search;
  * @see ElasticUser
  */
 
-public class ElasticObject {
+public class ElasticObject<T> {
 
     private ElasticClient client;
     private String elasticId;
-    private Object obj;
+    private Class<T> type;
+    private T obj;
 
     /**
      * creates an ElasticObject from an elasticsearch id
      * and the ElasticClient Singleton
      * @param id the elasticsearch id
      */
-    public ElasticObject(String id) {
+    public ElasticObject(String id, Class<T> type) {
         this.client = ElasticClient.getInstance();
         this.elasticId = id;
+        this.type = type;
     }
 
     /**
@@ -53,9 +55,10 @@ public class ElasticObject {
      * @param id the elasticsearch id
      * @param client the ElasticClient
      */
-    public ElasticObject(String id, ElasticClient client) {
+    public ElasticObject(String id, Class<T> type, ElasticClient client) {
         this.client = client;
         this.elasticId = id;
+        this.type = type;
     }
 
     /**
@@ -64,12 +67,13 @@ public class ElasticObject {
      * and the ElasticClient Singleton
      * @param obj the object to upload to elasticsearch
      */
-    public ElasticObject(Object obj) throws Exception {
+    public ElasticObject(T obj, Class<T> type) throws Exception {
         this.client = ElasticClient.getInstance();
         this.obj = obj;
+        this.type = type;
 
         //TODO support proper index
-        Index index = new Index.Builder(obj).index("testing").type(obj.getClass().getName()).build();
+        Index index = new Index.Builder(obj).index("testing").type(this.type.getName()).build();
         DocumentResult result = (DocumentResult) this.client.execute(index);
 
         if (!result.isSucceeded()) {
@@ -87,12 +91,13 @@ public class ElasticObject {
      * @param obj the object to upload to elasticsearch
      * @param client the ElasticClient
      */
-    public ElasticObject(Object obj, ElasticClient client) throws Exception {
+    public ElasticObject(T obj, Class<T> type, ElasticClient client) throws Exception {
         this.client = client;
         this.obj = obj;
+        this.type = type;
 
         //TODO support proper index
-        Index index = new Index.Builder(obj).index("testing").type(obj.getClass().getName()).build();
+        Index index = new Index.Builder(obj).index("testing").type(this.type.getName()).build();
         DocumentResult result = (DocumentResult) this.client.execute(index);
 
         if (!result.isSucceeded()) {
@@ -106,19 +111,19 @@ public class ElasticObject {
     public void update() throws Exception {
         //TODO support proper index
         Index index = new Index.Builder(this.obj)
-                .index("testing").type(this.obj.getClass().getName())
+                .index("testing").type(this.type.getName())
                 .id(this.elasticId).build();
         DocumentResult result = (DocumentResult) this.client.execute(index);
     }
 
-    public Object getObj() {
+    public T getObj() {
         if (this.obj == null) {
             //TODO support proper index
             Get get = new Get.Builder("testing", this.elasticId).build();
 
             DocumentResult result = (DocumentResult) this.client.execute(get);
 
-            this.obj = result.getSourceAsObject(Object.class);
+            this.obj = result.getSourceAsObject(this.type);
         }
         return this.obj;
     }
