@@ -33,7 +33,7 @@ public class TestViewProfileActivity {
             ViewProfileActivity.class, false, false);
 
     @Test
-    public void testViewTaskActivity() {
+    public void testViewProfileActivity() {
         Intent intent = new Intent();
 
         ConcreteUser user = new ConcreteUser("user1", "user1@example.com", "(555) 555-5555");
