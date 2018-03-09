@@ -16,18 +16,20 @@
   ~
   -->
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/taskView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="ca.ualberta.cs.wrkify.ViewTaskActivity">
 
     <ScrollView
         android:id="@+id/taskViewPane"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:layout_constraintBottom_toTopOf="@+id/taskViewBottomSheetFrame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,4 +78,9 @@
 
         </LinearLayout>
     </ScrollView>
-</android.support.design.widget.CoordinatorLayout>
+    <FrameLayout
+        android:id="@+id/taskViewBottomSheetFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </FrameLayout>
+</LinearLayout>

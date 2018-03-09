@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.CoordinatorLayout;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.security.InvalidParameterException;
@@ -88,7 +89,7 @@ public class ViewTaskActivity extends Activity {
         }
 
         // Add the bottom sheet
-        CoordinatorLayout layout = findViewById(R.id.taskView);
+        ViewGroup layout = findViewById(R.id.taskView);
         layout.addView(bottomSheet);
 
         // Set up the app bar

@@ -23,6 +23,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/taskViewBottomSheetHeader"
+        android:translationZ="1dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -54,6 +55,7 @@
         android:id="@+id/taskViewBottomSheetContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/taskViewBottomSheetHeader">
 
