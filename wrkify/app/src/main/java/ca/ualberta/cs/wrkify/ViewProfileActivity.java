@@ -37,7 +37,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_profile);
+        setContentView(R.layout.activity_view_profile);
 
         this.user = (User) getIntent().getSerializableExtra(USER_EXTRA);
 
@@ -46,9 +46,9 @@ public class ViewProfileActivity extends AppCompatActivity {
         TextView phonenumber = (TextView) findViewById(R.id.PhoneNumber);
 
         username.setText(user.getUsername());
-        email.setText("email: " + user.getEmail());
+        email.setText(user.getEmail());
         //TODO phone number formating
-        phonenumber.setText("phone: " + user.getPhoneNumber());
+        phonenumber.setText(user.getPhoneNumber());
 
         //TODO FAB hidden if user is not us
     }
