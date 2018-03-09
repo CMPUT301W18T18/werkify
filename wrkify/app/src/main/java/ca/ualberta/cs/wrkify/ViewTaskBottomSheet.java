@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.transition.SidePropagation;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
@@ -81,12 +82,33 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
     abstract protected View getContentLayout(ViewGroup root);
 
     /**
+     * Checks whether the bottom sheet is currently expanded.
+     * @return whether the bottom sheet is expanded
+     */
+    public boolean isExpanded() {
+        return this.expanded;
+    }
+
+    /**
      * Expands the bottom sheet, if it isn't already expanded.
      */
     public void expand() {
         TransitionManager.beginDelayedTransition(this, new Slide(Gravity.BOTTOM));
         findViewById(R.id.taskViewBottomSheetContent).setVisibility(VISIBLE);
         setTranslationZ(8);
+        this.expanded = true;
+    }
+
+    /**
+     * Collapses the bottom sheet, if it isn't already collapsed.
+     */
+    public void collapse() {
+        Slide slide = new Slide(Gravity.BOTTOM);
+        slide.setPropagation(new SidePropagation());
+        TransitionManager.beginDelayedTransition(this, slide);
+        findViewById(R.id.taskViewBottomSheetContent).setVisibility(GONE);
+        setTranslationZ(0);
+        this.expanded = false;
     }
 
     /**
@@ -132,5 +154,15 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
     public void setDetailString(String detailString) {
         TextView detailView = findViewById(R.id.taskViewBottomSheetDetail);
         detailView.setText(detailString);
+    }
+
+    public void setRightStatusString(String rightStatusString) {
+        TextView rightStatusView = findViewById(R.id.taskViewBottomSheetRightStatus);
+        rightStatusView.setText(rightStatusString);
+    }
+
+    public void setRightDetailString(String rightDetailString) {
+        TextView rightDetailView = findViewById(R.id.taskViewBottomSheetRightDetail);
+        rightDetailView.setText(rightDetailString);
     }
 }

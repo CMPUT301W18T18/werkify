@@ -22,8 +22,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.CoordinatorLayout;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import java.security.InvalidParameterException;
 import java.util.Locale;
@@ -37,6 +40,8 @@ import java.util.Locale;
 public class ViewTaskActivity extends Activity {
     public static String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
     public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
+
+    private ViewTaskBottomSheet bottomSheet;
 
     /**
      * Create the ViewTaskActivity.
@@ -55,6 +60,9 @@ public class ViewTaskActivity extends Activity {
         Task task = (Task) intent.getSerializableExtra(EXTRA_TARGET_TASK);
         User sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
 
+        // Determine if the session user owns this task
+        Boolean sessionUserIsRequester = (task.getRequester().equals(sessionUser));
+
         // Set the task title
         TextView titleView = findViewById(R.id.taskViewTitle);
         titleView.setText(task.getTitle());
@@ -67,23 +75,59 @@ public class ViewTaskActivity extends Activity {
         TextView descriptionView = findViewById(R.id.taskViewDescription);
         descriptionView.setText(task.getDescription());
 
-        // Create the bottom sheet
+        // Generate bottom sheet
         TaskStatus status = task.getStatus();
-
-        ViewTaskBottomSheet bottomSheet = null;
         if (status == TaskStatus.BIDDED) {
-            bottomSheet = new ViewTaskBiddedBottomSheet(this);
-            bottomSheet.setDetailString(String.format(Locale.US,
-                    "Current bid is $%2f (%d bids so far)",
-                    task.getLowestBid().getValue(),
-                    task.getBidList().size()));
+            // Bidded task bottom sheet
+            // Provider still sees "open" status,
+            // since the presence of other bids doesn't change anything for them.
+            // Requester sees "bidded" status as expected.
+            if (sessionUserIsRequester) {
+                this.bottomSheet = new ViewTaskBiddedBottomSheet(this);
+            }
+            else {
+                this.bottomSheet = new ViewTaskOpenBottomSheet(this);
+            }
+
+            Double lowestBidValue = task.getLowestBid().getValue();
+            Integer bidCount = task.getBidList().size();
+
+            // Show number of bids so far
+            this.bottomSheet.setDetailString(
+                    String.format(Locale.US, "%d bids so far", bidCount));
+
+            // Show current bid
+            this.bottomSheet.setRightStatusString(
+                    String.format(Locale.US, "$%.2f", lowestBidValue));
         } else if (status == TaskStatus.REQUESTED) {
-            bottomSheet = new ViewTaskOpenBottomSheet(this);
-            bottomSheet.setDetailString("No bids yet");
+            // Requested (not yet bidded) task bottom sheet
+            this.bottomSheet = new ViewTaskOpenBottomSheet(this);
+
+            // Just show a status message
+            this.bottomSheet.setDetailString("No bids yet");
         } else if (status == TaskStatus.ASSIGNED) {
+            // Assigned bottom sheet
             bottomSheet = new ViewTaskAssignedBottomSheet(this);
+
+            User assignee = task.getProvider();
+            Double bidValue = task.getPrice();
+
+            // Show assignee
+            bottomSheet.setDetailString(
+                String.format(Locale.US, "Assigned to %s", assignee.getUsername()));
+
+            // Show their accepted bid price
+            bottomSheet.setRightStatusString(
+                String.format(Locale.US, "$%.2f", bidValue));
         } else if (status == TaskStatus.DONE) {
+            // Completed bottom sheet
             bottomSheet = new ViewTaskDoneBottomSheet(this);
+
+            User assignee = task.getProvider();
+
+            // Show a status message with the assignee name
+            bottomSheet.setDetailString(
+                    String.format(Locale.US, "Completed by %s", assignee.getUsername()));
         } else {
             throw new InvalidParameterException();
         }
@@ -94,5 +138,22 @@ public class ViewTaskActivity extends Activity {
 
         // Set up the app bar
         setTitle("Task");
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    /**
+     * Collapse the bottom sheet on up press if it is open, instead of
+     * leaving the activity altogether. (This is the intended way to
+     * 'cancel' the bottom sheet.)
+     */
+    @Override
+    public boolean onNavigateUp() {
+        if (this.bottomSheet.isExpanded()) {
+            bottomSheet.collapse();
+            return false;
+        }
+        else {
+            return super.onNavigateUp();
+        }
     }
 }
