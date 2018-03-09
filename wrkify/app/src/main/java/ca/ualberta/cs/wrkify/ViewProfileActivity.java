@@ -30,7 +30,7 @@ import android.widget.TextView;
  */
 public class ViewProfileActivity extends AppCompatActivity {
 
-    public static final String UserIntent = "ca.ualberta.cs.wrkify.USER_INTENT";
+    public static final String USER_EXTRA = "ca.ualberta.cs.wrkify.USER_INTENT";
 
     private User user;
 
@@ -39,7 +39,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        this.user = (User) getIntent().getSerializableExtra(UserIntent);
+        this.user = (User) getIntent().getSerializableExtra(USER_EXTRA);
 
         TextView username = (TextView) findViewById(R.id.UserName);
         TextView email = (TextView) findViewById(R.id.email);

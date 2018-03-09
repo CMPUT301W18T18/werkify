@@ -14,6 +14,8 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.io.Serializable;
+
 /**
  * ConcreteUser is the java implementation of User
  * TODO: add restrictions to setters
@@ -21,7 +23,7 @@ package ca.ualberta.cs.wrkify;
  * @see User
  */
 
-public class ConcreteUser implements User {
+public class ConcreteUser implements User, Serializable {
     private String username;
     private String email;
     private String phoneNumber;
