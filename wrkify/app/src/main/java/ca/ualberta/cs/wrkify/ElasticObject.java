@@ -42,6 +42,7 @@ public class ElasticObject<T> {
      * creates an ElasticObject from an elasticsearch id
      * and the ElasticClient Singleton
      * @param id the elasticsearch id
+     * @param type the type of our object
      */
     public ElasticObject(String id, Class<T> type) {
         this.client = ElasticClient.getInstance();
@@ -53,6 +54,7 @@ public class ElasticObject<T> {
      * creates an ElasticObject from an elasticsearch id
      * and a provided ElasticClient
      * @param id the elasticsearch id
+     * @param type the type of our object
      * @param client the ElasticClient
      */
     public ElasticObject(String id, Class<T> type, ElasticClient client) {
@@ -66,6 +68,7 @@ public class ElasticObject<T> {
      * be uploaded to eslasticsearch.
      * and the ElasticClient Singleton
      * @param obj the object to upload to elasticsearch
+     * @param type the type of our object
      */
     public ElasticObject(T obj, Class<T> type) throws Exception {
         this.client = ElasticClient.getInstance();
@@ -90,6 +93,7 @@ public class ElasticObject<T> {
      * and an ElasticClient
      * @param obj the object to upload to elasticsearch
      * @param client the ElasticClient
+     * @param type the type of our object
      */
     public ElasticObject(T obj, Class<T> type, ElasticClient client) throws Exception {
         this.client = client;
@@ -108,6 +112,11 @@ public class ElasticObject<T> {
         this.elasticId = result.getId();
     }
 
+    /**
+     * updates the object to elasticsearch.
+     *
+     * @throws Exception on failed execution
+     */
     public void update() throws Exception {
         //TODO support proper index
         Index index = new Index.Builder(this.obj)
@@ -116,6 +125,11 @@ public class ElasticObject<T> {
         DocumentResult result = (DocumentResult) this.client.execute(index);
     }
 
+    /**
+     * lazily gets the internal object
+     *
+     * @return the T that we are tracking
+     */
     public T getObj() {
         if (this.obj == null) {
             //TODO support proper index
@@ -128,6 +142,9 @@ public class ElasticObject<T> {
         return this.obj;
     }
 
+    /**
+     * causes the next getObj to be reloaded from elasticsearch.
+     */
     public void refresh() {
         this.obj = null;
     }
