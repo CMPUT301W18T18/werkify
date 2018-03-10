@@ -76,6 +76,8 @@ public class ElasticClient {
         this.client = (JestDroidClient) factory.getObject();
     }
 
+    protected ElasticClient() {}
+
     /**
      * a wrapper for jest's JestDroidClient.execute
      *

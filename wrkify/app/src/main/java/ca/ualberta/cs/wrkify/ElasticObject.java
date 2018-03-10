@@ -72,7 +72,7 @@ public class ElasticObject<T> {
      * @param obj the object to upload to elasticsearch
      * @param type the type of our object
      */
-    public ElasticObject(T obj, Class<T> type) throws Exception {
+    public ElasticObject(T obj, Class<T> type) {
         this.client = ElasticClient.getInstance();
         this.obj = obj;
         this.type = type;
@@ -88,7 +88,7 @@ public class ElasticObject<T> {
      * @param client the ElasticClient
      * @param type the type of our object
      */
-    public ElasticObject(T obj, Class<T> type, ElasticClient client) throws Exception {
+    public ElasticObject(T obj, Class<T> type, ElasticClient client) {
         this.client = client;
         this.obj = obj;
         this.type = type;
@@ -122,5 +122,14 @@ public class ElasticObject<T> {
      */
     public void refresh() {
         this.obj = null;
+    }
+
+    /**
+     * gets the id of the ElasticObject
+     *
+     * @return the elasticsearch id
+     */
+    public String getId() {
+        return this.elasticId;
     }
 }
