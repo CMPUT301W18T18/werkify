@@ -93,7 +93,7 @@ public class ElasticClient {
      * @param type the type of the object
      * @return the elasticsearch id (null if offline)
      */
-    public String create(Object obj, Class type) {
+    public <T> String create( T obj, Class<T> type) {
         Index index = new Index.Builder(obj).index(INDEX).type(type.getName()).build();
         try {
             DocumentResult result = this.execute(index);
@@ -111,7 +111,7 @@ public class ElasticClient {
      * @param obj the object to push
      * @param type the type of obj
      */
-    public void update(String id, Object obj, Class type) {
+    public <T> void update(String id, T obj, Class<T> type) {
         Index index = new Index.Builder(obj)
                 .index(INDEX).type(type.getName())
                 .id(id).build();
