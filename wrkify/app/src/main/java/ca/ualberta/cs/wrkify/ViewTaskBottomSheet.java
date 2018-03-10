@@ -44,6 +44,7 @@ import android.widget.TextView;
  * when clicked on.
  */
 public abstract class ViewTaskBottomSheet extends ConstraintLayout {
+    private Boolean expandable = true;
     private Boolean expanded = false;
 
     public ViewTaskBottomSheet(Context context, AttributeSet attrs) {
@@ -59,6 +60,17 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
     public ViewTaskBottomSheet(Context context) {
         super(context);
         this.populateView();
+    }
+
+    /**
+     * Initializes the bottom sheet contents from a task object. This will set the
+     * header fields appropriately, and possibly initialize the sheet contents if
+     * they require initializing.
+     * @param task task object to initialize from
+     * @return this
+     */
+    public ViewTaskBottomSheet initializeWithTask(Task task) {
+        return this;
     }
 
     /**
@@ -93,6 +105,8 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
      * Expands the bottom sheet, if it isn't already expanded.
      */
     public void expand() {
+        if (!this.expandable) return;
+
         TransitionManager.beginDelayedTransition(this, new Slide(Gravity.BOTTOM));
         findViewById(R.id.taskViewBottomSheetContent).setVisibility(VISIBLE);
         setTranslationZ(8);
@@ -137,9 +151,16 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
         statusView.setText(this.getStatusString());
 
         // Set content view
-        FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
-        frame.addView(this.getContentLayout(this));
-        frame.setVisibility(GONE);
+        View content = this.getContentLayout(this);
+
+        if (view != null) {
+            FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
+            frame.addView(content);
+            frame.setVisibility(GONE);
+        }
+        else {
+            this.expandable = false;
+        }
 
         // Set click listener
         view.setOnClickListener(new View.OnClickListener() {

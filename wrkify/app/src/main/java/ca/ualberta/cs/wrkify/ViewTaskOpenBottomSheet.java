@@ -6,10 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 
 /**
- * Bottom sheet to use for requested tasks.
- * Contains controls to place a bid.
+ * Bottom sheet for a task provider viewing a task that is
+ * open or bidded, and that they have not bidded on themselves.
+ * Contains controls for placing a bid.
  */
 public class ViewTaskOpenBottomSheet extends ViewTaskBottomSheet {
     public ViewTaskOpenBottomSheet(Context context, AttributeSet attrs) {
@@ -22,6 +25,24 @@ public class ViewTaskOpenBottomSheet extends ViewTaskBottomSheet {
 
     public ViewTaskOpenBottomSheet(Context context) {
         super(context);
+    }
+
+    @Override
+    public ViewTaskBottomSheet initializeWithTask(Task task) {
+        Bid lowestBid = task.getLowestBid();
+        if (lowestBid != null) {
+            setRightStatusString(String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+        }
+
+        Integer bidCount = task.getBidList().size();
+        if (bidCount == 0) {
+            setDetailString("No bids yet");
+        }
+        else {
+            setDetailString(String.format(Locale.US, "%d bids so far", bidCount));
+        }
+
+        return super.initializeWithTask(task);
     }
 
     @Override

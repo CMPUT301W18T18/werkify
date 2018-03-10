@@ -76,61 +76,7 @@ public class ViewTaskActivity extends Activity {
         descriptionView.setText(task.getDescription());
 
         // Generate bottom sheet
-        TaskStatus status = task.getStatus();
-        if (status == TaskStatus.BIDDED) {
-            // Bidded task bottom sheet
-            // Provider still sees "open" status,
-            // since the presence of other bids doesn't change anything for them.
-            // Requester sees "bidded" status as expected.
-            if (sessionUserIsRequester) {
-                this.bottomSheet = new ViewTaskBiddedBottomSheet(this);
-            }
-            else {
-                this.bottomSheet = new ViewTaskOpenBottomSheet(this);
-            }
-
-            Double lowestBidValue = task.getLowestBid().getValue();
-            Integer bidCount = task.getBidList().size();
-
-            // Show number of bids so far
-            this.bottomSheet.setDetailString(
-                    String.format(Locale.US, "%d bids so far", bidCount));
-
-            // Show current bid
-            this.bottomSheet.setRightStatusString(
-                    String.format(Locale.US, "$%.2f", lowestBidValue));
-        } else if (status == TaskStatus.REQUESTED) {
-            // Requested (not yet bidded) task bottom sheet
-            this.bottomSheet = new ViewTaskOpenBottomSheet(this);
-
-            // Just show a status message
-            this.bottomSheet.setDetailString("No bids yet");
-        } else if (status == TaskStatus.ASSIGNED) {
-            // Assigned bottom sheet
-            bottomSheet = new ViewTaskAssignedBottomSheet(this);
-
-            User assignee = task.getProvider();
-            Double bidValue = task.getPrice();
-
-            // Show assignee
-            bottomSheet.setDetailString(
-                String.format(Locale.US, "Assigned to %s", assignee.getUsername()));
-
-            // Show their accepted bid price
-            bottomSheet.setRightStatusString(
-                String.format(Locale.US, "$%.2f", bidValue));
-        } else if (status == TaskStatus.DONE) {
-            // Completed bottom sheet
-            bottomSheet = new ViewTaskDoneBottomSheet(this);
-
-            User assignee = task.getProvider();
-
-            // Show a status message with the assignee name
-            bottomSheet.setDetailString(
-                    String.format(Locale.US, "Completed by %s", assignee.getUsername()));
-        } else {
-            throw new InvalidParameterException();
-        }
+        this.bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
 
         // Add the bottom sheet
         ViewGroup layout = findViewById(R.id.taskView);
@@ -139,6 +85,30 @@ public class ViewTaskActivity extends Activity {
         // Set up the app bar
         setTitle("Task");
         getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    /**
+     * Determines and returns the appropriate bottom sheet for the task.
+     * @param task task being viewed
+     * @param sessionUserIsRequester whether the session user is the task requester
+     * @return bottom sheet view selected by the parameters
+     */
+    private ViewTaskBottomSheet generateBottomSheetFor(Task task, Boolean sessionUserIsRequester) {
+        if (sessionUserIsRequester) {
+            switch(task.getStatus()) {
+                case REQUESTED: return new ViewTaskRequestedBottomSheet(this).initializeWithTask(task);
+                case BIDDED: return new ViewTaskBiddedBottomSheet(this).initializeWithTask(task);
+                case ASSIGNED: return new ViewTaskProviderAssignedBottomSheet(this).initializeWithTask(task);
+                case DONE: return new ViewTaskDoneBottomSheet(this).initializeWithTask(task);
+            }
+        }
+        switch(task.getStatus()) {
+            case REQUESTED:
+            case BIDDED: return new ViewTaskOpenBottomSheet(this).initializeWithTask(task);
+            case ASSIGNED: return new ViewTaskAssignedBottomSheet(this).initializeWithTask(task);
+            case DONE: return new ViewTaskDoneBottomSheet(this).initializeWithTask(task);
+        }
+        throw new InvalidParameterException();
     }
 
     /**

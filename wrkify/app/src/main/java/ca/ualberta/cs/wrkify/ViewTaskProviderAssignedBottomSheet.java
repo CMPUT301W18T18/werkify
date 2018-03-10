@@ -17,51 +17,50 @@
 
 package ca.ualberta.cs.wrkify;
 
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.Locale;
 
 /**
- * Bottom sheet to use for a task requester viewing a task
- * of their own that has been bidded on.
+ * Bottom sheet to use for a task requester viewing a task they
+ * have assigned to a provider. Contains controls to deassign or close the task.
  */
-public class ViewTaskBiddedBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs) {
+public class ViewTaskProviderAssignedBottomSheet extends ViewTaskBottomSheet {
+    public ViewTaskProviderAssignedBottomSheet(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ViewTaskProviderAssignedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ViewTaskBiddedBottomSheet(Context context) {
+    public ViewTaskProviderAssignedBottomSheet(Context context) {
         super(context);
     }
 
     @Override
     public ViewTaskBottomSheet initializeWithTask(Task task) {
-        Bid lowestBid = task.getLowestBid();
-
-        setDetailString(String.format(Locale.US, "%d bids so far", task.getBidList().size()));
-        if (lowestBid != null) {
-            setRightStatusString(String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+        User assignee = task.getProvider();
+        if (assignee != null) {
+            setDetailString(String.format(Locale.US,"assigned to %s", assignee.getUsername()));
         }
+        setRightStatusString(String.format(Locale.US, "$%.2f", task.getPrice()));
 
         return super.initializeWithTask(task);
     }
 
     @Override
     protected String getStatusString() {
-        return "Bidded";
+        return "Assigned";
     }
 
     @Override
     protected int getBackgroundColor() {
-        return R.color.colorStatusBidded;
+        return R.color.colorStatusAssigned;
     }
 
     @Override

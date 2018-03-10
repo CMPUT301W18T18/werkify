@@ -24,6 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Locale;
+
+/**
+ * Bottom sheet for a task provider viewing a task that is assigned (to
+ * themself or to someone else.) Contains no controls.
+ */
 class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
     public ViewTaskAssignedBottomSheet(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -38,6 +44,16 @@ class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
+    public ViewTaskBottomSheet initializeWithTask(Task task) {
+        User assignee = task.getProvider();
+        if (assignee != null) {
+            setDetailString(String.format(Locale.US, "assigned to %s", assignee.getUsername()));
+        }
+
+        return super.initializeWithTask(task);
+    }
+
+    @Override
     protected String getStatusString() {
         return "Assigned";
     }
@@ -49,8 +65,6 @@ class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
 
     @Override
     protected View getContentLayout(ViewGroup root) {
-        TextView view = new TextView(getContext());
-        view.setText("assigned");
-        return view;
+        return null;
     }
 }

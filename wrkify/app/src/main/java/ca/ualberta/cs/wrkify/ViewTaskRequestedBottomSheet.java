@@ -17,51 +17,44 @@
 
 package ca.ualberta.cs.wrkify;
 
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import java.util.Locale;
 
 /**
- * Bottom sheet to use for a task requester viewing a task
- * of their own that has been bidded on.
+ * Bottom sheet to use for a task requester viewing their own task
+ * that has no bids so far.
  */
-public class ViewTaskBiddedBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs) {
+class ViewTaskRequestedBottomSheet extends ViewTaskBottomSheet {
+    public ViewTaskRequestedBottomSheet(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ViewTaskRequestedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ViewTaskBiddedBottomSheet(Context context) {
+    public ViewTaskRequestedBottomSheet(Context context) {
         super(context);
     }
 
     @Override
-    public ViewTaskBottomSheet initializeWithTask(Task task) {
-        Bid lowestBid = task.getLowestBid();
-
-        setDetailString(String.format(Locale.US, "%d bids so far", task.getBidList().size()));
-        if (lowestBid != null) {
-            setRightStatusString(String.format(Locale.US, "$%.2f", lowestBid.getValue()));
-        }
-
-        return super.initializeWithTask(task);
-    }
-
-    @Override
     protected String getStatusString() {
-        return "Bidded";
+        return "Requested";
     }
 
     @Override
     protected int getBackgroundColor() {
-        return R.color.colorStatusBidded;
+        return R.color.colorStatusRequested;
+    }
+
+    @Override
+    public ViewTaskBottomSheet initializeWithTask(Task task) {
+        setDetailString("No bids yet");
+
+        return super.initializeWithTask(task);
     }
 
     @Override

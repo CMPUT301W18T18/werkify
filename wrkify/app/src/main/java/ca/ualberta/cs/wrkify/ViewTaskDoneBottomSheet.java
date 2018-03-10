@@ -24,6 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Locale;
+
+/**
+ * Bottom sheet to use for a task that is completed.
+ * Has no content.
+ */
 public class ViewTaskDoneBottomSheet extends ViewTaskBottomSheet {
     public ViewTaskDoneBottomSheet(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -48,9 +54,17 @@ public class ViewTaskDoneBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
+    public ViewTaskBottomSheet initializeWithTask(Task task) {
+        User assignee = task.getProvider();
+        if (assignee != null) {
+            setDetailString(String.format(Locale.US, "Completed by %s", assignee.getUsername()));
+        }
+
+        return super.initializeWithTask(task);
+    }
+
+    @Override
     protected View getContentLayout(ViewGroup root) {
-        TextView view = new TextView(getContext());
-        view.setText("closed");
-        return view;
+        return null;
     }
 }
