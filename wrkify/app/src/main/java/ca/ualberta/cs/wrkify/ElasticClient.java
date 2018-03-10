@@ -25,10 +25,15 @@ import java.io.IOException;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestResult;
+import io.searchbox.core.DocumentResult;
+import io.searchbox.core.Get;
+import io.searchbox.core.Index;
 
 /**
  * ElasticClient provides a singleton for a JestDroidClient, with
  * buffering offline behavior
+ *
+ * @see JestDroidClient
  */
 
 public class ElasticClient {
@@ -36,6 +41,8 @@ public class ElasticClient {
     private static ElasticClient instance;
     // TODO move defurl to config file
     private static String defurl = "http://cmput301.softwareprocess.es:8080";
+    // TODO use proper index
+    private static String INDEX = "testing";
 
     private JestDroidClient client;
 
@@ -54,11 +61,11 @@ public class ElasticClient {
 
     /**
      * instantiates an Elastic client by creating a jest client
-     * private to avoid uncontrolled instantiation.
+     * protected to avoid uncontrolled instantiation.
      *
      * @param url the url of the elasticsearch server
      */
-    private ElasticClient(String url) {
+    protected ElasticClient(String url) {
         // from elasticsearch lab (2018-02-27)
 
         DroidClientConfig.Builder builder = new DroidClientConfig.Builder(url);
@@ -70,20 +77,64 @@ public class ElasticClient {
     }
 
     /**
-     * a wrapper for jest's JestDroidClient.execute,
-     * in order to implement offline behavior.
+     * a wrapper for jest's JestDroidClient.execute
      *
      * @param action the jest action to execute
      * @return a JestResult
      */
-    public <T extends JestResult> T execute(Action<T> action) {
-        T res;
+    public <T extends JestResult> T execute(Action<T> action) throws IOException {
+        return this.client.execute(action);
+    }
+
+    /**
+     * creates a new document
+     *
+     * @param obj the object you are uploading
+     * @param type the type of the object
+     * @return the elasticsearch id (null if offline)
+     */
+    public String create(Object obj, Class type) {
+        Index index = new Index.Builder(obj).index(INDEX).type(type.getName()).build();
         try {
-            res = this.client.execute(action);
+            DocumentResult result = this.execute(index);
+            return result.getId();
         } catch (IOException e) {
-            // TODO: offline behavior
-            res = null;
+            // TODO buffer creation
+            return null;
         }
-        return res;
+    }
+
+    /**
+     * updates an existing document
+     *
+     * @param id the elasticsearch id
+     * @param obj the object to push
+     * @param type the type of obj
+     */
+    public void update(String id, Object obj, Class type) {
+        Index index = new Index.Builder(obj)
+                .index(INDEX).type(type.getName())
+                .id(id).build();
+        try {
+            DocumentResult result = this.execute(index);
+        } catch (IOException e) {
+            //TODO buffer update
+        }
+    }
+
+    /**
+     * gets the object by it's id.
+     * this function will not work offline
+     *
+     * @param id the elasticsearch ID
+     * @param type the type to be returned
+     * @param <T>
+     * @return the object related to that id
+     * @throws IOException when execute fails
+     */
+    public <T> T get(String id, Class<T> type) throws IOException {
+        Get get = new Get.Builder(INDEX, id).build();
+        DocumentResult result = this.execute(get);
+        return result.getSourceAsObject(type);
     }
 }
