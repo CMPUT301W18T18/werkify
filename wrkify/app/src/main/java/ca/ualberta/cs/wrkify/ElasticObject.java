@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.io.IOException;
+
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
@@ -75,16 +77,7 @@ public class ElasticObject<T> {
         this.obj = obj;
         this.type = type;
 
-        //TODO support proper index
-        Index index = new Index.Builder(obj).index("testing").type(this.type.getName()).build();
-        DocumentResult result = (DocumentResult) this.client.execute(index);
-
-        if (!result.isSucceeded()) {
-            //TODO choose a better exception
-            throw new Exception();
-        }
-
-        this.elasticId = result.getId();
+        this.elasticId = this.client.create(obj, type);
     }
 
     /**
@@ -100,44 +93,26 @@ public class ElasticObject<T> {
         this.obj = obj;
         this.type = type;
 
-        //TODO support proper index
-        Index index = new Index.Builder(obj).index("testing").type(this.type.getName()).build();
-        DocumentResult result = (DocumentResult) this.client.execute(index);
-
-        if (!result.isSucceeded()) {
-            //TODO choose a better exception
-            throw new Exception();
-        }
-
-        this.elasticId = result.getId();
+        this.elasticId = this.client.create(obj, type);
     }
 
     /**
      * updates the object to elasticsearch.
-     *
-     * @throws Exception on failed execution
      */
-    public void update() throws Exception {
-        //TODO support proper index
-        Index index = new Index.Builder(this.obj)
-                .index("testing").type(this.type.getName())
-                .id(this.elasticId).build();
-        DocumentResult result = (DocumentResult) this.client.execute(index);
+    public void update() {
+       this.client.update(this.elasticId, this.obj, this.type);
     }
 
     /**
      * lazily gets the internal object
      *
+     * @throws IOException when you try to load the object with
+     *                     no internet
      * @return the T that we are tracking
      */
-    public T getObj() {
+    public T getObj() throws IOException {
         if (this.obj == null) {
-            //TODO support proper index
-            Get get = new Get.Builder("testing", this.elasticId).build();
-
-            DocumentResult result = (DocumentResult) this.client.execute(get);
-
-            this.obj = result.getSourceAsObject(this.type);
+            this.client.get(this.elasticId, this.type);
         }
         return this.obj;
     }
