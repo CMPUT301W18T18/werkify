@@ -76,8 +76,8 @@ public class ElasticClient {
      * @param action the jest action to execute
      * @return a JestResult
      */
-    public JestResult execute(Action action) {
-        JestResult res;
+    public <T extends JestResult> T execute(Action<T> action) {
+        T res;
         try {
             res = this.client.execute(action);
         } catch (IOException e) {
