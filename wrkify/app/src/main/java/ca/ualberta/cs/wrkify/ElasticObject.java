@@ -112,7 +112,7 @@ public class ElasticObject<T> {
      */
     public T getObj() throws IOException {
         if (this.obj == null) {
-            this.client.get(this.elasticId, this.type);
+            this.obj = this.client.get(this.elasticId, this.type);
         }
         return this.obj;
     }
