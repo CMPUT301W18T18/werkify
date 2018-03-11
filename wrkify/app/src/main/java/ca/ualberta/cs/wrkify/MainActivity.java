@@ -20,6 +20,9 @@ package ca.ualberta.cs.wrkify;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -33,18 +36,22 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Fragment frag;
             switch (item.getItemId()) {
                 case R.id.navigation_posts:
-                    mTextMessage.setText(R.string.title_myposts);
-                    return true;
+                    frag = new RequesterFragment();
+                    break;
                 case R.id.navigation_tasks:
-                    mTextMessage.setText(R.string.title_mytasks);
-                    return true;
+                    frag = new ProviderFragment();
+                    break;
                 case R.id.navigation_search:
-                    mTextMessage.setText(R.string.title_search);
-                    return true;
+                    frag = new SearchFragment();
+                    break;
+                default:
+                    return false;
             }
-            return false;
+            showFragment(frag);
+            return true;
         }
     };
 
@@ -53,9 +60,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        showFragment(new RequesterFragment());
+    }
+
+    protected void showFragment(Fragment frag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragTransaction = fragmentManager.beginTransaction();
+
+        fragTransaction.replace(R.id.fragment_container, frag, null);
+        fragTransaction.commit();
     }
 
 }
