@@ -17,13 +17,13 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Context;
+import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
-import android.support.constraint.ConstraintLayout;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.transition.SidePropagation;
 import android.transition.Slide;
 import android.transition.TransitionManager;
-import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,35 +37,25 @@ import android.widget.TextView;
  * it has a status line and a detail line, and it expands
  * when clicked on.
  */
-public abstract class ViewTaskBottomSheet extends ConstraintLayout {
+public abstract class ViewTaskBottomSheetFragment extends Fragment {
+    public static String ARGUMENT_TARGET_TASK = "ca.ualberta.cs.wrkify.ARGUMENT_TARGET_TASK";
+
     private Boolean expandable = true;
     private Boolean expanded = false;
 
-    public ViewTaskBottomSheet(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        this.populateView();
-    }
-
-    public ViewTaskBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        this.populateView();
-    }
-
-    public ViewTaskBottomSheet(Context context) {
-        super(context);
-        this.populateView();
-    }
+    /**
+     * Requisite null constructor
+     */
+    public ViewTaskBottomSheetFragment() { }
 
     /**
      * Initializes the bottom sheet contents from a task object. This will set the
      * header fields appropriately, and possibly initialize the sheet contents if
      * they require initializing.
+     * @param container ViewGroup containing the header and content frame
      * @param task task object to initialize from
-     * @return this
      */
-    public ViewTaskBottomSheet initializeWithTask(Task task) {
-        return this;
-    }
+    protected abstract void initializeWithTask(ViewGroup container, Task task);
 
     /**
      * The default status message to be displayed on the sheet.
@@ -101,13 +91,16 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
     public void expand() {
         if (!this.expandable) return;
 
+        View view = this.getView();
+        if (view == null) throw new IllegalStateException();
+
         // Show the content
-        TransitionManager.beginDelayedTransition(this, new Slide(Gravity.BOTTOM));
-        findViewById(R.id.taskViewBottomSheetContent).setVisibility(VISIBLE);
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
+        getView().findViewById(R.id.taskViewBottomSheetContent).setVisibility(View.VISIBLE);
 
         // Elevate the sheet
         // TODO This doesn't actually work
-        setTranslationZ(8);
+        getView().setTranslationZ(8);
 
         this.expanded = true;
     }
@@ -116,11 +109,14 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
      * Collapses the bottom sheet, if it isn't already collapsed.
      */
     public void collapse() {
+        View view = this.getView();
+        if (view == null) throw new IllegalStateException();
+
         Slide slide = new Slide(Gravity.BOTTOM);
         slide.setPropagation(new SidePropagation());
-        TransitionManager.beginDelayedTransition(this, slide);
-        findViewById(R.id.taskViewBottomSheetContent).setVisibility(GONE);
-        setTranslationZ(0);
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), slide);
+        view.findViewById(R.id.taskViewBottomSheetContent).setVisibility(View.GONE);
+        view.setTranslationZ(0);
         this.expanded = false;
     }
 
@@ -135,22 +131,23 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
      * hidden container in which is placed the class's getContentLayout()
      * which will be revealed when the bottom sheet is clicked.
      */
-    public void populateView() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, this, false);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, container, false);
 
         // Set background
         int color = getResources().getColor(this.getBackgroundColor());
         view.findViewById(R.id.taskViewBottomSheetHeader).setBackground(new ColorDrawable(color));
-        this.setBackground(new ColorDrawable(color));
-        this.setElevation(0);
+        view.setBackground(new ColorDrawable(color));
+        view.setElevation(0);
 
         // Set status text
         TextView statusView = view.findViewById(R.id.taskViewBottomSheetStatus);
         statusView.setText(this.getStatusString());
 
         // Set content view
-        View content = this.getContentLayout(this);
+        View content = this.getContentLayout((ViewGroup) view);
         FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
 
         if (content != null) {
@@ -161,8 +158,12 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
             this.expandable = false;
         }
 
-        // Hide content frame
-        frame.setVisibility(GONE);
+        // Hide/show content frame
+        if (this.expanded) {
+            frame.setVisibility(View.VISIBLE);
+        } else {
+            frame.setVisibility(View.GONE);
+        }
 
         // Set click listener
         view.setOnClickListener(new View.OnClickListener() {
@@ -171,21 +172,25 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
                 expand();
             }
         });
-        this.addView(view);
+
+        // Fill in detail fields
+        this.initializeWithTask((ViewGroup) view, (Task) getArguments().getSerializable(ARGUMENT_TARGET_TASK));
+
+        return view;
     }
 
-    public void setDetailString(String detailString) {
-        TextView detailView = findViewById(R.id.taskViewBottomSheetDetail);
+    public void setDetailString(ViewGroup container, String detailString) {
+        TextView detailView = container.findViewById(R.id.taskViewBottomSheetDetail);
         detailView.setText(detailString);
     }
 
-    public void setRightStatusString(String rightStatusString) {
-        TextView rightStatusView = findViewById(R.id.taskViewBottomSheetRightStatus);
+    public void setRightStatusString(ViewGroup container, String rightStatusString) {
+        TextView rightStatusView = container.findViewById(R.id.taskViewBottomSheetRightStatus);
         rightStatusView.setText(rightStatusString);
     }
 
-    public void setRightDetailString(String rightDetailString) {
-        TextView rightDetailView = findViewById(R.id.taskViewBottomSheetRightDetail);
+    public void setRightDetailString(ViewGroup container, String rightDetailString) {
+        TextView rightDetailView = container.findViewById(R.id.taskViewBottomSheetRightDetail);
         rightDetailView.setText(rightDetailString);
     }
 }

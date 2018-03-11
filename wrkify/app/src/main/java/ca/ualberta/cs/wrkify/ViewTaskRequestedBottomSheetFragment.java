@@ -18,8 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,19 +25,7 @@ import android.view.ViewGroup;
  * Bottom sheet to use for a task requester viewing their own task
  * that has no bids so far.
  */
-class ViewTaskRequestedBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskRequestedBottomSheet(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ViewTaskRequestedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public ViewTaskRequestedBottomSheet(Context context) {
-        super(context);
-    }
-
+public class ViewTaskRequestedBottomSheetFragment extends ViewTaskBottomSheetFragment {
     @Override
     protected String getStatusString() {
         return "Requested";
@@ -51,10 +37,8 @@ class ViewTaskRequestedBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
-    public ViewTaskBottomSheet initializeWithTask(Task task) {
-        setDetailString("No bids yet");
-
-        return super.initializeWithTask(task);
+    protected void initializeWithTask(ViewGroup container, Task task) {
+        setDetailString(container, "No bids yet");
     }
 
     @Override

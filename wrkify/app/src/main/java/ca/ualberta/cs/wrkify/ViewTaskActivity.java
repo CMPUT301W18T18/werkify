@@ -19,9 +19,16 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ViewGroup;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.security.InvalidParameterException;
@@ -36,12 +43,13 @@ public class ViewTaskActivity extends Activity {
     public static String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
     public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
-    private ViewTaskBottomSheet bottomSheet;
+    private static String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
 
     /**
      * Create the ViewTaskActivity.
      * Populates the layout with details from the intended
      * Task and creates the appropriate bottom sheet.
+     *
      * @param savedInstanceState passed to superclass constructor
      */
     @Override
@@ -49,6 +57,8 @@ public class ViewTaskActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_task);
 
+
+        Log.i("-->", "onCreate called");
 
         Intent intent = this.getIntent();
 
@@ -71,12 +81,20 @@ public class ViewTaskActivity extends Activity {
         TextView descriptionView = findViewById(R.id.taskViewDescription);
         descriptionView.setText(task.getDescription());
 
-        // Generate bottom sheet
-        this.bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
+        // Add the bottom sheet if it doesn't exist already from a previous initialization
+        FragmentManager fragmentManager = getFragmentManager();
 
-        // Add the bottom sheet
-        ViewGroup layout = findViewById(R.id.taskView);
-        layout.addView(bottomSheet);
+        if (fragmentManager.findFragmentByTag(FRAGMENT_BOTTOM_SHEET) == null) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
+            bottomSheet.setArguments(arguments);
+
+            transaction.add(R.id.taskView, bottomSheet, FRAGMENT_BOTTOM_SHEET);
+            transaction.commit();
+        }
 
         // Set up the app bar
         setTitle("Task");
@@ -89,20 +107,20 @@ public class ViewTaskActivity extends Activity {
      * @param sessionUserIsRequester whether the session user is the task requester
      * @return bottom sheet view selected by the parameters
      */
-    private ViewTaskBottomSheet generateBottomSheetFor(Task task, Boolean sessionUserIsRequester) {
+    private ViewTaskBottomSheetFragment generateBottomSheetFor(Task task, Boolean sessionUserIsRequester) {
         if (sessionUserIsRequester) {
             switch(task.getStatus()) {
-                case REQUESTED: return new ViewTaskRequestedBottomSheet(this).initializeWithTask(task);
-                case BIDDED: return new ViewTaskBiddedBottomSheet(this).initializeWithTask(task);
-                case ASSIGNED: return new ViewTaskRequesterAssignedBottomSheet(this).initializeWithTask(task);
-                case DONE: return new ViewTaskDoneBottomSheet(this).initializeWithTask(task);
+                case REQUESTED: return new ViewTaskRequestedBottomSheetFragment();
+                case BIDDED: return new ViewTaskBiddedBottomSheetFragment();
+                case ASSIGNED: return new ViewTaskRequesterAssignedBottomSheetFragment();
+                case DONE: return new ViewTaskDoneBottomSheetFragment();
             }
         }
         switch(task.getStatus()) {
             case REQUESTED:
-            case BIDDED: return new ViewTaskOpenBottomSheet(this).initializeWithTask(task);
-            case ASSIGNED: return new ViewTaskAssignedBottomSheet(this).initializeWithTask(task);
-            case DONE: return new ViewTaskDoneBottomSheet(this).initializeWithTask(task);
+            case BIDDED: return new ViewTaskOpenBottomSheetFragment();
+            case ASSIGNED: return new ViewTaskAssignedBottomSheetFragment();
+            case DONE: return new ViewTaskDoneBottomSheetFragment();
         }
         throw new InvalidParameterException();
     }
@@ -114,7 +132,9 @@ public class ViewTaskActivity extends Activity {
      */
     @Override
     public boolean onNavigateUp() {
-        if (this.bottomSheet.isExpanded()) {
+        ViewTaskBottomSheetFragment bottomSheet = (ViewTaskBottomSheetFragment)
+                getFragmentManager().findFragmentByTag(FRAGMENT_BOTTOM_SHEET);
+        if (bottomSheet.isExpanded()) {
             bottomSheet.collapse();
             return false;
         }

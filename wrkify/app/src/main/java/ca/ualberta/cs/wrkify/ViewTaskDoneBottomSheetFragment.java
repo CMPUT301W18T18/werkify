@@ -18,11 +18,8 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -30,19 +27,7 @@ import java.util.Locale;
  * Bottom sheet to use for a task that is completed.
  * Has no content.
  */
-public class ViewTaskDoneBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskDoneBottomSheet(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ViewTaskDoneBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public ViewTaskDoneBottomSheet(Context context) {
-        super(context);
-    }
-
+public class ViewTaskDoneBottomSheetFragment extends ViewTaskBottomSheetFragment {
     @Override
     protected String getStatusString() {
         return "Done";
@@ -54,13 +39,12 @@ public class ViewTaskDoneBottomSheet extends ViewTaskBottomSheet {
     }
 
     @Override
-    public ViewTaskBottomSheet initializeWithTask(Task task) {
+    protected void initializeWithTask(ViewGroup container, Task task) {
         User assignee = task.getProvider();
         if (assignee != null) {
-            setDetailString(String.format(Locale.US, "Completed by %s", assignee.getUsername()));
+            setDetailString(container,
+                    String.format(Locale.US, "Completed by %s", assignee.getUsername()));
         }
-
-        return super.initializeWithTask(task);
     }
 
     @Override

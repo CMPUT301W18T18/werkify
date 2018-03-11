@@ -17,11 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -30,29 +27,17 @@ import java.util.Locale;
  * of their own that has been bidded on. Has no contents,
  * but will be bound to open a view of the current BidList on click.
  */
-public class ViewTaskBiddedBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public ViewTaskBiddedBottomSheet(Context context) {
-        super(context);
-    }
-
+public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragment {
     @Override
-    public ViewTaskBottomSheet initializeWithTask(Task task) {
+    protected void initializeWithTask(ViewGroup container, Task task) {
         Bid lowestBid = task.getLowestBid();
 
-        setDetailString(String.format(Locale.US, "%d bids so far", task.getBidList().size()));
+        setDetailString(container,
+                String.format(Locale.US, "%d bids so far", task.getBidList().size()));
         if (lowestBid != null) {
-            setRightStatusString(String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+            setRightStatusString(container,
+                    String.format(Locale.US, "$%.2f", lowestBid.getValue()));
         }
-
-        return super.initializeWithTask(task);
     }
 
     @Override

@@ -17,12 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
-
-import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.Locale;
 
@@ -30,27 +26,14 @@ import java.util.Locale;
  * Bottom sheet for a task provider viewing a task that is assigned (to
  * themself or to someone else.) Contains no controls.
  */
-class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskAssignedBottomSheet(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ViewTaskAssignedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public ViewTaskAssignedBottomSheet(Context context) {
-        super(context);
-    }
-
+public class ViewTaskAssignedBottomSheetFragment extends ViewTaskBottomSheetFragment {
     @Override
-    public ViewTaskBottomSheet initializeWithTask(Task task) {
+    protected void initializeWithTask(ViewGroup container, Task task) {
         User assignee = task.getProvider();
         if (assignee != null) {
-            setDetailString(String.format(Locale.US, "to %s", assignee.getUsername()));
+            setDetailString(container,
+                    String.format(Locale.US, "to %s", assignee.getUsername()));
         }
-
-        return super.initializeWithTask(task);
     }
 
     @Override
