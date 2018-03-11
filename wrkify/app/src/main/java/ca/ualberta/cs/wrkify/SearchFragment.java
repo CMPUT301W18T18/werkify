@@ -24,9 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by peter on 11/03/18.
+ * SeachFragment allows users to search for tasks
+ * this Fragment is displayed by MainActivity
+ * TODO: this class has not been implemented
+ *
+ * @see MainActivity
  */
-
 public class SearchFragment extends Fragment {
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     @Override

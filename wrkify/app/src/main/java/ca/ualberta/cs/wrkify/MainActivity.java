@@ -27,9 +27,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+/**
+ * the entry point to the wrkify app, provides the bottom navigation
+ * and delegates to fragments
+ *
+ * @see RequesterFragment
+ * @see ProviderFragment
+ * @see SearchFragment
+ */
 public class MainActivity extends AppCompatActivity {
-
-    private TextView mTextMessage;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -55,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * creates the main activity, using a bottom nav
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
         showFragment(new RequesterFragment());
     }
 
+    /**
+     * set the main fragment to the provided fragment
+     * @param frag the fragment you want to display
+     */
     protected void showFragment(Fragment frag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragTransaction = fragmentManager.beginTransaction();
