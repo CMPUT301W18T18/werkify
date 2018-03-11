@@ -29,16 +29,16 @@ import java.util.Locale;
  * Bottom sheet to use for a task requester viewing a task they
  * have assigned to a provider. Contains controls to deassign or close the task.
  */
-public class ViewTaskProviderAssignedBottomSheet extends ViewTaskBottomSheet {
-    public ViewTaskProviderAssignedBottomSheet(Context context, AttributeSet attrs) {
+public class ViewTaskRequesterAssignedBottomSheet extends ViewTaskBottomSheet {
+    public ViewTaskRequesterAssignedBottomSheet(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ViewTaskProviderAssignedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ViewTaskRequesterAssignedBottomSheet(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ViewTaskProviderAssignedBottomSheet(Context context) {
+    public ViewTaskRequesterAssignedBottomSheet(Context context) {
         super(context);
     }
 
@@ -65,6 +65,6 @@ public class ViewTaskProviderAssignedBottomSheet extends ViewTaskBottomSheet {
 
     @Override
     protected View getContentLayout(ViewGroup root) {
-        return null;
+        return inflate(getContext(), R.layout.activity_view_task_bottom_sheet_assigned, null);
     }
 }

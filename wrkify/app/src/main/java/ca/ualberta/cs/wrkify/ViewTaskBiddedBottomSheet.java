@@ -27,7 +27,8 @@ import java.util.Locale;
 
 /**
  * Bottom sheet to use for a task requester viewing a task
- * of their own that has been bidded on.
+ * of their own that has been bidded on. Has no contents,
+ * but will be bound to open a view of the current BidList on click.
  */
 public class ViewTaskBiddedBottomSheet extends ViewTaskBottomSheet {
     public ViewTaskBiddedBottomSheet(Context context, AttributeSet attrs) {

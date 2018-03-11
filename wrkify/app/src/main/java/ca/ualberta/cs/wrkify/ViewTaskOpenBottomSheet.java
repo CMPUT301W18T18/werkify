@@ -29,17 +29,14 @@ public class ViewTaskOpenBottomSheet extends ViewTaskBottomSheet {
 
     @Override
     public ViewTaskBottomSheet initializeWithTask(Task task) {
-        Bid lowestBid = task.getLowestBid();
-        if (lowestBid != null) {
-            setRightStatusString(String.format(Locale.US, "$%.2f", lowestBid.getValue()));
-        }
-
         Integer bidCount = task.getBidList().size();
         if (bidCount == 0) {
             setDetailString("No bids yet");
         }
         else {
             setDetailString(String.format(Locale.US, "%d bids so far", bidCount));
+            Bid lowestBid = task.getLowestBid();
+            setRightStatusString(String.format(Locale.US, "$%.2f", lowestBid.getValue()));
         }
 
         return super.initializeWithTask(task);

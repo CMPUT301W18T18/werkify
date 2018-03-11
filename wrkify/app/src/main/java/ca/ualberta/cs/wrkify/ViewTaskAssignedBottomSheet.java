@@ -47,7 +47,7 @@ class ViewTaskAssignedBottomSheet extends ViewTaskBottomSheet {
     public ViewTaskBottomSheet initializeWithTask(Task task) {
         User assignee = task.getProvider();
         if (assignee != null) {
-            setDetailString(String.format(Locale.US, "assigned to %s", assignee.getUsername()));
+            setDetailString(String.format(Locale.US, "to %s", assignee.getUsername()));
         }
 
         return super.initializeWithTask(task);

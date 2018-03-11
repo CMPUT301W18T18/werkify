@@ -29,7 +29,7 @@
         android:text="Your bid"
         app:layout_constraintBottom_toTopOf="@id/taskViewBottomSheetBidField"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="18dp"
         android:labelFor="@id/taskViewBottomSheetBidField"
         android:textAppearance="@android:style/TextAppearance.Material.Caption"/>
     <EditText
@@ -48,6 +48,6 @@
         android:layout_height="wrap_content"
         android:text="Place bid"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginEnd="12dp"
+        android:layout_marginEnd="4dp"
         app:layout_constraintBaseline_toBaselineOf="@id/taskViewBottomSheetBidField"/>
 </android.support.constraint.ConstraintLayout>

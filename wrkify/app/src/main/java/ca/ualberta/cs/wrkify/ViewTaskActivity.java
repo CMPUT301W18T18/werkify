@@ -20,16 +20,11 @@ package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.design.widget.CoordinatorLayout;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import java.security.InvalidParameterException;
-import java.util.Locale;
 
 /**
  * ViewTaskActivity displays an expanded view of a Task.
@@ -61,7 +56,8 @@ public class ViewTaskActivity extends Activity {
         User sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
 
         // Determine if the session user owns this task
-        Boolean sessionUserIsRequester = (task.getRequester().equals(sessionUser));
+        // TODO? this comparison seems like it should be encapsulable as User.equals
+        Boolean sessionUserIsRequester = (task.getRequester().getUsername().equals(sessionUser.getUsername()));
 
         // Set the task title
         TextView titleView = findViewById(R.id.taskViewTitle);
@@ -98,7 +94,7 @@ public class ViewTaskActivity extends Activity {
             switch(task.getStatus()) {
                 case REQUESTED: return new ViewTaskRequestedBottomSheet(this).initializeWithTask(task);
                 case BIDDED: return new ViewTaskBiddedBottomSheet(this).initializeWithTask(task);
-                case ASSIGNED: return new ViewTaskProviderAssignedBottomSheet(this).initializeWithTask(task);
+                case ASSIGNED: return new ViewTaskRequesterAssignedBottomSheet(this).initializeWithTask(task);
                 case DONE: return new ViewTaskDoneBottomSheet(this).initializeWithTask(task);
             }
         }

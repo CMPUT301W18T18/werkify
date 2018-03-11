@@ -80,6 +80,7 @@ public class ViewTaskActivityTest {
         task.setTitle("Example task with no bids");
         task.setDescription(aLongDescription);
         task.setStatus(TaskStatus.REQUESTED);
+        task.setBidList(new ArrayList<Bid>());
         startViewTaskActivityWith(task, exampleUser2);
     }
 
@@ -129,6 +130,7 @@ public class ViewTaskActivityTest {
         task.setTitle("Example requested task");
         task.setDescription(aLongDescription);
         task.setStatus(TaskStatus.REQUESTED);
+        task.setBidList(new ArrayList<Bid>());
         startViewTaskActivityWith(task, exampleUser1);
     }
 

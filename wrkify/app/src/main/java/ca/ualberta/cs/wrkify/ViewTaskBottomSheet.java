@@ -152,15 +152,18 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
 
         // Set content view
         View content = this.getContentLayout(this);
+        FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
 
-        if (view != null) {
-            FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
+        if (content != null) {
             frame.addView(content);
-            frame.setVisibility(GONE);
+            this.expandable = true;
         }
         else {
             this.expandable = false;
         }
+
+        // Hide content frame
+        frame.setVisibility(GONE);
 
         // Set click listener
         view.setOnClickListener(new View.OnClickListener() {
