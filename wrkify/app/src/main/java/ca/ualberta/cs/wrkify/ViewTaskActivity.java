@@ -142,4 +142,15 @@ public class ViewTaskActivity extends Activity {
             return super.onNavigateUp();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        ViewTaskBottomSheetFragment bottomSheet = (ViewTaskBottomSheetFragment)
+                getFragmentManager().findFragmentByTag(FRAGMENT_BOTTOM_SHEET);
+        if (bottomSheet.isExpanded()) {
+            bottomSheet.collapse();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
