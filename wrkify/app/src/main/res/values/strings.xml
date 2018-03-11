@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">wrkify</string>
+    <string name="bottom_sheet_toggle_description">Show/hide controls</string>
+    <string name="view_task_mark_done">Mark task as done</string>
+    <string name="view_task_deassign">Deassign task</string>
+    <string name="view_task_enter_bid_label">Your bid</string>
+    <string name="view_task_place_bid">Place bid</string>
 </resources>

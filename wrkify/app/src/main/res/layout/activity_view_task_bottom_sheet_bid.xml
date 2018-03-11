@@ -26,7 +26,7 @@
         android:id="@+id/taskViewBottomSheetBidFieldLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your bid"
+        android:text="@string/view_task_enter_bid_label"
         app:layout_constraintBottom_toTopOf="@id/taskViewBottomSheetBidField"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="18dp"
@@ -46,7 +46,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Place bid"
+        android:text="@string/view_task_place_bid"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginEnd="4dp"
         app:layout_constraintBaseline_toBaselineOf="@id/taskViewBottomSheetBidField"/>

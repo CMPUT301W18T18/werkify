@@ -26,13 +26,13 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mark task as done" />
+        android:text="@string/view_task_mark_done" />
 
     <Button
         android:id="@+id/taskViewBottomSheetButtonDeassign"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Deassign task"
+        android:text="@string/view_task_deassign"
         android:layout_marginBottom="8dp" />
 </LinearLayout>

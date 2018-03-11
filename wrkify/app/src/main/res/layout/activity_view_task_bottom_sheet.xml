@@ -28,6 +28,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/taskViewBottomSheetIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/bottom_sheet_toggle_description"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/taskViewBottomSheetStatus"
             android:layout_width="wrap_content"
@@ -36,7 +47,7 @@
             android:layout_marginTop="12dp"
             tools:text="Open"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/taskViewBottomSheetIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -47,7 +58,7 @@
             android:layout_marginBottom="12dp"
             android:layout_marginStart="16dp"
             tools:text="Detailed status line"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/taskViewBottomSheetIcon"
             app:layout_constraintTop_toBottomOf="@+id/taskViewBottomSheetStatus"
             app:layout_constraintBottom_toBottomOf="parent"/>
 

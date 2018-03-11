@@ -18,23 +18,17 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.transition.SidePropagation;
 import android.transition.Slide;
 import android.transition.TransitionManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -107,9 +101,14 @@ public abstract class ViewTaskBottomSheet extends ConstraintLayout {
     public void expand() {
         if (!this.expandable) return;
 
+        // Show the content
         TransitionManager.beginDelayedTransition(this, new Slide(Gravity.BOTTOM));
         findViewById(R.id.taskViewBottomSheetContent).setVisibility(VISIBLE);
+
+        // Elevate the sheet
+        // TODO This doesn't actually work
         setTranslationZ(8);
+
         this.expanded = true;
     }
 
