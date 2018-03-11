@@ -107,4 +107,31 @@ public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
             return "";
         }
     }
+
+    public void setUsername(String username) {
+        try {
+            getObj().setUsername(username);
+            update();
+        } catch (IOException e) {
+            //TODO figure out behavior when no object exists yet
+        }
+    }
+
+    public void setEmail(String email) {
+        try {
+            getObj().setEmail(email);
+            update();
+        } catch (IOException e) {
+            //TODO figure out behavior when no object exists yet
+        }
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        try {
+            getObj().setPhoneNumber(phoneNumber);
+            update();
+        } catch (IOException e) {
+            //TODO figure out behavior when no object exists yet
+        }
+    }
 }
