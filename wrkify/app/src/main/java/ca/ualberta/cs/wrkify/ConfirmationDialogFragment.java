@@ -25,6 +25,11 @@ import android.os.Bundle;
 
 /**
  * Fragment to ask for confirmation.
+ * (This is essentially a simplifying wrapper around AlertDialog.)
+ *
+ * Displays an AlertDialog with given body, confirmation,
+ * and cancellation texts, and has a single callback for
+ * if the action is confirmed.
  */
 public class ConfirmationDialogFragment extends DialogFragment {
     public static String ARGUMENT_CONFIRM_MESSAGE = "ca.ualberta.cs.wrkify.ARGUMENT_CONFIRM_MESSAGE";
@@ -52,6 +57,9 @@ public class ConfirmationDialogFragment extends DialogFragment {
 
     private OnConfirmListener listener;
 
+    /**
+     * Creates the dialog.
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle arguments = getArguments();
@@ -78,12 +86,19 @@ public class ConfirmationDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    /**
+     * Binds a listener to the dialog. The listener will be called
+     * if the Confirm option is selected in the dialog.
+     * @param listener listener to bind
+     */
     public void setOnConfirmListener(OnConfirmListener listener) {
         this.listener = listener;
     }
 
     /**
-     * Interface defining a callback from the ConfirmationDialog.
+     * Interface defining a listener for the ConfirmationDialog.
+     * Its onConfirm method will be called if the Confirm option is
+     * selected in the dialog.
      */
     public interface OnConfirmListener {
         /**

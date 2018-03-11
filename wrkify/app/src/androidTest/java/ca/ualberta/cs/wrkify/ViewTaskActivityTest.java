@@ -27,6 +27,10 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
+/**
+ * Tests for ViewTaskActivity.
+ * Launches ViewTaskActivity for a variety of task/session user configurations.
+ */
 public class ViewTaskActivityTest {
     @Rule
     public ActivityTestRule<ViewTaskActivity> activityTestRule = new ActivityTestRule<>(
@@ -108,6 +112,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewSelfBiddedTask() {
+        // TODO This doesn't currently work any differently from a normal bidded task
         ConcreteTask task = new ConcreteTask();
         task.setRequester(exampleUser1);
         task.setTitle("Example task that session user has bidded on");
@@ -174,6 +179,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewAssignedToSelfTask() {
+        // TODO This doesn't currently work any differently from a task assigned to another user
         ConcreteTask task = new ConcreteTask();
         task.setRequester(exampleUser1);
         task.setTitle("Example task assigned to self");

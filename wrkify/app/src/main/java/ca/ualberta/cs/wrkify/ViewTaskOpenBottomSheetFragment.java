@@ -31,6 +31,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
         EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
         Button button = view.findViewById(R.id.taskViewBottomSheetButtonBid);
 
+        // Confirm and submit bid on button press or text field submit
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view1) {
@@ -51,6 +52,10 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
         return view;
     }
 
+    /**
+     * Raises a confirmation dialog. If confirmed, submits the entered bid.
+     * @param view View corresponding to the sheet
+     */
     private void confirmAndSubmitBid(View view) {
         final EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
         ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(

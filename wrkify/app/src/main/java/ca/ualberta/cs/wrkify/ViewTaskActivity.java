@@ -98,7 +98,6 @@ public class ViewTaskActivity extends Activity {
 
         // Set up the app bar
         setTitle("Task");
-        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     /**
@@ -126,23 +125,10 @@ public class ViewTaskActivity extends Activity {
     }
 
     /**
-     * Collapse the bottom sheet on up press if it is open, instead of
-     * leaving the activity altogether. (This is the intended way to
-     * 'cancel' the bottom sheet.)
+     * Collapses the bottom sheet on back press if it is open, without actually
+     * going back. (This effectively makes the open bottom sheet a back state.)
+     * Pressing back with the bottom sheet closed behaves normally.
      */
-    @Override
-    public boolean onNavigateUp() {
-        ViewTaskBottomSheetFragment bottomSheet = (ViewTaskBottomSheetFragment)
-                getFragmentManager().findFragmentByTag(FRAGMENT_BOTTOM_SHEET);
-        if (bottomSheet.isExpanded()) {
-            bottomSheet.collapse();
-            return false;
-        }
-        else {
-            return super.onNavigateUp();
-        }
-    }
-
     @Override
     public void onBackPressed() {
         ViewTaskBottomSheetFragment bottomSheet = (ViewTaskBottomSheetFragment)

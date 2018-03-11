@@ -33,9 +33,11 @@ import android.widget.TextView;
 
 /**
  * Base class for bottom sheets of the ViewTaskActivity.
- * Defines the basic behaviour of such a bottom sheet:
- * it has a status line and a detail line, and it expands
- * when clicked on.
+ * A ViewTaskBottomSheetFragment creates a View which is effectively a simplified
+ * bottom sheet. It is intended to be anchored at the bottom of the screen, and
+ * it expands when clicked on. Subclasses can define the content that appears when
+ * the sheet is expanded (or define a lack of such content). Subclasses can also
+ * define the text that appears on the collapsed sheet and the sheet's color.
  */
 public abstract class ViewTaskBottomSheetFragment extends Fragment {
     public static String ARGUMENT_TARGET_TASK = "ca.ualberta.cs.wrkify.ARGUMENT_TARGET_TASK";
@@ -51,21 +53,23 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
     /**
      * Initializes the bottom sheet contents from a task object. This will set the
      * header fields appropriately, and possibly initialize the sheet contents if
-     * they require initializing.
+     * they require initializing. This is called from the default onCreateView.
      * @param container ViewGroup containing the header and content frame
      * @param task task object to initialize from
      */
     protected abstract void initializeWithTask(ViewGroup container, Task task);
 
     /**
-     * The default status message to be displayed on the sheet.
+     * Determines the status message to be displayed on the sheet. (eg. "Open")
+     * This is called from the default onCreateView and displayed in the upper left
+     * of the collapsed sheet.
      * @return default status message
      */
     abstract protected String getStatusString();
 
     /**
      * Determines the background color of this bottom sheet.
-     * @return int corresponding to background color
+     * @return resource ID corresponding to background color
      */
     abstract protected int getBackgroundColor();
 
@@ -122,14 +126,15 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
 
     /**
      * Creates the view. The base layout is inflated from
-     * activity_view_task_bottom_sheet, and contains two
-     * TextViews (taskViewBottomSheetStatus, taskViewBottomSheetDetail).
-     * The default value for Status comes from getStatusString().
-     * Detail is initially empty.
-     * The background color of the sheet is set by the class's
-     * getBackgroundColor(). The base layout also contains a
-     * hidden container in which is placed the class's getContentLayout()
-     * which will be revealed when the bottom sheet is clicked.
+     * activity_view_task_bottom_sheet.
+     * This is a templatized method which is partially defined by subclasses:
+     * - getBackgroundColor() determines the color of the bottom sheet
+     * - getStatusString() determines the primary status text to display on the collapsed sheet
+     * - getContentLayout() determines the View that will be displayed when the sheet is expanded
+     * - initializeWithTask() is called after main initialization completes, and is intended for
+     *         the subclass to fill in its detailed status fields and any expanded-view content
+     *         that is dependent on the task being manipulated.
+     * Subclasses can additionally override onCreateView to effect more complex specialization.
      */
     @Nullable
     @Override
@@ -179,16 +184,31 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
         return view;
     }
 
-    public void setDetailString(ViewGroup container, String detailString) {
+    /**
+     * Sets the lower-left detail string on the collapsed sheet
+     * @param container ViewGroup corresponding to the sheet
+     * @param detailString text to set
+     */
+    protected void setDetailString(ViewGroup container, String detailString) {
         TextView detailView = container.findViewById(R.id.taskViewBottomSheetDetail);
         detailView.setText(detailString);
     }
 
-    public void setRightStatusString(ViewGroup container, String rightStatusString) {
+    /**
+     * Sets the upper-right detail string on the collapsed sheet
+     * @param container ViewGroup corresponding to the sheet
+     * @param rightStatusString text to set
+     */
+    protected void setRightStatusString(ViewGroup container, String rightStatusString) {
         TextView rightStatusView = container.findViewById(R.id.taskViewBottomSheetRightStatus);
         rightStatusView.setText(rightStatusString);
     }
 
+    /**
+     * Sets the lower-right detail string on the collapsed sheet
+     * @param container ViewGroup corresponding to the sheet
+     * @param rightDetailString text to set
+     */
     public void setRightDetailString(ViewGroup container, String rightDetailString) {
         TextView rightDetailView = container.findViewById(R.id.taskViewBottomSheetRightDetail);
         rightDetailView.setText(rightDetailString);

@@ -29,6 +29,9 @@ import android.widget.TextView;
 public class UserView extends ConstraintLayout {
     private TextView userNameView;
 
+    /**
+     * Initializes a UserView. (standard View constructor)
+     */
     public UserView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -36,6 +39,9 @@ public class UserView extends ConstraintLayout {
         this.addView(userNameView);
     }
 
+    /**
+     * Initializes a UserView. (standard View constructor)
+     */
     public UserView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -44,8 +50,7 @@ public class UserView extends ConstraintLayout {
     }
 
     /**
-     * Initializes a UserView.
-     * @param context passed to superclass ConstraintLayout
+     * Initializes a UserView. (standard View constructor)
      */
     public UserView(Context context) {
         super(context);
