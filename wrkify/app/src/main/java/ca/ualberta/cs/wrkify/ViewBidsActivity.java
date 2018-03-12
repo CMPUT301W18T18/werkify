@@ -32,10 +32,21 @@ public class ViewBidsActivity extends Activity {
     protected ExclusiveExpandableListView listView;
     protected BidListAdapter adapter;
 
+
+    protected int color_headerDefault;
+    protected int color_headerSelected;
+    protected int color_item;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
+
+        color_headerDefault = Color.parseColor("#FF9F33");
+        color_headerSelected = Color.parseColor("#5F5F5F");
+        color_item = Color.parseColor("#5F5F5F");
+
+
 
         headers = new ArrayList<String>();
         items = new ArrayList<Integer>();
@@ -43,6 +54,8 @@ public class ViewBidsActivity extends Activity {
         makeFakeData();
 
         listView = (ExclusiveExpandableListView) findViewById(R.id.bidListView);
+        listView.setColors(color_headerDefault, color_headerSelected, color_item);
+
         adapter = new BidListAdapter(this, headers, items, listView);
 
         listView.setAdapter(adapter);

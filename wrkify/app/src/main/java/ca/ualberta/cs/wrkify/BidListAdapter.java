@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +107,7 @@ public class BidListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPos, boolean isExpanded, View convertView, ViewGroup parent) {
+        Log.i("Making group view: ", Integer.toString(groupPos) + Boolean.toString(isExpanded));
         String title = (String)getGroup(groupPos);
 
         if (convertView == null) {
@@ -115,6 +117,12 @@ public class BidListAdapter extends BaseExpandableListAdapter {
         final TextView textView = (TextView) convertView.findViewById(R.id.bidListHeaderText);
 
         textView.setText(title);
+
+        if (isExpanded) {
+            convertView.setBackgroundColor(listView.getSelectedHeaderColor());
+        } else {
+            convertView.setBackgroundColor(listView.getDefaultHeaderColor());
+        }
         return convertView;
     }
 
