@@ -19,21 +19,52 @@ package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 public class ViewBidsActivity extends Activity {
-
-
+    protected ArrayList<String> headers;
+    protected ArrayList<Integer> items;
+    protected ExclusiveExpandableListView listView;
+    protected BidListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
+        headers = new ArrayList<String>();
+        items = new ArrayList<Integer>();
+
+        makeFakeData();
+
+        listView = (ExclusiveExpandableListView) findViewById(R.id.bidListView);
+        adapter = new BidListAdapter(this, headers, items, listView);
+
+        listView.setAdapter(adapter);
+
+
+
         Intent intent = getIntent();
 
 
 
+        setTitle("Bids");
     }
+
+
+    public void makeFakeData(){
+        int sizeOfData = 4;
+        for (int i = 0; i < sizeOfData; i++) {
+            headers.add(Integer.toString(i));
+            items.add(i);
+        }
+    }
+
+
+
 }

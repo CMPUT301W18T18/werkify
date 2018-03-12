@@ -19,14 +19,19 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bidListHeaderLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.ualberta.cs.wrkify.ViewBidsActivity">
+    android:background="@android:color/holo_orange_light">
 
-    <ca.ualberta.cs.wrkify.ExclusiveExpandableListView
-        android:id="@+id/bidListView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="71dp" />
+    <TextView
+        android:id="@+id/bidListHeaderText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="32dp"
+        android:text="TextView"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
