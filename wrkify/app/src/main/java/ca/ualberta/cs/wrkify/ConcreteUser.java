@@ -14,6 +14,7 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
  * @see User
  */
 
-public class ConcreteUser implements User {
+public class ConcreteUser implements User, Serializable {
     private String username;
     private String email;
     private String phoneNumber;
