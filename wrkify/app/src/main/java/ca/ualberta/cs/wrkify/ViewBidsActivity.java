@@ -23,6 +23,8 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -31,6 +33,8 @@ public class ViewBidsActivity extends Activity {
     protected ArrayList<Integer> items;
     protected ExclusiveExpandableListView listView;
     protected BidListAdapter adapter;
+    protected Button addMoreButton;
+    protected int nextNumber = 0;
 
 
     protected int color_headerDefault;
@@ -51,7 +55,6 @@ public class ViewBidsActivity extends Activity {
         headers = new ArrayList<String>();
         items = new ArrayList<Integer>();
 
-        makeFakeData();
 
         listView = (ExclusiveExpandableListView) findViewById(R.id.bidListView);
         listView.setColors(color_headerDefault, color_headerSelected, color_item);
@@ -60,23 +63,34 @@ public class ViewBidsActivity extends Activity {
 
         listView.setAdapter(adapter);
 
+        for (int i = 0; i < 4; i++) {
+            addOneMore();
+        }
 
 
         Intent intent = getIntent();
 
+
+        addMoreButton = (Button) findViewById(R.id.addAnotherBid);
+        addMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addOneMore();
+            }
+        });
 
 
         setTitle("Bids");
     }
 
 
-    public void makeFakeData(){
-        int sizeOfData = 4;
-        for (int i = 0; i < sizeOfData; i++) {
-            headers.add(Integer.toString(i));
-            items.add(i);
-        }
+    public void addOneMore(){
+        headers.add(Integer.toString(nextNumber));
+        items.add(nextNumber);
+        nextNumber += 1;
+        adapter.notifyDataSetChanged();
     }
+
 
 
 

@@ -19,8 +19,6 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.widget.ExpandableListView;
 
 public class ExclusiveExpandableListView extends ExpandableListView{
@@ -38,7 +36,9 @@ public class ExclusiveExpandableListView extends ExpandableListView{
         return this.currentGroup;
     }
 
-
+    public void notifyDeleting(int deleting){
+        collapseGroup(deleting);
+    }
 
     public void setColors(int color_headerDefault, int color_headerSelected, int color_child){
         this.color_headerDefault = color_headerDefault;

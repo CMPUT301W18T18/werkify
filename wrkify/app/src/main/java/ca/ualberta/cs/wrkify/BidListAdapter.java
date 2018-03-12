@@ -31,8 +31,8 @@ import java.util.List;
 
 public class BidListAdapter extends BaseExpandableListAdapter {
     private Context _context;
-    private ArrayList<String> groups;
-    private ArrayList<Integer> children;
+    private List<String> groups;
+    private List<Integer> children;
     private ExclusiveExpandableListView listView;
 
     public static int headerLayoutID = R.layout.activity_view_bids_item_header;
@@ -43,15 +43,15 @@ public class BidListAdapter extends BaseExpandableListAdapter {
 
     public BidListAdapter(Context context, List<String> groups, List<Integer> children, ExclusiveExpandableListView listView) {
         this._context = context;
-        this.groups = new ArrayList<String>(groups);
-        this.children = new ArrayList<Integer>(children);
+        this.groups = groups;
+        this.children = children;
         this.listView = listView;
     }
 
 
     @Override
     public Object getChild(int groupPos, int childPos) {
-        return children.get(childPos);
+        return children.get(groupPos);
     }
 
     @Override
@@ -82,12 +82,41 @@ public class BidListAdapter extends BaseExpandableListAdapter {
 
         button1.setText("Increase");
         button2.setText("Delete");
-        textView.setText(Integer.toString((Integer)getChild(groupPos, childPos)));
+        textView.setText(Integer.toString((Integer) getChild(groupPos, childPos)));
+
+
+
+        final BidListAdapter ad = this;
+        final int groupConst = groupPos;
+        final int childConst = childPos;
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ad.increment(groupConst, childConst);
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ad.remove(groupConst, childConst);
+            }
+        });
 
         return convertView;
     }
 
+    public void increment(int groupPos, int childPos) {
+        children.set(groupPos, children.get(groupPos) + 1);
+        notifyDataSetChanged();
+    }
 
+    public void remove(int groupPos, int childPos){
+        groups.remove(groupPos);
+        children.remove(groupPos);
+        listView.notifyDeleting(groupPos);
+        notifyDataSetChanged();
+    }
 
     @Override
     public Object getGroup(int groupPos) {
