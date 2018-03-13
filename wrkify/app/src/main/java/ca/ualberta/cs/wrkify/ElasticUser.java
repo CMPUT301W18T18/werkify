@@ -108,6 +108,10 @@ public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
         }
     }
 
+    /**
+     * sets the username then pushes to elasticsearch
+     * @param username the username
+     */
     public void setUsername(String username) {
         try {
             getObj().setUsername(username);
@@ -117,6 +121,10 @@ public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
         }
     }
 
+    /**
+     * sets the email then pushes to elasticsearch
+     * @param email the email
+     */
     public void setEmail(String email) {
         try {
             getObj().setEmail(email);
@@ -126,6 +134,10 @@ public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
         }
     }
 
+    /**
+     * sets the phone number then pushes to elasticsearch
+     * @param phoneNumber the phone number
+     */
     public void setPhoneNumber(String phoneNumber) {
         try {
             getObj().setPhoneNumber(phoneNumber);
