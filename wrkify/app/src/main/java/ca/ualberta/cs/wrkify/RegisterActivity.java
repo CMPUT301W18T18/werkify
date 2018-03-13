@@ -18,7 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +28,14 @@ import android.widget.TextView;
 
 import static ca.ualberta.cs.wrkify.LoginActivity.EXTRA_SESSION_USER;
 
+/**
+ * Allows a user to register.
+ * This is currently implemented by having the user select a username,
+ * and creating a user with that name.
+ * Takes no input intents.
+ * Returns the newly-registered user as EXTRA_SESSION_USER if successful
+ * (result RESULT_OK). May also return RESULT_CANCELLED if cancelled.
+ */
 public class RegisterActivity extends Activity {
     private EditText registerField;
 

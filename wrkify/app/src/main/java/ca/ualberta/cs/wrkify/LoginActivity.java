@@ -37,9 +37,10 @@ import java.io.IOException;
  * this just asks the user for their username. The user being logged
  * in as must exist in the database.
  * Takes no input intents.
- * Returns the user logged in as as EXTRA_SESSION_USER.
+ * Returns the user logged in as as EXTRA_SESSION_USER, always as RESULT_OK.
  */
 public class LoginActivity extends Activity {
+    /** Extra representing the logged-in user. */
     public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
     private static Integer REQUEST_REGISTER = 11;
@@ -101,6 +102,11 @@ public class LoginActivity extends Activity {
         finish();
     }
 
+    /**
+     * Activity result handler.
+     * When called back from RegisterActivity with success, immediately returns
+     * the newly-registered user.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REGISTER && resultCode == RESULT_OK) {
