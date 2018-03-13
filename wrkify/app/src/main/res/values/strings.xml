@@ -4,4 +4,15 @@
     <string name="title_myposts">My Posts</string>
     <string name="title_mytasks">My Tasks</string>
     <string name="title_search">Search</string>
+    <string name="bottom_sheet_toggle_description">Show/hide controls</string>
+    <string name="view_task_mark_done">Mark task as done</string>
+    <string name="view_task_deassign">Deassign task</string>
+    <string name="view_task_enter_bid_label">Your bid</string>
+    <string name="view_task_place_bid">Place bid</string>
+    <string name="login_username_label">Username</string>
+    <string name="login_login">Login</string>
+    <string name="login_register_caption">Don\'t have an account?</string>
+    <string name="login_register">Sign up</string>
+    <string name="register_caption">Create a new account</string>
+    <string name="register_register">Register</string>
 </resources>

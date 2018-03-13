@@ -19,7 +19,7 @@
 <!--modifed from https://stackoverflow.com/questions/36563739/ (2018-03-03)-->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="#F44336" />
+    <solid android:color="@color/colorStatusAssigned" />
 
     <padding
         android:bottom="12dp"

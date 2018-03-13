@@ -1,4 +1,5 @@
-/* Copyright 2018 CMPUT301W18T18
+/*
+ * Copyright 2018 CMPUT301W18T18
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,23 +12,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
+
 package ca.ualberta.cs.wrkify;
 
-import java.io.Serializable;
+
+import android.content.Intent;
+import android.support.test.rule.ActivityTestRule;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
- * User provides an interface for users
- *
- * @see ConcreteUser
+ * Tests for LoginActivity (and RegisterActivity).
  */
+public class LoginActivityTest {
+    @Rule
+    public ActivityTestRule<LoginActivity> activityTestRule = new ActivityTestRule<>(
+            LoginActivity.class, false, false);
 
-public interface User extends Serializable {
-    String getUsername();
-    String getEmail();
-    String getPhoneNumber();
-
-    void setUsername(String username);
-    void setEmail(String email);
-    void setPhoneNumber(String phoneNumber);
+    /**
+     * Launches LoginActivity
+     */
+    @Test
+    public void testLoginActivity() {
+        activityTestRule.launchActivity(new Intent());
+    }
 }

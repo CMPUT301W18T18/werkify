@@ -18,11 +18,12 @@ package ca.ualberta.cs.wrkify;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
 
-public interface Task {
+public interface Task extends Serializable {
     public String getTitle();
     public void setTitle(String title);
 
