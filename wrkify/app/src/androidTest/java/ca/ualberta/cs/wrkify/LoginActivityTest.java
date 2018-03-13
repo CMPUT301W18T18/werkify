@@ -24,11 +24,17 @@ import android.support.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Tests for LoginActivity (and RegisterActivity).
+ */
 public class LoginActivityTest {
     @Rule
     public ActivityTestRule<LoginActivity> activityTestRule = new ActivityTestRule<>(
             LoginActivity.class, false, false);
 
+    /**
+     * Launches LoginActivity
+     */
     @Test
     public void testLoginActivity() {
         activityTestRule.launchActivity(new Intent());
