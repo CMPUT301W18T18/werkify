@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.transition.TransitionManager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -39,7 +40,7 @@ import java.io.IOException;
  * Takes no input intents.
  * Returns the user logged in as as EXTRA_SESSION_USER, always as RESULT_OK.
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
     /** Extra representing the logged-in user. */
     public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
@@ -52,7 +53,7 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        getActionBar().hide();
+        getSupportActionBar().hide();
 
         this.loginField = findViewById(R.id.loginField);
         Button loginButton = findViewById(R.id.loginButton);
