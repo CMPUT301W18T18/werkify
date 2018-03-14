@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">wrkify</string>
+    <string name="title_activity_main">wrkify</string>
+    <string name="title_myposts">My Posts</string>
+    <string name="title_mytasks">My Tasks</string>
+    <string name="title_search">Search</string>
     <string name="bottom_sheet_toggle_description">Show/hide controls</string>
     <string name="view_task_mark_done">Mark task as done</string>
     <string name="view_task_deassign">Deassign task</string>
