@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -39,7 +40,7 @@ import java.security.InvalidParameterException;
  * description, and provides a bottom sheet displaying the
  * task status and allowing interaction.
  */
-public class ViewTaskActivity extends Activity {
+public class ViewTaskActivity extends AppCompatActivity {
     public static String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
     public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
