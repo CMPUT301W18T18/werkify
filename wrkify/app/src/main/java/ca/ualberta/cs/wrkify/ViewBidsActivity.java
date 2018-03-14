@@ -29,68 +29,14 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 public class ViewBidsActivity extends Activity {
-    protected ArrayList<String> headers;
-    protected ArrayList<Integer> items;
-    protected ExclusiveExpandableListView listView;
-    protected BidListAdapter adapter;
-    protected Button addMoreButton;
-    protected int nextNumber = 0;
-
-
-    protected int color_headerDefault;
-    protected int color_headerSelected;
-    protected int color_item;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-        color_headerDefault = Color.parseColor("#FF9F33");
-        color_headerSelected = Color.parseColor("#5F5F5F");
-        color_item = Color.parseColor("#5F5F5F");
-
-
-
-        headers = new ArrayList<String>();
-        items = new ArrayList<Integer>();
-
-
-        listView = (ExclusiveExpandableListView) findViewById(R.id.bidListView);
-        listView.setColors(color_headerDefault, color_headerSelected, color_item);
-
-        adapter = new BidListAdapter(this, headers, items, listView);
-
-        listView.setAdapter(adapter);
-
-        for (int i = 0; i < 4; i++) {
-            addOneMore();
-        }
-
-
-        Intent intent = getIntent();
-
-
-        addMoreButton = (Button) findViewById(R.id.addAnotherBid);
-        addMoreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addOneMore();
-            }
-        });
-
 
         setTitle("Bids");
     }
-
-
-    public void addOneMore(){
-        headers.add(Integer.toString(nextNumber));
-        items.add(nextNumber);
-        nextNumber += 1;
-        adapter.notifyDataSetChanged();
-    }
-
 
 
 
