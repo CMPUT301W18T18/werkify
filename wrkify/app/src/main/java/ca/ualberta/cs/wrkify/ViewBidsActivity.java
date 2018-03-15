@@ -18,21 +18,50 @@
 package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.ArrayList;
+
 
 public class ViewBidsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_bids);
+        //setContentView(R.layout.activity_view_bids);
+        setContentView(R.layout.bidlistitem);
+
+
+
+        int[] a = {R.id.button, R.id.button2, R.id.button3};
+
+        for (int i = 0; i < a.length; i++) {
+            final Button b = findViewById(a[i]);
+
+            b.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+
+                    switch(event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            b.setTypeface(Typeface.DEFAULT_BOLD);
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+                            b.setTypeface(Typeface.DEFAULT);
+                            break;
+
+                    }
+
+                    return false;
+                }
+            });
+        }
+
+
+
 
 
         setTitle("Bids");
