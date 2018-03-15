@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 
 public class ViewBidsActivity extends Activity {
-
     protected ArrayList<User> users;
     protected ArrayList<Bid> bids;
     protected RecyclerView recyclerView;
@@ -42,10 +41,8 @@ public class ViewBidsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-
         //makeData();
         makeData2(20);
-
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
 
@@ -63,8 +60,7 @@ public class ViewBidsActivity extends Activity {
         setTitle("Bids");
     }
 
-
-    protected void makeData2(int amount){
+    protected void makeData2(int amount) {
         bids = new ArrayList<Bid>();
         users = new ArrayList<User>();
 
@@ -73,7 +69,7 @@ public class ViewBidsActivity extends Activity {
         }
     }
 
-    protected void makeData(){
+    protected void makeData() {
         bids = new ArrayList<Bid>();
         users = new ArrayList<User>();
 
@@ -92,7 +88,6 @@ public class ViewBidsActivity extends Activity {
         users.add(new ConcreteUser("UsernameHere13", "email2@website.com", "780-223-4567"));
         users.add(new ConcreteUser("UsernameHere14", "email2@website.com", "780-223-4567"));
 
-
         bids.add(new Bid(20.0, users.get(0)));
         bids.add(new Bid(41.2, users.get(1)));
         bids.add(new Bid(41.3, users.get(2)));
@@ -107,8 +102,6 @@ public class ViewBidsActivity extends Activity {
         bids.add(new Bid(42.2, users.get(11)));
         bids.add(new Bid(42.3, users.get(12)));
         bids.add(new Bid(42.4, users.get(13)));
-
-
     }
 
 

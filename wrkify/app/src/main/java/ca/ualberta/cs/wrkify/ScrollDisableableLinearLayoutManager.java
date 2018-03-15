@@ -22,9 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager implements ScrollDisableable{
-
-
+public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager implements ScrollDisableable {
     private boolean scrollEnabled = true;
 
     public ScrollDisableableLinearLayoutManager(Context context) {
@@ -39,14 +37,13 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setScrollEnabled(boolean enabled){
+    public void setScrollEnabled(boolean enabled) {
         this.scrollEnabled = enabled;
     }
 
-    public boolean getScrollEnabled(){
+    public boolean getScrollEnabled() {
         return scrollEnabled;
     }
-
 
     @Override
     public void scrollToPosition(int position) {

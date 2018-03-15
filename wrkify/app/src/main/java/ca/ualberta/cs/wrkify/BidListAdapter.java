@@ -18,7 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -37,29 +36,24 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private Context context;
     private List<Bid> data;
     private RecyclerView recyclerView;
-
-    public static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
-    public static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
-
+    private static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
+    private static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
     private long animationTime = 20;
-
     private int currentSelectedPos = -1;
     private BidViewHolder currentSelected = null;
     private boolean selectedIsVisible = false;
-
 
     public BidListAdapter(Context context, List<Bid> data) {
         this.context = context;
         this.data = data;
     }
 
-
-    public void setAnimationTime(long ms){
+    public void setAnimationTime(long ms) {
         this.animationTime = ms;
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return data.size();
     }
 
@@ -81,7 +75,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         return holder;
     }
 
-    private void cardClicked(BidViewHolder holder, int position){
+    private void cardClicked(BidViewHolder holder, int position) {
         if (position != currentSelectedPos) {
             if (selectedIsVisible) {
                 expandAndCollapseViews(holder, currentSelected);
@@ -93,7 +87,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             selectedIsVisible = true;
             currentSelectedPos = position;
         } else {
-
             collapseView(holder);
             currentSelected = null;
             selectedIsVisible = false;
@@ -102,8 +95,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     }
 
-
-    private void setAnimationDisableListener(Transition transition){
+    private void setAnimationDisableListener(Transition transition) {
         RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
 
         if (recyclerView.getLayoutManager() instanceof ScrollDisableable) {
@@ -141,7 +133,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         }
     }
 
-    private void expandView(BidViewHolder holder){
+    private void expandView(BidViewHolder holder) {
         ChangeBounds cb = new ChangeBounds();
         cb.setDuration(animationTime);
         setAnimationDisableListener(cb);
@@ -149,7 +141,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         holder.expand();
     }
 
-    private void collapseView(BidViewHolder holder){
+    private void collapseView(BidViewHolder holder) {
         ChangeBounds cb = new ChangeBounds();
         cb.setDuration(animationTime);
         setAnimationDisableListener(cb);
@@ -157,7 +149,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         holder.collapse();
     }
 
-    private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse){
+    private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse) {
         toExpand.expand();
         toCollapse.collapse();
         ChangeBounds cb = new ChangeBounds();
@@ -166,9 +158,8 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         TransitionManager.beginDelayedTransition(recyclerView, cb);
     }
 
-
     @Override
-    public void onBindViewHolder(final BidViewHolder holder, final int position){
+    public void onBindViewHolder(final BidViewHolder holder, final int position) {
         Log.i("BINDING VIEW HOLDER:", Integer.toString(position));
 
         holder.getCardView().setOnClickListener(new View.OnClickListener() {
@@ -183,7 +174,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         restoreSelectionStatus(holder, position);
     }
 
-    private void restoreSelectionStatus(BidViewHolder holder, int position){
+    private void restoreSelectionStatus(BidViewHolder holder, int position) {
         if (currentSelectedPos == position) {
             holder.expand();
             selectedIsVisible = true;
@@ -191,18 +182,18 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     @Override
-    public long getItemId(int position){
+    public long getItemId(int position) {
         return (long) position;
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView){
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
     }
 
     @Override
-    public void onViewRecycled(BidViewHolder holder){
+    public void onViewRecycled(BidViewHolder holder) {
 
         Log.i("Recycling: ", Integer.toString(holder.getLayoutPosition()));
 

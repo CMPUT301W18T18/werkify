@@ -23,5 +23,4 @@ public interface ScrollDisableable {
 
     public boolean getScrollEnabled();
 
-
 }

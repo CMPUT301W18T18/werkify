@@ -38,8 +38,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     private Drawable defaultBackground;
     private Drawable selectedBackground;
 
-
-    public BidViewHolder(View v){
+    public BidViewHolder(View v) {
         super(v);
         this.taskCompleter = v.findViewById(R.id.bidListItem_taskCompleter);
         this.bidAmount = v.findViewById(R.id.bidListItem_bidAmount);
@@ -57,12 +56,12 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         selectedBackground = defaultBackground;
     }
 
-    public void setBackgrounds(Drawable defaultBG, Drawable selectedBG){
+    public void setBackgrounds(Drawable defaultBG, Drawable selectedBG) {
         this.defaultBackground = defaultBG;
         this.selectedBackground = selectedBG;
     }
 
-    private void setButtonTextBolding(final Button b){
+    private void setButtonTextBolding(final Button b) {
         b.setTypeface(Typeface.DEFAULT);
 
         b.setOnTouchListener(new View.OnTouchListener() {
@@ -87,47 +86,46 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         });
     }
 
-    public void setData(Bid b){
+    public void setData(Bid b) {
         taskCompleter.setText(b.getBidder().getUsername());
         bidAmount.setText("$" + b.getValue().toString());
     }
 
-    public void expand(){
+    public void expand() {
         this.viewProfile.setVisibility(View.VISIBLE);
         this.reject.setVisibility(View.VISIBLE);
         this.accept.setVisibility(View.VISIBLE);
         this.cardLayout.setBackground(selectedBackground);
     }
 
-    public void collapse(){
+    public void collapse() {
         this.viewProfile.setVisibility(View.GONE);
         this.reject.setVisibility(View.GONE);
         this.accept.setVisibility(View.GONE);
         this.cardLayout.setBackground(defaultBackground);
     }
 
-    public TextView getTaskCompleter(){
+    public TextView getTaskCompleter() {
         return this.taskCompleter;
     }
 
-    public TextView getBidAmount(){
+    public TextView getBidAmount() {
         return bidAmount;
     }
 
-
-    public Button getViewProfile(){
+    public Button getViewProfile() {
         return viewProfile;
     }
 
-    public Button getReject(){
+    public Button getReject() {
         return reject;
     }
 
-    public Button getAccept(){
+    public Button getAccept() {
         return accept;
     }
 
-    public CardView getCardView(){
+    public CardView getCardView() {
         return cardView;
     }
 }
