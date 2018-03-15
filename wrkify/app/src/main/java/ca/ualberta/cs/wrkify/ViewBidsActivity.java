@@ -20,7 +20,6 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -36,7 +35,6 @@ public class ViewBidsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-        //makeData();
         makeData2(20);
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
@@ -51,7 +49,6 @@ public class ViewBidsActivity extends Activity {
 
         adapter.notifyDataSetChanged();
 
-        Log.i("Size of data set:", Integer.toString(bids.size()));
         setTitle("Bids");
     }
 

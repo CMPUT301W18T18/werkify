@@ -24,7 +24,6 @@ import android.support.v7.widget.RecyclerView;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
-    public static int itemLayoutId = R.layout.bidlistitem;
+    private static int itemLayoutId = R.layout.bidlistitem;
     private Context context;
     private List<Bid> data;
     private RecyclerView recyclerView;
@@ -79,12 +78,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     @Override
     public void onBindViewHolder(final BidViewHolder holder, final int position) {
-        Log.i("BINDING VIEW HOLDER:", Integer.toString(position));
-
         holder.getCardView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("CLICKED:", Integer.toString(position));
                 cardClicked(holder, position);
             }
         });
@@ -95,8 +91,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     @Override
     public void onViewRecycled(BidViewHolder holder) {
-        Log.i("Recycling: ", Integer.toString(holder.getLayoutPosition()));
-
         holder.collapse();
         if (holder == currentSelected) {
             selectedIsVisible = false;
