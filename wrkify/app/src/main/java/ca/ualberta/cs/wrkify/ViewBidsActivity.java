@@ -67,9 +67,25 @@ public class ViewBidsActivity extends Activity {
 
         users.add(new ConcreteUser("UsernameHere", "email@website.com", "780-123-4567"));
         users.add(new ConcreteUser("UsernameHere2", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere3", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere4", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere5", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere6", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere7", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere8", "email2@website.com", "780-223-4567"));
+        users.add(new ConcreteUser("UsernameHere9", "email2@website.com", "780-223-4567"));
+
 
         bids.add(new Bid(20.0, users.get(0)));
         bids.add(new Bid(41.2, users.get(1)));
+        bids.add(new Bid(41.3, users.get(2)));
+        bids.add(new Bid(41.4, users.get(3)));
+        bids.add(new Bid(41.5, users.get(4)));
+        bids.add(new Bid(41.6, users.get(5)));
+        bids.add(new Bid(41.7, users.get(6)));
+        bids.add(new Bid(41.8, users.get(7)));
+        bids.add(new Bid(41.9, users.get(8)));
+
 
     }
 

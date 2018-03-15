@@ -19,48 +19,31 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.transition.ChangeBounds;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.List;
 
-public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.BidViewHolder> {
+public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     public static int itemLayoutId = R.layout.bidlistitem;
     private Context context;
     private List<Bid> data;
     private RecyclerView recyclerView;
+
+
+    private int currentSelected = -1;
+
+
 
     public BidListAdapter(Context context, List<Bid> data) {
         this.context = context;
         this.data = data;
     }
 
-    class BidViewHolder extends RecyclerView.ViewHolder{
-        private TextView taskCompleter;
-        private TextView bidAmount;
-        private Button viewProfile;
-        private Button reject;
-        private Button accept;
-
-
-        public BidViewHolder(View v){
-            super(v);
-            this.taskCompleter = v.findViewById(R.id.bidListItem_taskCompleter);
-            this.bidAmount = v.findViewById(R.id.bidListItem_bidAmount);
-            this.bidAmount = v.findViewById(R.id.bidListItem_bidAmount);
-
-            taskCompleter.setText("XD");
-        }
-
-        public TextView getTaskCompleter(){
-            return this.taskCompleter;
-        }
-
-    }
 
     @Override
     public int getItemCount(){
@@ -68,16 +51,63 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.BidViewH
     }
 
     @Override
-    public BidViewHolder onCreateViewHolder(ViewGroup viewGroup, int position){
+    public BidViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(BidListAdapter.itemLayoutId, viewGroup, false);
         BidViewHolder holder = new BidViewHolder(v);
+
         return holder;
     }
 
+    private void cardClicked(BidViewHolder holder, int position){
+        if (position == currentSelected) {
+            collapseView(holder);
+            currentSelected = -1;
+        } else {
+            if (currentSelected != -1) {
+                RecyclerView.ViewHolder toCollapse = recyclerView.findViewHolderForItemId(getItemId(currentSelected));
+            }
+            expandView(holder);
+            currentSelected = position;
+        }
+    }
+
+    private void expandView(BidViewHolder holder){
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(200);
+        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        holder.expand();
+
+    }
+
+    private void collapseView(BidViewHolder holder){
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(200);
+        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        holder.collapse();
+    }
+
+
     @Override
-    public void onBindViewHolder(BidViewHolder holder, int position){
+    public void onBindViewHolder(final BidViewHolder holder, final int position){
         Log.i("BINDING VIEW HOLDER:", Integer.toString(position));
-        holder.getTaskCompleter().setText("asdasd");
+
+        holder.getCardView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardClicked(holder, position);
+            }
+        });
+
+        holder.setData(data.get(position));
+        restoreSelectionStatus(holder, position);
+    }
+
+    private void restoreSelectionStatus(BidViewHolder holder, int position){
+        if (position == currentSelected) {
+            holder.expand();
+        } else {
+            holder.collapse();
+        }
     }
 
     @Override
@@ -93,6 +123,8 @@ public class BidListAdapter extends RecyclerView.Adapter<BidListAdapter.BidViewH
 
     @Override
     public void onViewRecycled(BidViewHolder holder){
+        holder.collapse();
+        Log.i("Recycling: ", Integer.toString(holder.getLayoutPosition()));
         return;
     }
 

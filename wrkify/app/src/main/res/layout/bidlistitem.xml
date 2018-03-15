@@ -19,6 +19,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bidListItem_cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -26,7 +27,8 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/background_light"
+        android:background="@color/cardview_light_background"
+        android:elevation="@android:dimen/notification_large_icon_width"
         android:paddingBottom="8dp">
 
         <Button
