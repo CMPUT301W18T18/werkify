@@ -25,6 +25,7 @@
 
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/bidListItem_cardLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"

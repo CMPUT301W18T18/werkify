@@ -18,6 +18,9 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
@@ -33,6 +36,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private Context context;
     private List<Bid> data;
     private RecyclerView recyclerView;
+
+    public static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
+    public static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
 
 
     private int currentSelectedPos = -1;
@@ -57,6 +63,14 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         BidViewHolder holder = new BidViewHolder(v);
 
         holder.collapse();
+
+        ColorDrawable defaultBG = new ColorDrawable();
+        defaultBG.setColor(ContextCompat.getColor(context, item_defaultBackgroundId));
+
+        ColorDrawable selectedBG = new ColorDrawable();
+        selectedBG.setColor(ContextCompat.getColor(context, item_selectedBackgroundId));
+
+        holder.setBackgrounds(defaultBG, selectedBG);
 
         return holder;
     }

@@ -18,6 +18,8 @@
 package ca.ualberta.cs.wrkify;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
@@ -32,6 +34,9 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     private Button reject;
     private Button accept;
     private CardView cardView;
+    private ConstraintLayout cardLayout;
+    private Drawable defaultBackground;
+    private Drawable selectedBackground;
 
 
     public BidViewHolder(View v){
@@ -42,12 +47,20 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.reject = v.findViewById(R.id.bidListItem_reject);
         this.accept = v.findViewById(R.id.bidListItem_accept);
         this.cardView = v.findViewById(R.id.bidListItem_cardView);
+        this.cardLayout = v.findViewById(R.id.bidListItem_cardLayout);
 
         setButtonTextBolding(reject);
         setButtonTextBolding(accept);
         setButtonTextBolding(viewProfile);
+
+        defaultBackground = cardLayout.getBackground();
+        selectedBackground = defaultBackground;
     }
 
+    public void setBackgrounds(Drawable defaultBG, Drawable selectedBG){
+        this.defaultBackground = defaultBG;
+        this.selectedBackground = selectedBG;
+    }
 
     private void setButtonTextBolding(final Button b){
         b.setTypeface(Typeface.DEFAULT);
@@ -79,12 +92,14 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.viewProfile.setVisibility(View.VISIBLE);
         this.reject.setVisibility(View.VISIBLE);
         this.accept.setVisibility(View.VISIBLE);
+        this.cardLayout.setBackground(selectedBackground);
     }
 
     public void collapse(){
         this.viewProfile.setVisibility(View.GONE);
         this.reject.setVisibility(View.GONE);
         this.accept.setVisibility(View.GONE);
+        this.cardLayout.setBackground(defaultBackground);
     }
 
     public TextView getTaskCompleter(){
