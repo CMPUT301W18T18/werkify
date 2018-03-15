@@ -43,8 +43,8 @@ public class ViewBidsActivity extends Activity {
         setContentView(R.layout.activity_view_bids);
 
 
-        makeData();
-        //makeData2(100);
+        //makeData();
+        makeData2(9999);
 
 
         recyclerView = findViewById(R.id.bidListRecyclerView);

@@ -49,12 +49,13 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
-            android:text="Button"
+            android:text="@string/bidListItem_reject"
             android:visibility="visible"
 
 
             app:layout_constraintEnd_toStartOf="@+id/bidListItem_accept"
-            app:layout_constraintTop_toTopOf="@+id/bidListItem_accept" />
+            app:layout_constraintTop_toTopOf="@+id/bidListItem_accept"
+            tools:text="@string/bidListItem_reject" />
 
         <Button
             android:id="@+id/bidListItem_viewProfile"
