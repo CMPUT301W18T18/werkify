@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.transition.ChangeBounds;
+import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     public static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
     public static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
 
+    private long animationTime = 20;
 
     private int currentSelectedPos = -1;
     private BidViewHolder currentSelected = null;
@@ -51,6 +53,10 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         this.data = data;
     }
 
+
+    public void setAnimationTime(long ms){
+        this.animationTime = ms;
+    }
 
     @Override
     public int getItemCount(){
@@ -96,17 +102,57 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     }
 
+
+    private void setAnimationDisableListener(Transition transition){
+        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+
+        if (recyclerView.getLayoutManager() instanceof ScrollDisableable) {
+            final ScrollDisableable manager2 = (ScrollDisableable) manager;
+
+            transition.addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+                    manager2.setScrollEnabled(false);
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    manager2.setScrollEnabled(true);
+
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+                    manager2.setScrollEnabled(true);
+
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+
+                }
+            });
+
+        }
+    }
+
     private void expandView(BidViewHolder holder){
         ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(200);
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
         TransitionManager.beginDelayedTransition(recyclerView, cb);
         holder.expand();
-
     }
 
     private void collapseView(BidViewHolder holder){
         ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(200);
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
         TransitionManager.beginDelayedTransition(recyclerView, cb);
         holder.collapse();
     }
@@ -115,7 +161,8 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         toExpand.expand();
         toCollapse.collapse();
         ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(200);
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
         TransitionManager.beginDelayedTransition(recyclerView, cb);
     }
 
