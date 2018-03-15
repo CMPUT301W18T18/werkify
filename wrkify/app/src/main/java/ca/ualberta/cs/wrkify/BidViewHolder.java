@@ -46,7 +46,6 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         setButtonTextBolding(reject);
         setButtonTextBolding(accept);
         setButtonTextBolding(viewProfile);
-
     }
 
 

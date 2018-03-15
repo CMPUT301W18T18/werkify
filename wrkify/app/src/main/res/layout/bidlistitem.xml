@@ -28,8 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"
-        android:elevation="@android:dimen/notification_large_icon_width"
-        android:paddingBottom="8dp">
+        android:elevation="@android:dimen/notification_large_icon_width">
 
         <Button
             android:id="@+id/bidListItem_accept"
@@ -93,6 +92,19 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/bidListItem_taskCompleter"
             app:layout_constraintTop_toBottomOf="@+id/bidListItem_taskCompleter" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF000000"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF000000"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
