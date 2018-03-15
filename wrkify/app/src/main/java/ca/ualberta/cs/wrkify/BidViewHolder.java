@@ -89,7 +89,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
 
     public void setData(Bid b){
         taskCompleter.setText(b.getBidder().getUsername());
-        bidAmount.setText(b.getValue().toString());
+        bidAmount.setText("$" + b.getValue().toString());
     }
 
     public void expand(){
