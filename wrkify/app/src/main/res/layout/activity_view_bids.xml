@@ -26,10 +26,42 @@
     tools:context="ca.ualberta.cs.wrkify.ViewBidsActivity">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/bidListRecyclerView"
+    <LinearLayout
+        android:id="@+id/bidListActivity_linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/bidListActivity_taskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bidListActivity_taskTitle"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            tools:text="@string/bidListActivity_taskTitle" />
+
+        <TextView
+            android:id="@+id/bidListActivity_bidCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bidListActivity_bidCount"
+            android:textColor="@android:color/black"
+            tools:text="@string/bidListActivity_bidCount"
+            android:gravity="center_horizontal"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FF000000"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/bidListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="8dp" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

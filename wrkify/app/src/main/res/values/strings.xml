@@ -10,4 +10,6 @@
     <string name="bidListItem_viewProfile">View Profile</string>
     <string name="bidListItem_reject">Reject</string>
     <string name="bidListItem_accept">Accept</string>
+    <string name="bidListActivity_taskTitle">Task Name Goes Here</string>
+    <string name="bidListActivity_bidCount">555 bids so far</string>
 </resources>
