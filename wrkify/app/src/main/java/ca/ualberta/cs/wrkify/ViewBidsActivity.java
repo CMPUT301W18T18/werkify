@@ -20,51 +20,57 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.ArrayList;
 
 
 public class ViewBidsActivity extends Activity {
+
+    protected ArrayList<User> users;
+    protected ArrayList<Bid> bids;
+    protected RecyclerView recyclerView;
+    protected BidListAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_view_bids);
-        setContentView(R.layout.bidlistitem);
+        setContentView(R.layout.activity_view_bids);
+
+        makeData();
 
 
+        recyclerView = findViewById(R.id.bidListRecyclerView);
 
-        int[] a = {R.id.button, R.id.button2, R.id.button3};
-
-        for (int i = 0; i < a.length; i++) {
-            final Button b = findViewById(a[i]);
-
-            b.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-
-                    switch(event.getAction()){
-                        case MotionEvent.ACTION_DOWN:
-                            b.setTypeface(Typeface.DEFAULT_BOLD);
-                            break;
-
-                        case MotionEvent.ACTION_UP:
-                            b.setTypeface(Typeface.DEFAULT);
-                            break;
-
-                    }
-
-                    return false;
-                }
-            });
-        }
+        adapter = new BidListAdapter(this, bids);
 
 
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
 
+        adapter.notifyDataSetChanged();
 
-
+        Log.i("Size of data set:", Integer.toString(bids.size()));
         setTitle("Bids");
+    }
+
+
+    protected void makeData(){
+        bids = new ArrayList<Bid>();
+        users = new ArrayList<User>();
+
+        users.add(new ConcreteUser("UsernameHere", "email@website.com", "780-123-4567"));
+        users.add(new ConcreteUser("UsernameHere2", "email2@website.com", "780-223-4567"));
+
+        bids.add(new Bid(20.0, users.get(0)));
+        bids.add(new Bid(41.2, users.get(1)));
+
     }
 
 

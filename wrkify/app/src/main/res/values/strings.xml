@@ -5,4 +5,9 @@
     <string name="view_task_deassign">Deassign task</string>
     <string name="view_task_enter_bid_label">Your bid</string>
     <string name="view_task_place_bid">Place bid</string>
+    <string name="bidListItem_taskCompleter">Task Completer</string>
+    <string name="bidListItem_bidAmount">$23</string>
+    <string name="bidListItem_viewProfile">View Profile</string>
+    <string name="bidListItem_reject">Reject</string>
+    <string name="bidListItem_accept">Accept</string>
 </resources>
