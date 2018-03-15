@@ -37,6 +37,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     private ConstraintLayout cardLayout;
     private Drawable defaultBackground;
     private Drawable selectedBackground;
+    private boolean isRequester = true;
 
     public BidViewHolder(View v) {
         super(v);
@@ -88,8 +89,10 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
 
     public void expand() {
         this.viewProfile.setVisibility(View.VISIBLE);
-        this.reject.setVisibility(View.VISIBLE);
-        this.accept.setVisibility(View.VISIBLE);
+        if (this.isRequester) {
+            this.reject.setVisibility(View.VISIBLE);
+            this.accept.setVisibility(View.VISIBLE);
+        }
         this.cardLayout.setBackground(selectedBackground);
     }
 
@@ -142,6 +145,14 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
 
     public void setSelectedBackground(Drawable bg){
         this.selectedBackground = bg;
+    }
+
+    public void setIsRequester(boolean isRequester){
+        this.isRequester = isRequester;
+    }
+
+    public boolean getIsRequester(){
+        return isRequester;
     }
 
 }

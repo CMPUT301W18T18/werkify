@@ -105,7 +105,7 @@
 
             android:paddingTop="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bidListItem_accept" />
+            app:layout_constraintTop_toBottomOf="@+id/bidListItem_viewProfile" />
 
 
     </android.support.constraint.ConstraintLayout>

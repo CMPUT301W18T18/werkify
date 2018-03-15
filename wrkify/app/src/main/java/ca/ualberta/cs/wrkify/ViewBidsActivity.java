@@ -39,7 +39,7 @@ public class ViewBidsActivity extends Activity {
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
 
-        adapter = new BidListAdapter(this, bids);
+        adapter = new BidListAdapter(this, bids, true);
         adapter.setAnimationTime(200);
 
         ScrollDisableableLinearLayoutManager manager = new ScrollDisableableLinearLayoutManager(this);

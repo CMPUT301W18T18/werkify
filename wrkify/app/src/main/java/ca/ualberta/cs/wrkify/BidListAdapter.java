@@ -41,10 +41,12 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private int currentSelectedPos = -1;
     private BidViewHolder currentSelected = null;
     private boolean selectedIsVisible = false;
+    private boolean isRequester = true;
 
-    public BidListAdapter(Context context, List<Bid> data) {
+    public BidListAdapter(Context context, List<Bid> data, boolean isRequester) {
         this.context = context;
         this.data = data;
+        this.isRequester = isRequester;
     }
 
     @Override
@@ -63,6 +65,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         BidViewHolder holder = new BidViewHolder(v);
 
         holder.collapse();
+        holder.setIsRequester(isRequester);
 
         ColorDrawable defaultBG = new ColorDrawable();
         defaultBG.setColor(ContextCompat.getColor(context, item_defaultBackgroundId));
@@ -101,6 +104,10 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
+    }
+
+    public boolean getIsRequester(){
+        return isRequester;
     }
 
     private void cardClicked(BidViewHolder holder, int position) {
