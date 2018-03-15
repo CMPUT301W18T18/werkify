@@ -44,7 +44,7 @@ public class ViewBidsActivity extends Activity {
 
 
         //makeData();
-        makeData2(9999);
+        makeData2(20);
 
 
         recyclerView = findViewById(R.id.bidListRecyclerView);

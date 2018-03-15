@@ -76,6 +76,10 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
                     case MotionEvent.ACTION_DOWN:
                         b.setTypeface(Typeface.DEFAULT_BOLD);
                         break;
+
+                    case MotionEvent.ACTION_CANCEL:
+                        b.setTypeface(Typeface.DEFAULT);
+                        break;
                 }
 
                 return false;
