@@ -35,6 +35,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private RecyclerView recyclerView;
 
 
+    private int currentSelectedPos = -1;
     private BidViewHolder currentSelected = null;
     private boolean selectedIsVisible = false;
 
@@ -61,7 +62,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void cardClicked(BidViewHolder holder, int position){
-        if (holder != currentSelected) {
+        if (position != currentSelectedPos) {
             if (selectedIsVisible) {
                 expandAndCollapseViews(holder, currentSelected);
             } else {
@@ -70,11 +71,13 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
             currentSelected = holder;
             selectedIsVisible = true;
+            currentSelectedPos = position;
         } else {
 
             collapseView(holder);
             currentSelected = null;
             selectedIsVisible = false;
+            currentSelectedPos = -1;
         }
 
     }
@@ -120,8 +123,8 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void restoreSelectionStatus(BidViewHolder holder, int position){
-        if (holder.equals(currentSelected)) {
-            currentSelected.expand();
+        if (currentSelectedPos == position) {
+            holder.expand();
             selectedIsVisible = true;
         }
     }
@@ -146,7 +149,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         if (holder == currentSelected) {
             selectedIsVisible = false;
         }
-        return;
     }
 
 

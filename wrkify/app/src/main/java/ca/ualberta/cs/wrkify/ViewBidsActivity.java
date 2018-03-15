@@ -42,7 +42,9 @@ public class ViewBidsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
+
         makeData();
+        //makeData2(100);
 
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
@@ -60,6 +62,15 @@ public class ViewBidsActivity extends Activity {
         setTitle("Bids");
     }
 
+
+    protected void makeData2(int amount){
+        bids = new ArrayList<Bid>();
+        users = new ArrayList<User>();
+
+        for (int i = 0; i < amount; i++) {
+            bids.add(new Bid(Double.parseDouble(Integer.toString(i)), new ConcreteUser("User" + Integer.toString(i), "email@webiste.com", "230-234-1234") ));
+        }
+    }
 
     protected void makeData(){
         bids = new ArrayList<Bid>();
