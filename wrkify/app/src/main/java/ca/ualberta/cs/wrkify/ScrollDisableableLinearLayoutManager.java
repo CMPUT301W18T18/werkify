@@ -37,14 +37,6 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setScrollEnabled(boolean enabled) {
-        this.scrollEnabled = enabled;
-    }
-
-    public boolean getScrollEnabled() {
-        return scrollEnabled;
-    }
-
     @Override
     public void scrollToPosition(int position) {
         if (!scrollEnabled) {
@@ -75,5 +67,13 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
             return 0;
         }
         return super.scrollVerticallyBy(dy, recycler, state);
+    }
+
+    public void setScrollEnabled(boolean enabled) {
+        this.scrollEnabled = enabled;
+    }
+
+    public boolean getScrollEnabled() {
+        return scrollEnabled;
     }
 }

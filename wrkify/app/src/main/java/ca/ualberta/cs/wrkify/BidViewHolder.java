@@ -56,11 +56,6 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         selectedBackground = defaultBackground;
     }
 
-    public void setBackgrounds(Drawable defaultBG, Drawable selectedBG) {
-        this.defaultBackground = defaultBG;
-        this.selectedBackground = selectedBG;
-    }
-
     private void setButtonTextBolding(final Button b) {
         b.setTypeface(Typeface.DEFAULT);
 
@@ -128,4 +123,25 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     public CardView getCardView() {
         return cardView;
     }
+
+    public ConstraintLayout getCardLayout(){
+        return cardLayout;
+    }
+
+    public Drawable getDefaultBackground(){
+        return defaultBackground;
+    }
+
+    public void setDefaultBackground(Drawable bg){
+        this.defaultBackground = bg;
+    }
+
+    public Drawable getSelectedBackground(){
+        return selectedBackground;
+    }
+
+    public void setSelectedBackground(Drawable bg){
+        this.selectedBackground = bg;
+    }
+
 }

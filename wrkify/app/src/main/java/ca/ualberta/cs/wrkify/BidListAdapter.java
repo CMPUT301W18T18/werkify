@@ -48,13 +48,14 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         this.data = data;
     }
 
-    public void setAnimationTime(long ms) {
-        this.animationTime = ms;
-    }
-
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return (long) position;
     }
 
     @Override
@@ -70,9 +71,42 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         ColorDrawable selectedBG = new ColorDrawable();
         selectedBG.setColor(ContextCompat.getColor(context, item_selectedBackgroundId));
 
-        holder.setBackgrounds(defaultBG, selectedBG);
+        holder.setDefaultBackground(defaultBG);
+        holder.setSelectedBackground(selectedBG);
 
         return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(final BidViewHolder holder, final int position) {
+        Log.i("BINDING VIEW HOLDER:", Integer.toString(position));
+
+        holder.getCardView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("CLICKED:", Integer.toString(position));
+                cardClicked(holder, position);
+            }
+        });
+
+        holder.setData(data.get(position));
+        restoreSelectionStatus(holder, position);
+    }
+
+    @Override
+    public void onViewRecycled(BidViewHolder holder) {
+        Log.i("Recycling: ", Integer.toString(holder.getLayoutPosition()));
+
+        holder.collapse();
+        if (holder == currentSelected) {
+            selectedIsVisible = false;
+        }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     private void cardClicked(BidViewHolder holder, int position) {
@@ -93,6 +127,42 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             currentSelectedPos = -1;
         }
 
+    }
+
+    private void expandView(BidViewHolder holder) {
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
+        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        holder.expand();
+    }
+
+    private void collapseView(BidViewHolder holder) {
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
+        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        holder.collapse();
+    }
+
+    private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse) {
+        toExpand.expand();
+        toCollapse.collapse();
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
+        TransitionManager.beginDelayedTransition(recyclerView, cb);
+    }
+
+    private void restoreSelectionStatus(BidViewHolder holder, int position) {
+        if (currentSelectedPos == position) {
+            holder.expand();
+            selectedIsVisible = true;
+        }
+    }
+
+    public void setAnimationTime(long ms) {
+        this.animationTime = ms;
     }
 
     private void setAnimationDisableListener(Transition transition) {
@@ -129,79 +199,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
                 }
             });
-
         }
     }
-
-    private void expandView(BidViewHolder holder) {
-        ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        TransitionManager.beginDelayedTransition(recyclerView, cb);
-        holder.expand();
-    }
-
-    private void collapseView(BidViewHolder holder) {
-        ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        TransitionManager.beginDelayedTransition(recyclerView, cb);
-        holder.collapse();
-    }
-
-    private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse) {
-        toExpand.expand();
-        toCollapse.collapse();
-        ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        TransitionManager.beginDelayedTransition(recyclerView, cb);
-    }
-
-    @Override
-    public void onBindViewHolder(final BidViewHolder holder, final int position) {
-        Log.i("BINDING VIEW HOLDER:", Integer.toString(position));
-
-        holder.getCardView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("CLICKED:", Integer.toString(position));
-                cardClicked(holder, position);
-            }
-        });
-
-        holder.setData(data.get(position));
-        restoreSelectionStatus(holder, position);
-    }
-
-    private void restoreSelectionStatus(BidViewHolder holder, int position) {
-        if (currentSelectedPos == position) {
-            holder.expand();
-            selectedIsVisible = true;
-        }
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return (long) position;
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-        this.recyclerView = recyclerView;
-    }
-
-    @Override
-    public void onViewRecycled(BidViewHolder holder) {
-
-        Log.i("Recycling: ", Integer.toString(holder.getLayoutPosition()));
-
-        holder.collapse();
-        if (holder == currentSelected) {
-            selectedIsVisible = false;
-        }
-    }
-
 
 }

@@ -18,14 +18,9 @@
 package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -58,15 +53,6 @@ public class ViewBidsActivity extends Activity {
 
         Log.i("Size of data set:", Integer.toString(bids.size()));
         setTitle("Bids");
-    }
-
-    protected void makeData2(int amount) {
-        bids = new ArrayList<Bid>();
-        users = new ArrayList<User>();
-
-        for (int i = 0; i < amount; i++) {
-            bids.add(new Bid(Double.parseDouble(Integer.toString(i)), new ConcreteUser("User" + Integer.toString(i), "email@webiste.com", "230-234-1234") ));
-        }
     }
 
     protected void makeData() {
@@ -104,6 +90,12 @@ public class ViewBidsActivity extends Activity {
         bids.add(new Bid(42.4, users.get(13)));
     }
 
+    protected void makeData2(int amount) {
+        bids = new ArrayList<Bid>();
+        users = new ArrayList<User>();
 
-
+        for (int i = 0; i < amount; i++) {
+            bids.add(new Bid(Double.parseDouble(Integer.toString(i)), new ConcreteUser("User" + Integer.toString(i), "email@webiste.com", "230-234-1234") ));
+        }
+    }
 }
