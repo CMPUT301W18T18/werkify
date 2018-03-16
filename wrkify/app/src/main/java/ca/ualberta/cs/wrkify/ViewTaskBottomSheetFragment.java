@@ -21,6 +21,8 @@ import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.transition.SidePropagation;
 import android.transition.Slide;
 import android.transition.TransitionManager;
@@ -140,6 +142,13 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, container, false);
+
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+        params.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
+        params.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
+        view.setLayoutParams(params);
 
         // Set background
         int color = getResources().getColor(this.getBackgroundColor());

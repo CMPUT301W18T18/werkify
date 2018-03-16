@@ -26,7 +26,7 @@ import org.junit.Test;
 /**
  * Runs EditTaskActivity
  */
-public class TestEditTaskActivity {
+public class EditTaskActivityTest {
     @Rule
     public ActivityTestRule<EditTaskActivity> activityTestRule = new ActivityTestRule<>(
             EditTaskActivity.class, false, false);

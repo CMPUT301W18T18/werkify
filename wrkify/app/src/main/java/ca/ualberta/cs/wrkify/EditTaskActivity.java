@@ -43,6 +43,7 @@ public class EditTaskActivity extends AppCompatActivity {
     public static final String EXTRA_RETURNED_TASK = "ca.ualberta.cs.wrkify.EXTRA_RETURNED_TASK";
     public static final int RESULT_TASK_CREATED = 11;
     public static final int RESULT_TASK_DELETED = 12;
+    public static final int REQUEST_EDIT_TASK = 13;
 
     private Task task;
     private boolean taskIsNew = false;
@@ -66,10 +67,15 @@ public class EditTaskActivity extends AppCompatActivity {
             // TODO this may or may not need to be changed to allow server connectivity
             this.task = new ConcreteTask();
             this.taskIsNew = true;
-            if (actionBar != null) { actionBar.setTitle("New task"); }
+            if (actionBar != null) {
+                actionBar.setTitle("New task");
+            }
         } else {
             this.taskIsNew = false;
-            if (actionBar != null) { actionBar.setTitle("Editing task"); }
+            if (actionBar != null) {
+                actionBar.setTitle("Editing task");
+                actionBar.setSubtitle(task.getTitle());
+            }
 
             // populate fields
             titleField.setText(task.getTitle());
@@ -153,5 +159,11 @@ public class EditTaskActivity extends AppCompatActivity {
         else setResult(RESULT_OK, intent);
 
         finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -46,6 +47,8 @@ public class ViewTaskActivity extends AppCompatActivity {
 
     private static String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
 
+    private Task task;
+
     /**
      * Create the ViewTaskActivity.
      * Populates the layout with details from the intended
@@ -63,7 +66,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        Task task = (Task) intent.getSerializableExtra(EXTRA_TARGET_TASK);
+        this.task = (Task) intent.getSerializableExtra(EXTRA_TARGET_TASK);
         User sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
 
         // Determine if the session user owns this task
@@ -93,12 +96,28 @@ public class ViewTaskActivity extends AppCompatActivity {
             arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
             bottomSheet.setArguments(arguments);
 
-            transaction.add(R.id.taskView, bottomSheet, FRAGMENT_BOTTOM_SHEET);
+            transaction.add(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
             transaction.commit();
         }
 
         // Set up the app bar
         setTitle("Task");
+
+        // Set up the edit button if appropriate
+        if (sessionUserIsRequester && task.getStatus() == TaskStatus.REQUESTED) {
+            FloatingActionButton editButton = findViewById(R.id.taskViewButtonEdit);
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Edit the task
+                    Intent editIntent = new Intent(ViewTaskActivity.this,
+                            EditTaskActivity.class);
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, task);
+                    startActivityForResult(editIntent, EditTaskActivity.REQUEST_EDIT_TASK);
+                }
+            });
+        }
     }
 
     /**

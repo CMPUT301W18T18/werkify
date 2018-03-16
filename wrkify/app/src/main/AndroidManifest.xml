@@ -30,7 +30,8 @@
             android:parentActivityName=".LoginActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".EditTaskActivity"
-            android:parentActivityName=".ViewTaskActivity" />
+            android:parentActivityName=".ViewTaskActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
