@@ -15,4 +15,6 @@
     <string name="login_register">Sign up</string>
     <string name="register_caption">Create a new account</string>
     <string name="register_register">Register</string>
+    <string name="edit_task_title_label">Task title</string>
+    <string name="edit_task_description_label">Description</string>
 </resources>

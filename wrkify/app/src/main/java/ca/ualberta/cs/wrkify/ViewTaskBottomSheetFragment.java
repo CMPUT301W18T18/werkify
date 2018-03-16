@@ -21,6 +21,8 @@ import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.transition.SidePropagation;
 import android.transition.Slide;
 import android.transition.TransitionManager;
