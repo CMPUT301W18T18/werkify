@@ -232,7 +232,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private void rejectClicked(final BidViewHolder holder, final int position) {
         //ChangeBounds cb = new ChangeBounds();
         AutoTransition cb = new AutoTransition();
-        cb.setDuration((long) (animationTime * 1.5));
+        cb.setDuration((long) (animationTime));
 
         final RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
         final boolean isScrollDisableable = (manager instanceof ScrollDisableable);
