@@ -144,17 +144,17 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void expandView(BidViewHolder holder) {
-        TransitionManager.beginDelayedTransition(recyclerView, makeAutoTransition());
+        TransitionManager.beginDelayedTransition(recyclerView, makeSizeChangeTransition());
         holder.expand();
     }
 
     private void collapseView(BidViewHolder holder) {
-        TransitionManager.beginDelayedTransition(recyclerView, makeAutoTransition());
+        TransitionManager.beginDelayedTransition(recyclerView, makeSizeChangeTransition());
         holder.collapse();
     }
 
     private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse) {
-        TransitionManager.beginDelayedTransition(recyclerView, makeAutoTransition());
+        TransitionManager.beginDelayedTransition(recyclerView, makeSizeChangeTransition());
         toExpand.expand();
         toCollapse.collapse();
     }
@@ -164,6 +164,10 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             holder.expand();
             selectedIsVisible = true;
         }
+    }
+
+    private Transition makeSizeChangeTransition(){
+        return makeChangeBoundsTransition();
     }
 
     private ChangeBounds makeChangeBoundsTransition() {
