@@ -42,12 +42,14 @@ import java.security.InvalidParameterException;
  * task status and allowing interaction.
  */
 public class ViewTaskActivity extends AppCompatActivity {
-    public static String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
-    public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
+    public static final String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
+    public static final String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
-    private static String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
+    private static final String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
+    private static final int REQUEST_EDIT_TASK = 18;
 
     private Task task;
+    private User sessionUser;
 
     /**
      * Create the ViewTaskActivity.
@@ -66,8 +68,33 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        this.task = (Task) intent.getSerializableExtra(EXTRA_TARGET_TASK);
-        User sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
+        this.sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
+        this.initializeFromTask((Task) intent.getSerializableExtra(EXTRA_TARGET_TASK));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_EDIT_TASK) {
+            // TODO sync these changes to the database
+            if (resultCode == RESULT_OK) {
+                // Reinitialize the view when the task is edited
+                this.initializeFromTask((Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK));
+            } else if (resultCode == EditTaskActivity.RESULT_TASK_DELETED) {
+                // Exit if the task was deleted
+                finish();
+            }
+        }
+    }
+
+    /**
+     * Sets the activity to display the given task.
+     * Binds the task to the activity, populates views, and sets up UI miscellanea.
+     * This also needs to be called whenever the displayed task changes, or the
+     * changes will not be reflected in the UI.
+     * @param task task to display
+     */
+    private void initializeFromTask(Task task) {
+        this.task = task;
 
         // Determine if the session user owns this task
         // TODO? this comparison seems like it should be encapsulable as User.equals
@@ -113,8 +140,8 @@ public class ViewTaskActivity extends AppCompatActivity {
                     // Edit the task
                     Intent editIntent = new Intent(ViewTaskActivity.this,
                             EditTaskActivity.class);
-                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, task);
-                    startActivityForResult(editIntent, EditTaskActivity.REQUEST_EDIT_TASK);
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
+                    startActivityForResult(editIntent, REQUEST_EDIT_TASK);
                 }
             });
         }
