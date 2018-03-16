@@ -17,8 +17,11 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 /**
@@ -32,6 +35,8 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     public static final String USER_EXTRA = "ca.ualberta.cs.wrkify.USER_INTENT";
 
+    private static final int REQUEST_EDIT_PROFILE = 11;
+
     private User user;
 
     @Override
@@ -39,11 +44,35 @@ public class ViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
-        this.user = (User) getIntent().getSerializableExtra(USER_EXTRA);
+        this.initializeFromUser((User) getIntent().getSerializableExtra(USER_EXTRA));
 
-        TextView username = (TextView) findViewById(R.id.UserName);
-        TextView email = (TextView) findViewById(R.id.email);
-        TextView phonenumber = (TextView) findViewById(R.id.PhoneNumber);
+        // Open EditProfileActivity on edit button press
+        FloatingActionButton editButton = findViewById(R.id.editButton);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent editIntent = new Intent(
+                        ViewProfileActivity.this, EditProfileActivity.class);
+                editIntent.putExtra(EditProfileActivity.EXTRA_TARGET_USER, user);
+                startActivityForResult(editIntent, REQUEST_EDIT_PROFILE);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_EDIT_PROFILE && resultCode == RESULT_OK) {
+            this.initializeFromUser((User) data.getSerializableExtra(
+                    EditProfileActivity.EXTRA_RETURNED_USER));
+        }
+    }
+
+    private void initializeFromUser(User user) {
+        this.user = user;
+
+        TextView username = findViewById(R.id.UserName);
+        TextView email = findViewById(R.id.email);
+        TextView phonenumber = findViewById(R.id.PhoneNumber);
 
         username.setText(user.getUsername());
         email.setText(user.getEmail());
