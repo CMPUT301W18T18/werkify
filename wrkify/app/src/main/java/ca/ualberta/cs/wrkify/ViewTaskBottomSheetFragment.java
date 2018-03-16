@@ -143,13 +143,6 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, container, false);
 
-        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-        params.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-        params.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-        view.setLayoutParams(params);
-
         // Set background
         int color = getResources().getColor(this.getBackgroundColor());
         view.findViewById(R.id.taskViewBottomSheetHeader).setBackground(new ColorDrawable(color));
