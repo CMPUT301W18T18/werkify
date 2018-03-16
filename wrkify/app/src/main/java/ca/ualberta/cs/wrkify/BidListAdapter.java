@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.transition.AutoTransition;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -143,17 +144,17 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void expandView(BidViewHolder holder) {
-        TransitionManager.beginDelayedTransition(recyclerView, makeChangeBoundsTransition());
+        TransitionManager.beginDelayedTransition(recyclerView, makeAutoTransition());
         holder.expand();
     }
 
     private void collapseView(BidViewHolder holder) {
-        TransitionManager.beginDelayedTransition(recyclerView, makeChangeBoundsTransition());
+        TransitionManager.beginDelayedTransition(recyclerView, makeAutoTransition());
         holder.collapse();
     }
 
     private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse) {
-        TransitionManager.beginDelayedTransition(recyclerView, makeChangeBoundsTransition());
+        TransitionManager.beginDelayedTransition(recyclerView, makeAutoTransition());
         toExpand.expand();
         toCollapse.collapse();
     }
@@ -167,6 +168,13 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     private ChangeBounds makeChangeBoundsTransition() {
         ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
+        return cb;
+    }
+
+    private AutoTransition makeAutoTransition(){
+        AutoTransition cb = new AutoTransition();
         cb.setDuration(animationTime);
         setAnimationDisableListener(cb);
         return cb;
@@ -218,7 +226,8 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void rejectClicked(final BidViewHolder holder, final int position) {
-        ChangeBounds cb = new ChangeBounds();
+        //ChangeBounds cb = new ChangeBounds();
+        AutoTransition cb = new AutoTransition();
         cb.setDuration((long) (animationTime * 1.5));
 
         final RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
