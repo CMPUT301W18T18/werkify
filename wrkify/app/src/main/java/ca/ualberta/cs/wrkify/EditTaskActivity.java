@@ -39,11 +39,17 @@ import android.widget.EditText;
  * actual deletion of the task in this case.
  */
 public class EditTaskActivity extends AppCompatActivity {
+    /** Task being passed in to EditTaskActivity */
     public static final String EXTRA_EXISTING_TASK = "ca.ualberta.cs.wrkify.EXTRA_EXISTING_TASK";
+
+    /** Task being passed back from EditTaskActivity */
     public static final String EXTRA_RETURNED_TASK = "ca.ualberta.cs.wrkify.EXTRA_RETURNED_TASK";
+
+    /** The task being returned is a newly-created task and should be added to the appropriate context */
     public static final int RESULT_TASK_CREATED = 11;
+
+    /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
-    public static final int REQUEST_EDIT_TASK = 13;
 
     private Task task;
     private boolean taskIsNew = false;
