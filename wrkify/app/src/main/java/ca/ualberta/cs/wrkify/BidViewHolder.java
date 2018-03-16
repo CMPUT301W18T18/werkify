@@ -57,7 +57,13 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         selectedBackground = defaultBackground;
     }
 
-    private void setButtonTextBolding(final Button b) {
+
+    private void setButtonTextBolding(final Button b){
+        return;
+    }
+
+    /*
+    private void setButtonTextBolding(final Button b) { //for now just return
         b.setTypeface(Typeface.DEFAULT);
 
         b.setOnTouchListener(new View.OnTouchListener() {
@@ -80,7 +86,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
                 return false;
             }
         });
-    }
+    }*/
 
     public void setData(Bid b) {
         taskCompleter.setText(b.getBidder().getUsername());
@@ -94,6 +100,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
             this.accept.setVisibility(View.VISIBLE);
         }
         this.cardLayout.setBackground(selectedBackground);
+        this.itemView.setTranslationZ(8f);
     }
 
     public void collapse() {
@@ -101,6 +108,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.reject.setVisibility(View.GONE);
         this.accept.setVisibility(View.GONE);
         this.cardLayout.setBackground(defaultBackground);
+        this.itemView.setTranslationZ(0f);
     }
 
     public TextView getTaskCompleter() {

@@ -36,8 +36,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:background="@android:color/transparent"
             android:text="@string/bidListItem_accept"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:typeface="normal"
+            android:textStyle="normal"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/bidListItem_viewProfile"
@@ -48,11 +50,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:background="@android:color/transparent"
             android:text="@string/bidListItem_reject"
             android:visibility="visible"
-
-
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:typeface="normal"
+            android:textStyle="normal"
             app:layout_constraintEnd_toStartOf="@+id/bidListItem_accept"
             app:layout_constraintTop_toTopOf="@+id/bidListItem_accept"
             tools:text="@string/bidListItem_reject" />
@@ -63,9 +65,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="28dp"
-            android:background="@android:color/transparent"
             android:text="@string/bidListItem_viewProfile"
             android:visibility="visible"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:typeface="normal"
+            android:textStyle="normal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bidListItem_bidAmount"
             tools:text="@string/bidListItem_viewProfile" />
@@ -98,10 +102,10 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:layout_marginTop="12dp"
 
-            android:background="#FF000000"
+            android:background="#1E000000"
 
             android:paddingTop="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
