@@ -35,6 +35,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     private Button accept;
     private CardView cardView;
     private ConstraintLayout cardLayout;
+    private View line;
     private Drawable defaultBackground;
     private Drawable selectedBackground;
     private boolean isRequester = true;
@@ -48,45 +49,12 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.accept = v.findViewById(R.id.bidListItem_accept);
         this.cardView = v.findViewById(R.id.bidListItem_cardView);
         this.cardLayout = v.findViewById(R.id.bidListItem_cardLayout);
-
-        setButtonTextBolding(reject);
-        setButtonTextBolding(accept);
-        setButtonTextBolding(viewProfile);
+        this.line = v.findViewById(R.id.bidListItem_line);
 
         defaultBackground = cardLayout.getBackground();
         selectedBackground = defaultBackground;
+        itemView.setTranslationZ(0f);
     }
-
-
-    private void setButtonTextBolding(final Button b){
-        return;
-    }
-
-    /*
-    private void setButtonTextBolding(final Button b) { //for now just return
-        b.setTypeface(Typeface.DEFAULT);
-
-        b.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
-                    case MotionEvent.ACTION_UP:
-                        b.setTypeface(Typeface.DEFAULT);
-                        break;
-
-                    case MotionEvent.ACTION_DOWN:
-                        b.setTypeface(Typeface.DEFAULT_BOLD);
-                        break;
-
-                    case MotionEvent.ACTION_CANCEL:
-                        b.setTypeface(Typeface.DEFAULT);
-                        break;
-                }
-
-                return false;
-            }
-        });
-    }*/
 
     public void setData(Bid b) {
         taskCompleter.setText(b.getBidder().getUsername());
@@ -109,6 +77,25 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.accept.setVisibility(View.GONE);
         this.cardLayout.setBackground(defaultBackground);
         this.itemView.setTranslationZ(0f);
+    }
+
+    public void totalCollapse() {
+        this.viewProfile.setVisibility(View.GONE);
+        this.reject.setVisibility(View.GONE);
+        this.accept.setVisibility(View.GONE);
+        this.bidAmount.setVisibility(View.GONE);
+        this.taskCompleter.setVisibility(View.GONE);
+        this.cardLayout.setBackground(defaultBackground);
+        this.itemView.setVisibility(View.GONE);
+        line.setVisibility(View.GONE);
+        this.itemView.setTranslationZ(0f);
+    }
+
+    public void restoreSize() {
+        bidAmount.setVisibility(View.VISIBLE);
+        taskCompleter.setVisibility(View.VISIBLE);
+        this.itemView.setVisibility(View.VISIBLE);
+        line.setVisibility(View.VISIBLE);
     }
 
     public TextView getTaskCompleter() {

@@ -42,6 +42,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private BidViewHolder currentSelected = null;
     private boolean selectedIsVisible = false;
     private boolean isRequester = true;
+    private boolean deleteAnimation = false;
 
     public BidListAdapter(Context context, List<Bid> data, boolean isRequester) {
         this.context = context;
@@ -90,6 +91,13 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
         holder.setData(data.get(position));
         restoreSelectionStatus(holder, position);
+
+        holder.getReject().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rejectClicked(holder, position);
+            }
+        });
     }
 
     @Override
@@ -111,6 +119,10 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void cardClicked(BidViewHolder holder, int position) {
+        if (deleteAnimation) {
+            return;
+        }
+
         if (position != currentSelectedPos) {
             if (selectedIsVisible) {
                 expandAndCollapseViews(holder, currentSelected);
@@ -131,28 +143,19 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void expandView(BidViewHolder holder) {
-        ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        TransitionManager.beginDelayedTransition(recyclerView, makeChangeBoundsTransition());
         holder.expand();
     }
 
     private void collapseView(BidViewHolder holder) {
-        ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        TransitionManager.beginDelayedTransition(recyclerView, makeChangeBoundsTransition());
         holder.collapse();
     }
 
     private void expandAndCollapseViews(BidViewHolder toExpand, BidViewHolder toCollapse) {
+        TransitionManager.beginDelayedTransition(recyclerView, makeChangeBoundsTransition());
         toExpand.expand();
         toCollapse.collapse();
-        ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        TransitionManager.beginDelayedTransition(recyclerView, cb);
     }
 
     private void restoreSelectionStatus(BidViewHolder holder, int position) {
@@ -160,6 +163,13 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             holder.expand();
             selectedIsVisible = true;
         }
+    }
+
+    private ChangeBounds makeChangeBoundsTransition() {
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration(animationTime);
+        setAnimationDisableListener(cb);
+        return cb;
     }
 
     public void setAnimationTime(long ms) {
@@ -203,4 +213,82 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         }
     }
 
+    private void viewProfileClicked(int position) {
+        return;
+    }
+
+    private void rejectClicked(final BidViewHolder holder, final int position) {
+        ChangeBounds cb = new ChangeBounds();
+        cb.setDuration((long) (animationTime * 1.5));
+
+        final RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+        final boolean isScrollDisableable = (manager instanceof ScrollDisableable);
+
+        final BidListAdapter adapter = this;
+
+        cb.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                deleteAnimation = true;
+                if (isScrollDisableable) {
+                    ((ScrollDisableable) manager).setScrollEnabled(false);
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                deleteAnimation = false;
+                if (isScrollDisableable) {
+                    ((ScrollDisableable) manager).setScrollEnabled(true);
+                }
+                adapter.deleteItem(holder, position);
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                deleteAnimation = false;
+                if (isScrollDisableable) {
+                    ((ScrollDisableable) manager).setScrollEnabled(true);
+                }
+                adapter.deleteItem(holder, position);
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
+        TransitionManager.beginDelayedTransition(recyclerView, cb);
+        holder.totalCollapse();
+    }
+
+    private void deleteItem(BidViewHolder holder, int position){
+        currentSelectedPos = -1;
+        currentSelected = null;
+        selectedIsVisible = false;
+        data.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, data.size());
+        holder.restoreSize();
+        notifyDataSetChanged();
+
+        return;
+    }
+
+    private void acceptClicked(int position){
+
+    }
+
+
+
+
+
+
 }
+
