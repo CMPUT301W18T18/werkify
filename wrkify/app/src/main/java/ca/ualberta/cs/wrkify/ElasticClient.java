@@ -48,7 +48,7 @@ public class ElasticClient {
     // TODO move defurl to config file
     private static String defurl = "http://cmput301.softwareprocess.es:8080";
     // TODO use proper index
-    private static String INDEX = "CMPUT301W18T18";
+    private static String INDEX = "cmput301w18t18";
 
     private JestDroidClient client;
 
@@ -152,8 +152,8 @@ public class ElasticClient {
      * @param id the id of the object
      * @throws IOException when execute fails
      */
-    public void delete(String id) throws IOException {
-        Delete del = new Delete.Builder(id).build();
+    public void delete(String id, Class type) throws IOException {
+        Delete del = new Delete.Builder(id).index(INDEX).type(type.getName()).build();
         this.execute(del);
     }
 
