@@ -14,7 +14,9 @@
  */
 package ca.ualberta.cs.wrkify;
 
-public class Bid implements Comparable<Bid> {
+import java.io.Serializable;
+
+public class Bid implements Comparable<Bid>, Serializable {
     private Double value;
     private User bidder;
 
