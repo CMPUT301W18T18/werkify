@@ -21,8 +21,44 @@ import android.location.Location;
 public class ConcreteTaskTest {
 
     @Test
+    public void testFailConstructor() {
+        User use = new ConcreteUser("a", "a@a.com", "7");
+
+        boolean error = false;
+        try {
+            ConcreteTask concTask = new ConcreteTask("", use);
+        } catch (IllegalArgumentException e){
+            error = true;
+        }
+        assertTrue(error);
+
+        error = false;
+        try {
+            ConcreteTask concTask = new ConcreteTask("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", use);
+        } catch (IllegalArgumentException e){
+            error = true;
+        }
+        assertTrue(error);
+
+        StringBuffer outputBuffer = new StringBuffer(600);
+        for (int i = 0; i < 600; i++){
+            outputBuffer.append("a");
+        }
+
+        error = false;
+        try {
+            ConcreteTask concTask = new ConcreteTask("hello", use, outputBuffer.toString());
+        } catch (IllegalArgumentException e){
+            error = true;
+        }
+        assertTrue(error);
+
+    }
+
+    @Test
     public void testSetGetTitle() {
-        ConcreteTask concTask = new ConcreteTask();
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
         concTask.setTitle("Test Title");
 
         assertEquals("Test Title", concTask.getTitle());
@@ -30,28 +66,42 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetDescription() {
-        ConcreteTask concTask = new ConcreteTask();
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use, "def descr");
         concTask.setDescription("Test Description");
 
         assertEquals("Test Description",concTask.getDescription());
     }
 
     @Test
+    public void testCancelBid() {
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
+
+        Bid bid = new Bid(5.0, use);
+
+        concTask.addBid(bid);
+        concTask.cancelBid(bid);
+
+        assertEquals(TaskStatus.REQUESTED, concTask.getStatus());
+        assertEquals(0, concTask.getBidList().size());
+    }
+
+    @Test
     public void testSetGetImageList() {
-        ConcreteTask concTask = new ConcreteTask();
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
 
         Bitmap image = null; // Bitmap.createBitmap(1,1, Bitmap.Config.ARGB_8888); is not mocked
-        ArrayList<Bitmap> imgList = new ArrayList<>();
-        imgList.add(image);
+        concTask.addImage(image);
 
-        concTask.setImageList(imgList);
-
-        assertEquals(imgList, concTask.getImageList());
+        assertEquals(image, concTask.getImageList().get(0));
     }
 
     @Test
     public void testSetGetLocation() {
-        ConcreteTask concTask = new ConcreteTask();
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
         Location location = new Location("Test");
 
         concTask.setLocation(location);
@@ -61,7 +111,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetChecklist() {
-        ConcreteTask concTask = new ConcreteTask();
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
         CheckList checklist = new CheckList();
 
         concTask.setCheckList(checklist);
@@ -70,120 +121,100 @@ public class ConcreteTaskTest {
     }
 
     @Test
-    public void testSetGetBidList() {
-        ConcreteTask concTask = new ConcreteTask();
-        ArrayList<Bid> bidList = new ArrayList<>();
+    public void testAddBid() {
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
 
-        concTask.setBidList(bidList);
+        Bid bid = new Bid(5.0, use);
+        Bid bid2 = new Bid(3.0, use);
 
-        assertEquals(bidList, concTask.getBidList());
-    }
+        concTask.addBid(bid);
+        concTask.addBid(bid2);
 
-    @Test
-    public void testSetGetRequester() {
-        ConcreteTask concTask = new ConcreteTask();
-        ConcreteUser concUser = new ConcreteUser("Test", "Test@Test.com", "12 345 67890");
+        ArrayList<Bid> bids = concTask.getBidList();
+        assertEquals(2, bids.size());
+        assertEquals(bid2, bids.get(0));
+        assertEquals(bid, bids.get(1));
 
-        concTask.setRequester(concUser);
-
-        assertEquals(concUser, concTask.getRequester());
-
+        assertEquals(TaskStatus.BIDDED, concTask.getStatus());
     }
 
     @Test
     public void testSetGetProvider() {
-        ConcreteTask concTask = new ConcreteTask();
         ConcreteUser concUser = new ConcreteUser("Test", "Test@Test.com", "12 345 67890");
+        ConcreteTask concTask = new ConcreteTask("def", concUser);
+
 
         concTask.setProvider(concUser);
 
         assertEquals(concUser, concTask.getProvider());
     }
 
-    @Test
-    public void testSetGetStatus() {
-        ConcreteTask concTask = new ConcreteTask();
-        TaskStatus taskStat = TaskStatus.REQUESTED;
-
-        concTask.setStatus(taskStat);
-
-        assertEquals(taskStat, concTask.getStatus());
-    }
 
     @Test
-    public void testGetLowestBid() {
+    public void testBidSorting() {
         Random rand = new Random();
-        Double number;// = 0.0; is implied
-        Double lowbid = 20.0;
-        ConcreteTask concTask = new ConcreteTask();
-        ArrayList<Bid> bidList = new ArrayList<>();
+        double lowbid = 20.0;
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
 
-        for(int i=0; i < 10; i++){
-            number = rand.nextDouble()*20;
+        for(int i=0; i < 10; i++) {
+            double number = rand.nextDouble() * 20;
             if (number < lowbid) {
                 lowbid = number;
             }
             User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
             Bid bid = new Bid(number, bidder);
-            bidList.add(bid);
+            concTask.addBid(bid);
         }
 
-        concTask.setBidList(bidList);
-
-        assertEquals(lowbid, concTask.getLowestBid().getValue());
+        assertTrue(lowbid == concTask.getBidList().get(0).getValue());
     }
 
     @Test
-    public void testAddBid () {
-        ConcreteTask concTask = new ConcreteTask();
-        User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
-        Bid bid = new Bid(1.0, bidder);
-
-        concTask.addBid(bid);
-
-        assertEquals(bid, concTask.getBidList().get(0));
-    }
-
-    @Test
-    public void testSortBidList () {
-        Random rand = new Random();
-        Double number; // = 0.0;
-        ConcreteTask concTask = new ConcreteTask();
-        ArrayList<Bid> bidList = new ArrayList<>();
-
-        for(int i=0; i < 10; i++){
-            number = rand.nextDouble()*20;
-            User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
-            Bid bid = new Bid(number, bidder);
-            bidList.add(bid);
-        }
-        concTask.setBidList(bidList);
-
-        Collections.sort(bidList);
-
-        concTask.sortBidList();
-
-        assertEquals(bidList, concTask.getBidList());
-    }
-
-    @Test
-    public void testSetGetPrice() {
-        ConcreteTask concTask = new ConcreteTask();
-        Double price = 12.0;
-        concTask.setPrice(price);
-
-        assertEquals(price, concTask.getPrice());
-    }
-
-    @Test
-    public void testAcceptBid() {
-        ConcreteTask concTask = new ConcreteTask();
+    public void testAcceptUnassignBid() {
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
         User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
         Bid bid = new Bid(20.0, bidder);
 
         concTask.acceptBid(bid);
 
-        assertEquals(bid.getValue(), concTask.getPrice());
+        assertEquals(bid.getValue(), concTask.getAcceptedBid().getValue());
+        assertEquals(TaskStatus.ASSIGNED, concTask.getStatus());
+
+        concTask.unassign();
+        assertEquals(TaskStatus.BIDDED, concTask.getStatus());
+    }
+
+    @Test
+    public void testGetPrice() {
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
+        concTask.addBid(new Bid(20.0, use));
+        concTask.addBid(new Bid(10.0, use));
+
+        assertTrue(10.0 == concTask.getPrice());
+
+        concTask.acceptBid(concTask.getBidList().get(1));
+
+        assertTrue(20 == concTask.getPrice());
+    }
+
+    @Test
+    public void testComplete() {
+        User use = new ConcreteUser("a", "a@a.com", "7");
+        ConcreteTask concTask = new ConcreteTask("def title", use);
+
+        Bid bid = new Bid(10.0, use);
+        concTask.addBid(bid);
+        concTask.acceptBid(bid);
+
+        assertEquals(TaskStatus.ASSIGNED, concTask.getStatus());
+
+        concTask.complete();
+
+        assertEquals(TaskStatus.DONE, concTask.getStatus());
     }
 
 }
