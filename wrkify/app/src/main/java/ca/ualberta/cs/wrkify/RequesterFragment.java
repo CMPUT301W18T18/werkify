@@ -17,20 +17,12 @@
 
 package ca.ualberta.cs.wrkify;
 
-
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * RequesterFragment displays the lists of task that a task requester needs to see
  * this Fragment is displayed by MainActivity
- * TODO: this class has not been implemented
  *
  * @see MainActivity
  */
@@ -49,5 +41,10 @@ public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected String[] getTabTitles() {
         return new String[]{"Requested", "Assigned", "Closed"};
+    }
+    
+    @Override
+    protected String getAppBarTitle() {
+        return "My posts";
     }
 }

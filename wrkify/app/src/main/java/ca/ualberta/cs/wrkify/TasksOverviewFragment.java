@@ -24,14 +24,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +46,7 @@ import java.util.List;
 abstract class TasksOverviewFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager pager;
-    private UserView userView;
-
+    
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
     @Override
@@ -58,7 +56,12 @@ abstract class TasksOverviewFragment extends Fragment {
         // Find views
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
-        this.userView = view.findViewById(R.id.overviewSelfView);
+        
+        UserView userView = view.findViewById(R.id.overviewSelfView);
+        Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
+        
+        // Set title
+        toolbar.setTitle(getAppBarTitle());
 
         // Set user view
         userView.setUserName("SelfPlaceholder");
@@ -166,4 +169,10 @@ abstract class TasksOverviewFragment extends Fragment {
      * @return list of tab titles
      */
     protected abstract String[] getTabTitles();
+    
+    /**
+     * Determines the 'activity title' shown when viewing this Fragment.
+     * (It appears in the override app bar.)
+     */
+    protected abstract String getAppBarTitle();
 }

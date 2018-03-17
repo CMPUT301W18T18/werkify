@@ -36,9 +36,10 @@
         style="@style/AppTheme">
 
         <Toolbar
+            android:id="@+id/overviewToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:title="My tasks"
+            tools:title="Title"
             android:titleTextAppearance="@android:style/TextAppearance.Material.Widget.ActionBar.Title.Inverse">
 
             <view class="ca.ualberta.cs.wrkify.UserView"

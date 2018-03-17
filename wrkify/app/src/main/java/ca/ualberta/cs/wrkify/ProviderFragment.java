@@ -42,4 +42,9 @@ public class ProviderFragment extends TasksOverviewFragment {
     protected String[] getTabTitles() {
         return new String[]{"Assigned", "Bidded", "Completed"};
     }
+    
+    @Override
+    protected String getAppBarTitle() {
+        return "My tasks";
+    }
 }
