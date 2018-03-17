@@ -17,20 +17,6 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.app.ActionBar;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,65 +26,20 @@ import java.util.List;
  *
  * @see MainActivity
  */
-public class ProviderFragment extends Fragment {
-    private TabLayout tabLayout;
-    private ViewPager pager;
-
-    // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
-    // (basic structure)
+public class ProviderFragment extends TasksOverviewFragment {
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_provider, container, false);
-
-        this.tabLayout = view.findViewById(R.id.providerTabBar);
-        this.pager = view.findViewById(R.id.providerViewPager);
-
+    protected List<ArrayList<Task>> getTaskLists() {
         // TODO get actual tasks
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
         pageTaskLists.add(new ArrayList<Task>());
         pageTaskLists.add(new ArrayList<Task>());
         pageTaskLists.add(new ArrayList<Task>());
 
-        pager.setAdapter(new TaskListFragmentPagerAdapter(getFragmentManager(), pageTaskLists));
-        pager.setCurrentItem(0);
+        return pageTaskLists;
+    }
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Log.i("-->", "switching to tab " + tab.getPosition());
-                pager.setCurrentItem(tab.getPosition());
-                pager.forceLayout();
-                Log.i("-->", "now: " + pager.getCurrentItem());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // ignored
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // ignored
-            }
-        });
-
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                tabLayout.setScrollPosition(position, 0, true);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // ignored
-            }
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                tabLayout.setScrollPosition(position, positionOffset, true);
-            }
-        });
-
-        return view;
+    @Override
+    protected String[] getTabTitles() {
+        return new String[]{"Assigned", "Bidded", "Completed"};
     }
 }
