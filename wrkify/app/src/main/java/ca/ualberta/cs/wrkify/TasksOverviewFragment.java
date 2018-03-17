@@ -18,15 +18,20 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +47,54 @@ import java.util.List;
 abstract class TasksOverviewFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager pager;
+    private UserView userView;
 
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
-
+        
         // Find views
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
+        this.userView = view.findViewById(R.id.overviewSelfView);
 
+        // Set user view
+        userView.setUserName("SelfPlaceholder");
+        userView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create user view menu
+                PopupMenu popup = new PopupMenu(getActivity(), v);
+                getActivity().getMenuInflater().inflate(R.menu.overview, popup.getMenu());
+                
+                popup.getMenu().findItem(R.id.menuItemViewProfile).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        // View profile menu item
+                        Intent viewUserIntent = new Intent(getContext(), ViewProfileActivity.class);
+                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, new ConcreteUser("...", "x@x", ""));
+                        startActivity(viewUserIntent);
+                        
+                        return true;
+                    }
+                });
+                
+                popup.getMenu().findItem(R.id.menuItemLogout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        // Logout menu item
+                        getActivity().finish();
+                        
+                        return false;
+                    }
+                });
+                
+                popup.show();
+            }
+        });
+        
         // Create tabs
         for (String tabTitle: getTabTitles()) {
             TabLayout.Tab tab = tabLayout.newTab();

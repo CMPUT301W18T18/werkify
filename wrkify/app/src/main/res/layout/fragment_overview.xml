@@ -41,12 +41,16 @@
             android:title="My tasks"
             android:titleTextAppearance="@android:style/TextAppearance.Material.Widget.ActionBar.Title.Inverse">
 
-            <TextView
+            <view class="ca.ualberta.cs.wrkify.UserView"
+                android:id="@+id/overviewSelfView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="me"
                 android:layout_gravity="end"
-                android:layout_marginEnd="12dp"/>
+                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
+                android:layout_marginEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
 
         </Toolbar>
 
