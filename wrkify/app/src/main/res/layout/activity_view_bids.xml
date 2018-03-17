@@ -33,30 +33,43 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/bidListActivity_taskTitle"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/bidListActivity_taskTitle"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"
-            tools:text="@string/bidListActivity_taskTitle" />
+            android:background="@color/cardview_light_background"
+            android:translationZ="2dp">
 
-        <TextView
-            android:id="@+id/bidListActivity_bidCount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/bidListActivity_bidCount"
-            android:textColor="@android:color/black"
-            tools:text="@string/bidListActivity_bidCount"
-            android:gravity="center_horizontal"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="#FF000000"
-            />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/cardview_light_background"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/bidListActivity_taskTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="4dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:text="@string/bidListActivity_taskTitle"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    tools:text="@string/bidListActivity_taskTitle" />
+
+                <TextView
+                    android:id="@+id/bidListActivity_bidCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:text="@string/bidListActivity_bidCount"
+                    android:textColor="@android:color/black"
+                    tools:text="@string/bidListActivity_bidCount" />
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/bidListRecyclerView"
