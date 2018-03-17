@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,19 +43,32 @@ public class TaskListFragment extends Fragment {
         return fragment;
     }
 
-    private List<Task> tasks;
+    private ArrayList<Task> tasks;
 
     /**
      * Requisite null constructor
      */
     public TaskListFragment() { }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.tasks = (ArrayList<Task>) this.getArguments().getSerializable(ARGUMENT_TASK_LIST);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.i("-->", "created a TaskListFragment");
-        TextView view = new TextView(getContext());
-        view.setText("TEST");
+        View view = inflater.inflate(R.layout.fragment_task_list, container, false);
+        if (tasks.size() == 0) {
+            view.findViewById(R.id.taskListView).setVisibility(View.GONE);
+            view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
+        }
+        else {
+            RecyclerView recyclerView = view.findViewById(R.id.taskListView);
+            recyclerView.setAdapter(null); // TODO adapter doesn't exist yet
+        }
+
         return view;
     }
 }
