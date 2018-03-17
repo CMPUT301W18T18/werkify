@@ -28,6 +28,7 @@ import java.util.List;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestResult;
+import io.searchbox.core.Delete;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
@@ -47,7 +48,7 @@ public class ElasticClient {
     // TODO move defurl to config file
     private static String defurl = "http://cmput301.softwareprocess.es:8080";
     // TODO use proper index
-    private static String INDEX = "testing";
+    private static String INDEX = "CMPUT301W18T18";
 
     private JestDroidClient client;
 
@@ -143,6 +144,17 @@ public class ElasticClient {
         Get get = new Get.Builder(INDEX, id).build();
         DocumentResult result = this.execute(get);
         return result.getSourceAsObject(type);
+    }
+
+    /**
+     * deletes a given object by id.
+     *
+     * @param id the id of the object
+     * @throws IOException when execute fails
+     */
+    public void delete(String id) throws IOException {
+        Delete del = new Delete.Builder(id).build();
+        this.execute(del);
     }
 
     /**
