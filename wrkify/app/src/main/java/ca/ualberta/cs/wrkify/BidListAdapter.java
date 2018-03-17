@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -33,16 +34,18 @@ import java.util.List;
 
 public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private static int itemLayoutId = R.layout.bidlistitem;
+    private static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
+    private static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
+
     private Context context;
     private List<Bid> data;
     private RecyclerView recyclerView;
-    private static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
-    private static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
+    private boolean isRequester = true;
+
     private long animationTime = 20;
     private int currentSelectedPos = -1;
     private BidViewHolder currentSelected = null;
     private boolean selectedIsVisible = false;
-    private boolean isRequester = true;
     private boolean deleteAnimation = false;
 
     public BidListAdapter(Context context, List<Bid> data, boolean isRequester) {
@@ -58,7 +61,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        return (long) position;
+        return position;
     }
 
     @Override
@@ -99,6 +102,20 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 rejectClicked(holder, position);
             }
         });
+
+        holder.getViewProfile().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewProfileClicked(position);
+            }
+        });
+
+        holder.getAccept().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                acceptClicked(position);
+            }
+        });
     }
 
     @Override
@@ -115,7 +132,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         this.recyclerView = recyclerView;
     }
 
-    public boolean getIsRequester(){
+    public boolean getIsRequester() {
         return isRequester;
     }
 
@@ -166,19 +183,12 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         }
     }
 
-    private Transition makeSizeChangeTransition(){
+    private Transition makeSizeChangeTransition() {
         return makeChangeBoundsTransition();
     }
 
     private ChangeBounds makeChangeBoundsTransition() {
         ChangeBounds cb = new ChangeBounds();
-        cb.setDuration(animationTime);
-        setAnimationDisableListener(cb);
-        return cb;
-    }
-
-    private AutoTransition makeAutoTransition(){
-        AutoTransition cb = new AutoTransition();
         cb.setDuration(animationTime);
         setAnimationDisableListener(cb);
         return cb;
@@ -226,11 +236,12 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     private void viewProfileClicked(int position) {
-        return;
+        Intent profileIntent = new Intent(context, ViewProfileActivity.class);
+        profileIntent.putExtra(ViewProfileActivity.USER_EXTRA, data.get(position).getBidder());
+        context.startActivity(profileIntent);
     }
 
     private void rejectClicked(final BidViewHolder holder, final int position) {
-        //ChangeBounds cb = new ChangeBounds();
         AutoTransition cb = new AutoTransition();
         cb.setDuration((long) (animationTime));
 
@@ -281,7 +292,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         holder.totalCollapse();
     }
 
-    private void deleteItem(BidViewHolder holder, int position){
+    private void deleteItem(BidViewHolder holder, int position) {
         currentSelectedPos = -1;
         currentSelected = null;
         selectedIsVisible = false;
@@ -294,8 +305,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         return;
     }
 
-    private void acceptClicked(int position){
-
+    protected void acceptClicked(int position) {
     }
 
 

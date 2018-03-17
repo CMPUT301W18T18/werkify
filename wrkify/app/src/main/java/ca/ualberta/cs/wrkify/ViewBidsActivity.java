@@ -20,15 +20,14 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 
 public class ViewBidsActivity extends Activity {
-    protected ArrayList<User> users; //delete this
     protected ArrayList<Bid> bids;
     protected RecyclerView recyclerView;
     protected BidListAdapter adapter;
@@ -50,7 +49,12 @@ public class ViewBidsActivity extends Activity {
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
 
-        adapter = new BidListAdapter(this, bids, isRequester);
+        adapter = new BidListAdapter(this, bids, isRequester){
+            @Override
+            protected void acceptClicked(int position){
+                accept(position);
+            }
+        };
         adapter.setAnimationTime(200);
 
         ScrollDisableableLinearLayoutManager manager = new ScrollDisableableLinearLayoutManager(this);
@@ -75,7 +79,7 @@ public class ViewBidsActivity extends Activity {
         updateCount();
     }
 
-    protected void updateCount(){
+    protected void updateCount() {
         int count = adapter.getItemCount();
         String message;
         if (count == 1) {
@@ -87,58 +91,17 @@ public class ViewBidsActivity extends Activity {
         this.bidCount.setText(Integer.toString(count) + message);
     }
 
-    protected void getData(){
-        users = new ArrayList<User>();
+    protected void getData() {
         bids = new ArrayList<Bid>();
 
         viewer = (ConcreteUser) intent.getSerializableExtra("viewer");
         task = (ConcreteTask) intent.getSerializableExtra("task");
 
         bids = task.getBidList();
-
     }
 
-    protected void makeData() {
-        bids = new ArrayList<Bid>();
-        users = new ArrayList<User>();
-
-        users.add(new ConcreteUser("UsernameHere", "email@website.com", "780-123-4567"));
-        users.add(new ConcreteUser("UsernameHere2", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere3", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere4", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere5", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere6", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere7", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere8", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere9", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere10", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere11", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere12", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere13", "email2@website.com", "780-223-4567"));
-        users.add(new ConcreteUser("UsernameHere14", "email2@website.com", "780-223-4567"));
-
-        bids.add(new Bid(20.0, users.get(0)));
-        bids.add(new Bid(41.2, users.get(1)));
-        bids.add(new Bid(41.3, users.get(2)));
-        bids.add(new Bid(41.4, users.get(3)));
-        bids.add(new Bid(41.5, users.get(4)));
-        bids.add(new Bid(41.6, users.get(5)));
-        bids.add(new Bid(41.7, users.get(6)));
-        bids.add(new Bid(41.8, users.get(7)));
-        bids.add(new Bid(41.9, users.get(8)));
-        bids.add(new Bid(42.0, users.get(9)));
-        bids.add(new Bid(42.1, users.get(10)));
-        bids.add(new Bid(42.2, users.get(11)));
-        bids.add(new Bid(42.3, users.get(12)));
-        bids.add(new Bid(42.4, users.get(13)));
-    }
-
-    protected void makeData2(int amount) {
-        bids = new ArrayList<Bid>();
-        users = new ArrayList<User>();
-
-        for (int i = 0; i < amount; i++) {
-            bids.add(new Bid(Double.parseDouble(Integer.toString(i)), new ConcreteUser("User" + Integer.toString(i), "email@webiste.com", "230-234-1234") ));
-        }
+    protected void accept(int position) {
+        task.acceptBid(bids.get(position));
+        finish();
     }
 }
