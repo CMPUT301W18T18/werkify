@@ -61,7 +61,8 @@ abstract class TasksOverviewFragment extends Fragment {
         }
 
         // Bind adapter to pager
-        pager.setAdapter(new TaskListFragmentPagerAdapter(getFragmentManager(), getTaskLists()));
+        // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
+        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
 
         // Switch pager pages on tab move
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -104,7 +105,7 @@ abstract class TasksOverviewFragment extends Fragment {
 
         return view;
     }
-
+    
     /**
      * Selects which tasks to display in the task lists. Each element
      * in the outer list is a list of tasks that will be displayed in a tab.
