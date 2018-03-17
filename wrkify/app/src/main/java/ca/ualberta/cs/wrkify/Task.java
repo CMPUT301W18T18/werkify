@@ -41,7 +41,6 @@ public interface Task extends Serializable {
     void setDescription(String description);
     void setLocation(Location location);
     void setCheckList(CheckList checkList);
-    void setRequester(User requester);
     void setProvider(User provider);
 
     void addBid(Bid bid);
