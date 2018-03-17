@@ -17,23 +17,80 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.app.ActionBar;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * ProviderFragment displays the lists of task that a task provider needs to see
  * this Fragment is displayed by MainActivity
- * TODO: this class has not been implemented
  *
  * @see MainActivity
  */
 public class ProviderFragment extends Fragment {
+    private TabLayout tabLayout;
+    private ViewPager pager;
+
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
+    // (basic structure)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_provider, container, false);
+        View view = inflater.inflate(R.layout.fragment_provider, container, false);
+
+        this.tabLayout = view.findViewById(R.id.providerTabBar);
+        this.pager = view.findViewById(R.id.providerViewPager);
+
+        pager.setAdapter(new PagerAdapter() {
+            @NonNull
+            @Override
+            public Object instantiateItem(@NonNull ViewGroup container, int position) {
+               TextView pageView = new TextView(getContext());
+               pageView.setText(String.valueOf(position));
+               return pageView;
+            }
+
+            @Override
+            public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+                container.removeView((View) object);
+            }
+
+            @Override
+            public int getCount() {
+                return 3;
+            }
+
+            @Override
+            public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+                return view.equals(object);
+            }
+        });
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                pager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // ignored
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // ignored
+            }
+        });
+
+        return view;
     }
 }
