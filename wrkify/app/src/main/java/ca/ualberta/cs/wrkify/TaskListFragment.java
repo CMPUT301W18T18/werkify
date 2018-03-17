@@ -32,9 +32,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Fragment that displays a list of tasks.
+ * This is used as the pages of a TaskListFragmentPagerAdapter,
+ * but can probably be used in other contexts as well.
+ * Receives an ArrayList of Tasks as ARGUMENT_TASK_LIST,
+ * and displays those tasks.
+ *
+ * TODO adapter is currently not implemented.
+ */
 public class TaskListFragment extends Fragment {
     public static final String ARGUMENT_TASK_LIST = "ca.ualberta.cs.wrkify.ARGUMENT_TASK_LIST";
-
+    
+    /**
+     * Creates a TaskListFragment for a list of tasks. This is a simplifying
+     * factory wrapper around TaskListFragment.
+     * @param tasks list of tasks
+     * @return TaskListFragment to display the list of tasks
+     */
     public static TaskListFragment makeTaskList(ArrayList<Task> tasks) {
         TaskListFragment fragment = new TaskListFragment();
         Bundle arguments = new Bundle();

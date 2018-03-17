@@ -26,9 +26,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Displays a set of TaskListFragments in a pager.
+ * Used in TasksOverviewFragments.
+ *
+ * @see TaskListFragment
+ * @see TasksOverviewFragment
+ */
 public class TaskListFragmentPagerAdapter extends FragmentPagerAdapter {
     private List<ArrayList<Task>> pageTaskLists;
-
+    
+    /**
+     * Creates a TaskListFragmentPagerAdapter for the specified set of task lists.
+     * Each entry in the outer pageTaskLists list will be a single page containing
+     * the entry's inner list displayed in a TaskListFragment.
+     * @param fragmentManager Fragment manager to instantiate from (passed to super FragmentPagerAdapter)
+     * @param pageTaskLists List of task lists to display as pages
+     */
     public TaskListFragmentPagerAdapter(FragmentManager fragmentManager, List<ArrayList<Task>> pageTaskLists) {
         super(fragmentManager);
         Log.i("-->", "task lists: " + pageTaskLists.size());
