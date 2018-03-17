@@ -26,8 +26,7 @@
             android:id="@+id/providerViewPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_dodgeInsetEdges="all"
-            android:background="@color/colorAccent" />
+            app:layout_dodgeInsetEdges="all" />
 
     <android.support.design.widget.AppBarLayout
         app:layout_insetEdge="top"

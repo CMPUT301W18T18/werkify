@@ -82,6 +82,23 @@ public class ProviderFragment extends Fragment {
             }
         });
 
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                tabLayout.setScrollPosition(position, 0, true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // ignored
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                tabLayout.setScrollPosition(position, positionOffset, true);
+            }
+        });
+
         return view;
     }
 }
