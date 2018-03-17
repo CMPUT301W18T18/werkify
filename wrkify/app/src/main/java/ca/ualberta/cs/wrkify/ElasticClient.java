@@ -17,17 +17,25 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestResult;
+import io.searchbox.core.Delete;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 /**
  * ElasticClient provides a singleton for a JestDroidClient, with
@@ -42,7 +50,7 @@ public class ElasticClient {
     // TODO move defurl to config file
     private static String defurl = "http://cmput301.softwareprocess.es:8080";
     // TODO use proper index
-    private static String INDEX = "testing";
+    private static String INDEX = "cmput301w18t18";
 
     private JestDroidClient client;
 
@@ -138,5 +146,68 @@ public class ElasticClient {
         Get get = new Get.Builder(INDEX, id).build();
         DocumentResult result = this.execute(get);
         return result.getSourceAsObject(type);
+    }
+
+    /**
+     * deletes a given object by id.
+     *
+     * @param id the id of the object
+     * @throws IOException when execute fails
+     */
+    public void delete(String id, Class type) throws IOException {
+        Delete del = new Delete.Builder(id).index(INDEX).type(type.getName()).build();
+        this.execute(del);
+    }
+
+    /**
+     * searches for a list of elastic objects in given type.
+     *
+     * this ones a doozy.
+     *
+     * @param query the elasticsearch query
+     * @param elasticType the type of ElasticObject we want
+     * @param type the base type used in elasticsearch
+     * @return a List of the hits
+     * @throws IOException when execute() fails
+     */
+    public <T, E extends ElasticObject<T>> List<E> search(
+            String query, Class<E> elasticType, Class<T> type) throws IOException {
+
+        Search search = new Search.Builder(query).addIndex(INDEX)
+                .addType(type.getName()).build();
+
+        SearchResult result = this.client.execute(search);
+        List<SearchResult.Hit<T, Void>> hits = result.getHits(type);
+
+        // we've just done the search, now its time to convert
+        // our results into their elastic forms
+
+        ArrayList<E> elasticResults = new ArrayList<E>();
+        Constructor con;
+        try {
+            con = elasticType.getConstructor(
+                    String.class, ElasticClient.class);
+        } catch (NoSuchMethodException e) {
+            // idk if this can happen
+            e.printStackTrace();
+            Log.e("ElasticClient.search", Log.getStackTraceString(e));
+            return elasticResults;
+        }
+
+        // go through each hit mapping id's and objects
+        // to elasticObjects
+        for (SearchResult.Hit<T, Void> task : hits) {
+            //TODO change elasticObject to support object preloading
+            try {
+                E elast = (E) con.newInstance(task.id, this);
+                elasticResults.add(elast);
+            } catch (Exception e) {
+                // don't add to the list if it fails
+                // this will either happen every time or never
+                e.printStackTrace();
+                Log.e("ElasticClient.search", Log.getStackTraceString(e));
+            }
+        }
+        return elasticResults;
     }
 }
