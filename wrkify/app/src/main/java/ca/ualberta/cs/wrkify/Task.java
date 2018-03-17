@@ -21,42 +21,43 @@ import android.location.Location;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
-
+/**
+ * Task provides a standard task interface
+ * that can be used as a wrkify task
+ */
 public interface Task extends Serializable {
-    public String getTitle();
-    public void setTitle(String title);
+    String getTitle();
+    void setTitle(String title);
 
-    public String getDescription();
-    public void setDescription(String description);
+    String getDescription();
+    void setDescription(String description);
 
-    public ArrayList<Bitmap> getImageList();
-    public void setImageList(ArrayList<Bitmap> imageList);
+    ArrayList<Bitmap> getImageList();
+    void setImageList(ArrayList<Bitmap> imageList);
 
-    public Location getLocation();
-    public void setLocation(Location location);
+    Location getLocation();
+    void setLocation(Location location);
 
-    public CheckList getCheckList();
-    public void setCheckList(CheckList checkList);
+    CheckList getCheckList();
+    void setCheckList(CheckList checkList);
 
-    public ArrayList<Bid> getBidList();
-    public void setBidList(ArrayList<Bid> bidList);
+    ArrayList<Bid> getBidList();
+    void setBidList(ArrayList<Bid> bidList);
 
-    public User getRequester();
-    public void setRequester(User requester);
-    public User getProvider();
-    public void setProvider(User provider);
+    User getRequester();
+    void setRequester(User requester);
+    User getProvider();
+    void setProvider(User provider);
 
-    public TaskStatus getStatus();
-    public void setStatus(TaskStatus status);
+    TaskStatus getStatus();
+    void setStatus(TaskStatus status);
 
-    public Bid getLowestBid();
-    public void addBid(Bid bid);
-    public void sortBidList();
+    Bid getLowestBid();
+    void addBid(Bid bid);
+    void sortBidList();
 
-    public Double getPrice();
-    public void setPrice(Double price);
+    Double getPrice();
+    void setPrice(Double price);
 
-    public void acceptBid(Bid bid);
-
+    void acceptBid(Bid bid);
 }
