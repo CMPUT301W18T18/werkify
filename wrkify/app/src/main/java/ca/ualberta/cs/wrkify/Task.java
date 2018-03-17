@@ -27,37 +27,26 @@ import java.util.ArrayList;
  */
 public interface Task extends Serializable {
     String getTitle();
-    void setTitle(String title);
-
     String getDescription();
-    void setDescription(String description);
-
     ArrayList<Bitmap> getImageList();
-    void setImageList(ArrayList<Bitmap> imageList);
-
     Location getLocation();
-    void setLocation(Location location);
-
     CheckList getCheckList();
-    void setCheckList(CheckList checkList);
-
     ArrayList<Bid> getBidList();
-    void setBidList(ArrayList<Bid> bidList);
-
     User getRequester();
-    void setRequester(User requester);
     User getProvider();
+    TaskStatus getStatus();
+    Bid getAcceptedBid();
+
+    void setTitle(String title);
+    void setDescription(String description);
+    void setLocation(Location location);
+    void setCheckList(CheckList checkList);
+    void setRequester(User requester);
     void setProvider(User provider);
 
-    TaskStatus getStatus();
-    void setStatus(TaskStatus status);
-
-    Bid getLowestBid();
     void addBid(Bid bid);
-    void sortBidList();
-
-    Double getPrice();
-    void setPrice(Double price);
-
+    void cancelBid(Bid bid);
     void acceptBid(Bid bid);
+    void unassign();
+    void complete();
 }

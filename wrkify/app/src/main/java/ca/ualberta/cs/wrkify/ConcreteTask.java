@@ -36,83 +36,138 @@ public class ConcreteTask implements Task {
     private User requester;
     private User provider;
     private TaskStatus status;
-    private Double price;
+    private Bid acceptedBid;
+
+    private void internalSetTitle(String title) throws IllegalArgumentException {
+        if (title.length() > 32) {
+            throw new IllegalArgumentException("Title too long");
+        } else if (title.trim().length() <= 0) {
+            throw new IllegalArgumentException("Title cannot be empty");
+        } else {
+            this.title = title.trim();
+        }
+    }
+
+    private void internalSetDescription(String description) {
+        if (description.length() > 32) {
+            throw new IllegalArgumentException("Description too long");
+        } else if (description.trim().length() <= 0) {
+            throw new IllegalArgumentException("Desctiption cannot be empty");
+        } else {
+            this.description = description.trim();
+        }
+    }
+
+    public ConcreteTask(String title, User requester, String description) {
+        internalSetTitle(title);
+        internalSetDescription(description);
+        this.requester = requester;
+        this.status = TaskStatus.REQUESTED;
+        this.imageList = new ArrayList<Bitmap>();
+        this.bidList = new ArrayList<Bid>();
+    }
+
+    public ConcreteTask(String title, User requester) {
+        this(title, requester, "");
+    }
+
+    // begin the setters
 
     public String getTitle() {
         return title;
     }
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
     public String getDescription() {
         return description;
     }
-    public void setDescription(String description) {
-        this.description = description;
-    }
+
     public ArrayList<Bitmap> getImageList() {
         return imageList;
     }
-    public void setImageList(ArrayList<Bitmap> imageList) {
-        this.imageList = imageList;
-    }
+
     public Location getLocation() {
         return location;
     }
-    public void setLocation(Location location) {
-        this.location = location;
-    }
+
     public CheckList getCheckList() {
         return checkList;
     }
-    public void setCheckList(CheckList checkList) {
-        this.checkList = checkList;
-    }
+
     public ArrayList<Bid> getBidList() {
         return bidList;
     }
-    public void setBidList(ArrayList<Bid> bidList) {
-        this.bidList = bidList;
-    }
+
     public User getRequester() {
         return requester;
     }
-    public void setRequester(User requester) {
-        this.requester = requester;
-    }
+
     public User getProvider() {
         return provider;
     }
-    public void setProvider(User provider) {
-        this.provider = provider;
-    }
+
     public TaskStatus getStatus() {
         return status;
     }
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+
+    public Bid getAcceptedBid() {
+        return acceptedBid;
     }
 
-    public Bid getLowestBid() {
-        sortBidList();
-        return this.bidList.get(0);
+    // begin the setters
+
+    public void setTitle(String title) {
+        internalSetTitle(title);
     }
+
+    public void setDescription(String description) {
+        internalSetDescription(description);
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public void setCheckList(CheckList checkList) {
+        this.checkList = checkList;
+    }
+
+    public void setRequester(User requester) {
+        this.requester = requester;
+    }
+
+    public void setProvider(User provider) {
+        this.provider = provider;
+    }
+
+    // begin other functions
+
     public void addBid(Bid bid) {
         bidList.add(bid);
-        sortBidList();
-    }
-    public void sortBidList() {
         Collections.sort(this.bidList);
+        this.status = TaskStatus.BIDDED;
     }
 
-    public Double getPrice() {
-        return price;
-    }
-    public void setPrice(Double price) {
-        this.price = price;
+    public void cancelBid(Bid bid) {
+        bidList.remove(bid);
+
+        if (this.bidList.size() == 0) {
+            this.status = TaskStatus.ASSIGNED;
+        }
     }
 
     public void acceptBid(Bid bid) {
-        setPrice(bid.getValue());
+        this.acceptedBid = bid;
+        this.status = TaskStatus.ASSIGNED;
+        this.provider = bid.getBidder();
+    }
+
+    public void unassign() {
+        this.provider = null;
+        this.status = TaskStatus.BIDDED;
+        this.acceptedBid = null;
+    }
+
+    public void complete() {
+        this.status = TaskStatus.DONE;
     }
 }
