@@ -26,8 +26,18 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * Activity for a user to edit their profile. Must receive a User
+ * as EXTRA_TARGET_USER, which will be the user to edit. If the
+ * changes are saved, the activity will return RESULT_OK and the
+ * modified user will be EXTRA_RETURNED_USER. If the activity is
+ * cancelled, EXTRA_RETURNED_USER will not be set.
+ */
 public class EditProfileActivity extends AppCompatActivity {
+    /** User being passed in to EditProfileActivity */
     public static final String EXTRA_TARGET_USER = "ca.ualberta.cs.wrkify.EXTRA_TARGET_USER";
+
+    /** User being passed back from EditProfileActivity */
     public static final String EXTRA_RETURNED_USER = "ca.ualberta.cs.wrkify.EXTRA_RETURNED_USER";
 
     private User user;
@@ -56,8 +66,6 @@ public class EditProfileActivity extends AppCompatActivity {
         if (actionBar != null) { actionBar.setTitle("Editing profile"); }
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_profile, menu);
@@ -79,6 +87,11 @@ public class EditProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Writes changes to the User. If successful, finishes the activity
+     * with RESULT_OK. If the User rejects the changes, sets the error
+     * message on the appropriate field and does not return.
+     */
     private void saveAndFinish() {
         boolean valid = true;
 
