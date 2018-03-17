@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">wrkify</string>
+    <string name="title_activity_main">wrkify</string>
+    <string name="title_myposts">My Posts</string>
+    <string name="title_mytasks">My Tasks</string>
+    <string name="title_search">Search</string>
     <string name="bottom_sheet_toggle_description">Show/hide controls</string>
     <string name="view_task_mark_done">Mark task as done</string>
     <string name="view_task_deassign">Deassign task</string>
@@ -12,4 +16,15 @@
     <string name="bidListItem_accept">Accept</string>
     <string name="bidListActivity_taskTitle">Task Name Goes Here</string>
     <string name="bidListActivity_bidCount">555 bids so far</string>
+    <string name="login_username_label">Username</string>
+    <string name="login_login">Login</string>
+    <string name="login_register_caption">Don\'t have an account?</string>
+    <string name="login_register">Sign up</string>
+    <string name="register_caption">Create a new account</string>
+    <string name="register_register">Register</string>
+    <string name="edit_profile_email_label">Email address</string>
+    <string name="edit_profile_phone_label">Phone number</string>
+    <string name="edit_profile_contact_header">Contact information</string>
+    <string name="edit_task_title_label">Task title</string>
+    <string name="edit_task_description_label">Description</string>
 </resources>

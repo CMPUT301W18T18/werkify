@@ -18,15 +18,12 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.AttributeSet;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -39,11 +36,15 @@ import java.security.InvalidParameterException;
  * description, and provides a bottom sheet displaying the
  * task status and allowing interaction.
  */
-public class ViewTaskActivity extends Activity {
-    public static String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
-    public static String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
+public class ViewTaskActivity extends AppCompatActivity {
+    public static final String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
+    public static final String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
-    private static String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
+    private static final String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
+    private static final int REQUEST_EDIT_TASK = 18;
+
+    private Task task;
+    private User sessionUser;
 
     /**
      * Create the ViewTaskActivity.
@@ -62,8 +63,33 @@ public class ViewTaskActivity extends Activity {
 
         Intent intent = this.getIntent();
 
-        Task task = (Task) intent.getSerializableExtra(EXTRA_TARGET_TASK);
-        User sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
+        this.sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
+        this.initializeFromTask((Task) intent.getSerializableExtra(EXTRA_TARGET_TASK));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_EDIT_TASK) {
+            // TODO sync these changes to the database
+            if (resultCode == RESULT_OK) {
+                // Reinitialize the view when the task is edited
+                this.initializeFromTask((Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK));
+            } else if (resultCode == EditTaskActivity.RESULT_TASK_DELETED) {
+                // Exit if the task was deleted
+                finish();
+            }
+        }
+    }
+
+    /**
+     * Sets the activity to display the given task.
+     * Binds the task to the activity, populates views, and sets up UI miscellanea.
+     * This also needs to be called whenever the displayed task changes, or the
+     * changes will not be reflected in the UI.
+     * @param task task to display
+     */
+    private void initializeFromTask(Task task) {
+        this.task = task;
 
         // Determine if the session user owns this task
         // TODO? this comparison seems like it should be encapsulable as User.equals
@@ -92,12 +118,28 @@ public class ViewTaskActivity extends Activity {
             arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
             bottomSheet.setArguments(arguments);
 
-            transaction.add(R.id.taskView, bottomSheet, FRAGMENT_BOTTOM_SHEET);
+            transaction.add(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
             transaction.commit();
         }
 
         // Set up the app bar
         setTitle("Task");
+
+        // Set up the edit button if appropriate
+        if (sessionUserIsRequester && task.getStatus() == TaskStatus.REQUESTED) {
+            FloatingActionButton editButton = findViewById(R.id.taskViewButtonEdit);
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Edit the task
+                    Intent editIntent = new Intent(ViewTaskActivity.this,
+                            EditTaskActivity.class);
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
+                    startActivityForResult(editIntent, REQUEST_EDIT_TASK);
+                }
+            });
+        }
     }
 
     /**
