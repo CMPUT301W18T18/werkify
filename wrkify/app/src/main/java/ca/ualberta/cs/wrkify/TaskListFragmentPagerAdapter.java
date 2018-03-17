@@ -37,7 +37,9 @@ public class TaskListFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return TaskListFragment.makeTaskList(this.pageTaskLists.get(position));
+        Log.i("-->", "got item " + position);
+        return new RequesterFragment();
+        //return TaskListFragment.makeTaskList(this.pageTaskLists.get(position));
     }
 
     @Override

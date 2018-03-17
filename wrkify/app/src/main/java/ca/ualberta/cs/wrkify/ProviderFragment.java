@@ -60,12 +60,15 @@ public class ProviderFragment extends Fragment {
         pageTaskLists.add(new ArrayList<Task>());
 
         pager.setAdapter(new TaskListFragmentPagerAdapter(getFragmentManager(), pageTaskLists));
+        pager.setCurrentItem(0);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.i("-->", "switching to tab " + tab.getPosition());
                 pager.setCurrentItem(tab.getPosition());
+                pager.forceLayout();
+                Log.i("-->", "now: " + pager.getCurrentItem());
             }
 
             @Override

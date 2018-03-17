@@ -22,20 +22,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
-        app:layout_dodgeInsetEdges="all"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <android.support.v4.view.ViewPager
             android:id="@+id/providerViewPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorAccent"/>
-
-    </android.support.v4.widget.NestedScrollView>
-
-
+            android:layout_height="wrap_content"
+            app:layout_dodgeInsetEdges="all"
+            android:background="@color/colorAccent" />
 
     <android.support.design.widget.AppBarLayout
         app:layout_insetEdge="top"
