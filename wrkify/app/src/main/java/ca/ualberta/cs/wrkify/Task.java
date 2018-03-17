@@ -45,7 +45,10 @@ public interface Task extends Serializable {
 
     void addBid(Bid bid);
     void cancelBid(Bid bid);
+    void addImage(Bitmap image);
+    void delImage(Bitmap image);
     void acceptBid(Bid bid);
     void unassign();
     void complete();
+    double getPrice();
 }

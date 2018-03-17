@@ -66,10 +66,8 @@ public class ConcreteTask implements Task {
      * @throws IllegalArgumentException when constraints are violated
      */
     private void internalSetDescription(String description) {
-        if (description.length() > 32) {
+        if (description.length() > 512) {
             throw new IllegalArgumentException("Description too long");
-        } else if (description.trim().length() <= 0) {
-            throw new IllegalArgumentException("Desctiption cannot be empty");
         } else {
             this.description = description.trim();
         }
@@ -254,6 +252,22 @@ public class ConcreteTask implements Task {
     }
 
     /**
+     * adds an image to the image list
+     * @param image the image you want to add
+     */
+    public void addImage(Bitmap image) {
+        this.imageList.add(image);
+    }
+
+    /**
+     * deletes an image fromthe image list
+     * @param image the image that is being removed
+     */
+    public void delImage(Bitmap image) {
+        this.imageList.remove(image);
+    }
+
+    /**
      * sets the status to accepted and gets the provider
      * @param bid the bid that is being accepted
      */
@@ -277,5 +291,18 @@ public class ConcreteTask implements Task {
      */
     public void complete() {
         this.status = TaskStatus.DONE;
+    }
+
+    /**
+     * gets the price of either the lowest bid or the
+     * accepted bid depending on the status
+     * @return the current price of the task
+     */
+    public double getPrice() {
+        if (this.status == TaskStatus.ASSIGNED) {
+            return this.getAcceptedBid().getValue();
+        } else {
+            return this.getBidList().get(0).getValue();
+        }
     }
 }

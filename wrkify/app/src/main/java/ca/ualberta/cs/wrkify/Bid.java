@@ -42,6 +42,6 @@ public class Bid implements Comparable<Bid>, Serializable {
     }
 
     public int compareTo(Bid bid){
-        return bid.getValue().compareTo(this.getValue());
+        return this.getValue().compareTo(bid.getValue());
     }
 }
