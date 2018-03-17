@@ -81,4 +81,40 @@ public class ElasticClientTest {
 
         assertEquals(et, null);
     }
+
+    @Test
+    public void testUpdate() {
+        ElasticClient ec = ElasticClient.getInstance();
+
+        String id = ec.create(
+                new ElasticTestObject("t1", "t1", 0),
+                ElasticTestObject.class
+        );
+
+        assertNotEquals(id, null);
+
+        ec.update(
+                id,
+                new ElasticTestObject("t2", "t2", 1),
+                ElasticTestObject.class
+        );
+
+        ElasticTestObject et;
+        try {
+            et = ec.get(id, ElasticTestObject.class);
+        } catch (IOException e) {
+            assertTrue(false);
+            return;
+        }
+
+        assertEquals(et.param1, "t2");
+        assertEquals(et.param2, "t2");
+        assertEquals(et.param3, 1);
+
+        try {
+            ec.delete(id, ElasticTestObject.class);
+        } catch (IOException e) {
+            assertTrue(false);
+        }
+    }
 }
