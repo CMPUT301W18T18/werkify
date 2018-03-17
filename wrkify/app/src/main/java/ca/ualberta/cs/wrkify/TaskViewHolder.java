@@ -29,11 +29,11 @@ import org.w3c.dom.Text;
  */
 
 public class TaskViewHolder extends RecyclerView.ViewHolder {
-    CardView taskView;
-    TextView taskTitle;
-    TextView taskDescription;
-    TextView taskUser;
-    StatusView taskStatus;
+    protected CardView taskView;
+    protected TextView taskTitle;
+    protected TextView taskDescription;
+    protected TextView taskUser;
+    protected StatusView taskStatus;
 
     TaskViewHolder(View taskView){
         super(taskView);
@@ -43,5 +43,5 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         this.taskUser = (TextView) this.taskView.findViewById(R.id.taskUser);
         this.taskStatus = (StatusView) this.taskView.findViewById(R.id.taskStatus);
     }
-    
+
 }
