@@ -29,11 +29,14 @@
             android:name=".RegisterActivity"
             android:parentActivityName=".LoginActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".EditProfileActivity"
+        <activity
+            android:name=".EditProfileActivity"
             android:parentActivityName=".ViewProfileActivity" />
-        <activity android:name=".EditTaskActivity"
+        <activity
+            android:name=".EditTaskActivity"
             android:parentActivityName=".ViewTaskActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".lamechump"></activity>
     </application>
 
 </manifest>
