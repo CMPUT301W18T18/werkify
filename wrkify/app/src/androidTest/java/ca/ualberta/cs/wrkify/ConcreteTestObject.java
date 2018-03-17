@@ -18,26 +18,19 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * ElasticTestObject wraps ConcreteTestObject and is used for
- * testing ElasticClient
+ * ConcreteTestObject is Used for testing ElasticClient
  *
- * @see ConcreteTestObject
- * @see ElasticClientTest
+ * @see ElasticClient
  */
-public class ElasticTestObject extends ElasticObject<ConcreteTestObject> {
-    public ElasticTestObject(String id) {
-        super(id, ConcreteTestObject.class);
-    }
 
-    public ElasticTestObject(String id, ElasticClient ec) {
-        super(id, ConcreteTestObject.class, ec);
-    }
+public class ConcreteTestObject {
+    public final String param1;
+    public final String param2;
+    public final int param3;
 
-    public ElasticTestObject(ConcreteTestObject obj) {
-        super(obj, ConcreteTestObject.class);
-    }
-
-    public ElasticTestObject(ConcreteTestObject obj, ElasticClient ec) {
-        super(obj, ConcreteTestObject.class, ec);
+    public ConcreteTestObject(String param1, String param2, int param3) {
+        this.param1 = param1;
+        this.param2 = param2;
+        this.param3 = param3;
     }
 }

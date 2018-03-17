@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -48,38 +49,38 @@ public class ElasticClientTest {
         ElasticClient ec = ElasticClient.getInstance();
 
         String id = ec.create(
-                new ElasticTestObject("t1", "t1", 0),
-                ElasticTestObject.class
+                new ConcreteTestObject("t1", "t1", 0),
+                ConcreteTestObject.class
         );
 
         assertNotEquals(id, null);
 
-        ElasticTestObject et;
+        ConcreteTestObject ct;
         try {
-            et = ec.get(id, ElasticTestObject.class);
+            ct = ec.get(id, ConcreteTestObject.class);
         } catch (IOException e) {
             assertTrue(false);
             return;
         }
 
-        assertEquals(et.param1, "t1");
-        assertEquals(et.param2, "t1");
-        assertEquals(et.param3, 0);
+        assertEquals(ct.param1, "t1");
+        assertEquals(ct.param2, "t1");
+        assertEquals(ct.param3, 0);
 
         try {
-            ec.delete(id, ElasticTestObject.class);
+            ec.delete(id, ConcreteTestObject.class);
         } catch (IOException e) {
             assertTrue(false);
         }
 
         try {
-            et = ec.get(id, ElasticTestObject.class);
+            ct = ec.get(id, ConcreteTestObject.class);
         } catch (IOException e) {
             assertTrue(false);
             return;
         }
 
-        assertEquals(et, null);
+        assertEquals(ct, null);
     }
 
     @Test
@@ -87,32 +88,84 @@ public class ElasticClientTest {
         ElasticClient ec = ElasticClient.getInstance();
 
         String id = ec.create(
-                new ElasticTestObject("t1", "t1", 0),
-                ElasticTestObject.class
+                new ConcreteTestObject("t1", "t1", 0),
+                ConcreteTestObject.class
         );
 
         assertNotEquals(id, null);
 
         ec.update(
                 id,
-                new ElasticTestObject("t2", "t2", 1),
-                ElasticTestObject.class
+                new ConcreteTestObject("t2", "t2", 1),
+                ConcreteTestObject.class
         );
 
-        ElasticTestObject et;
+        ConcreteTestObject ct;
         try {
-            et = ec.get(id, ElasticTestObject.class);
+            ct = ec.get(id, ConcreteTestObject.class);
         } catch (IOException e) {
             assertTrue(false);
             return;
         }
 
-        assertEquals(et.param1, "t2");
-        assertEquals(et.param2, "t2");
-        assertEquals(et.param3, 1);
+        assertEquals(ct.param1, "t2");
+        assertEquals(ct.param2, "t2");
+        assertEquals(ct.param3, 1);
 
         try {
-            ec.delete(id, ElasticTestObject.class);
+            ec.delete(id, ConcreteTestObject.class);
+        } catch (IOException e) {
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testSearch() {
+        ElasticClient ec = ElasticClient.getInstance();
+
+        String id1 = ec.create(
+                new ConcreteTestObject("t1", "t1", 0),
+                ConcreteTestObject.class
+        );
+
+        String id2 = ec.create(
+                new ConcreteTestObject("t2", "t1", 0),
+                ConcreteTestObject.class
+        );
+
+        assertNotEquals(null, id1);
+        assertNotEquals(null, id2);
+
+
+        List<ElasticTestObject> arr;
+
+
+        try {
+            // give elasticsearch time to index
+            Thread.sleep(1000);
+            arr = ec.search(
+                    "{\"query\": {\"match\": {\"param1\": \"t2\"}}}",
+                    ElasticTestObject.class,
+                    ConcreteTestObject.class
+            );
+        } catch (Exception e) {
+            assertTrue(false);
+            return;
+        }
+
+        ConcreteTestObject obj;
+        try {
+            obj = arr.get(0).getObj();
+        } catch(IOException e) {
+            assertTrue(false);
+            return;
+        }
+
+        assertEquals(obj.param1, "t2");
+
+        try {
+            ec.delete(id1, ConcreteTestObject.class);
+            ec.delete(id2, ConcreteTestObject.class);
         } catch (IOException e) {
             assertTrue(false);
         }

@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
@@ -184,10 +186,11 @@ public class ElasticClient {
         Constructor con;
         try {
             con = elasticType.getConstructor(
-                    String.class, Class.class, ElasticClient.class);
+                    String.class, ElasticClient.class);
         } catch (NoSuchMethodException e) {
             // idk if this can happen
             e.printStackTrace();
+            Log.e("ElasticClient.search", Log.getStackTraceString(e));
             return elasticResults;
         }
 
@@ -196,12 +199,13 @@ public class ElasticClient {
         for (SearchResult.Hit<T, Void> task : hits) {
             //TODO change elasticObject to support object preloading
             try {
-                E elast = (E) con.newInstance(task.id, type, this);
+                E elast = (E) con.newInstance(task.id, this);
                 elasticResults.add(elast);
             } catch (Exception e) {
                 // don't add to the list if it fails
                 // this will either happen every time or never
                 e.printStackTrace();
+                Log.e("ElasticClient.search", Log.getStackTraceString(e));
             }
         }
         return elasticResults;

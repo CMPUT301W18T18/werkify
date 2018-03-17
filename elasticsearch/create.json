@@ -1,6 +1,6 @@
 {
     "mappings": {
-        "ca.ualberta.cs.wrkify.ElasticTestObject": {
+        "ca.ualberta.cs.wrkify.ConcreteTestObject": {
             "properties": {
                 "param1": {"type": "string"},
                 "param2": {"type": "string"},
