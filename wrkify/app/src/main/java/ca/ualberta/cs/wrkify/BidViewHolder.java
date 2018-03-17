@@ -17,16 +17,21 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * Used by BidListAdapter. Holds Views in the inflated layout representing a Bid item.
+ * Handles setting of Bid data given a Bid
+ * Handles collapse/expand by hiding/showing Views, though does not animate them
+ * Hides accept/reject buttons when necessary
+ * @see BidListAdapter
+ */
 public class BidViewHolder extends RecyclerView.ViewHolder{
     private TextView taskCompleter;
     private TextView bidAmount;
@@ -40,8 +45,14 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     private Drawable selectedBackground;
     private boolean isRequester = true;
 
-    public BidViewHolder(View v) {
+    /**
+     * Constructor; Initializes contained Views
+     * @param v the View to be contained
+     * @param isRequester if the viewer is a requester of the task which this Bid belongs to
+     */
+    public BidViewHolder(View v, boolean isRequester) {
         super(v);
+        this.isRequester = isRequester;
         this.taskCompleter = v.findViewById(R.id.bidListItem_taskCompleter);
         this.bidAmount = v.findViewById(R.id.bidListItem_bidAmount);
         this.viewProfile = v.findViewById(R.id.bidListItem_viewProfile);
@@ -56,11 +67,17 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         itemView.setTranslationZ(0f);
     }
 
+    /**
+     * @param b Bid whose data is to be displayed in the View
+     */
     public void setData(Bid b) {
         taskCompleter.setText(b.getBidder().getUsername());
         bidAmount.setText("$" + b.getValue().toString());
     }
 
+    /**
+     * Expand the ViewHolder by setting the appropriate Views visible. Does not animate
+     */
     public void expand() {
         this.viewProfile.setVisibility(View.VISIBLE);
         if (this.isRequester) {
@@ -71,6 +88,9 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.itemView.setTranslationZ(8f);
     }
 
+    /**
+     * Collapse the ViewHolder by setting the appropriate Views gone. Does not animate
+     */
     public void collapse() {
         this.viewProfile.setVisibility(View.GONE);
         this.reject.setVisibility(View.GONE);
@@ -79,6 +99,9 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.itemView.setTranslationZ(0f);
     }
 
+    /**
+     * Set all Views gone; used for animating item deletions. Does not animate
+     */
     public void totalCollapse() {
         this.viewProfile.setVisibility(View.GONE);
         this.reject.setVisibility(View.GONE);
@@ -88,64 +111,103 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
         this.cardLayout.setBackground(defaultBackground);
         this.itemView.setVisibility(View.GONE);
         line.setVisibility(View.GONE);
-        this.itemView.setTranslationZ(0f);
+        itemView.setTranslationZ(0f);
     }
 
+    /**
+     * Set views to visible to reuse this view after animating its deletion. Does not animate
+     */
     public void restoreSize() {
         bidAmount.setVisibility(View.VISIBLE);
         taskCompleter.setVisibility(View.VISIBLE);
-        this.itemView.setVisibility(View.VISIBLE);
+        itemView.setVisibility(View.VISIBLE);
         line.setVisibility(View.VISIBLE);
     }
 
+    /**
+     *
+     * @return TextView showing username of person who made this Bid
+     */
     public TextView getTaskCompleter() {
         return this.taskCompleter;
     }
 
+    /**
+     * @return TextView showing Bid amount
+     */
     public TextView getBidAmount() {
         return bidAmount;
     }
 
+    /**
+     * @return "View Profile" Button
+     */
     public Button getViewProfile() {
         return viewProfile;
     }
 
+    /**
+     * @return "Reject" Button
+     */
     public Button getReject() {
         return reject;
     }
 
+    /**
+     * @return "Accept" Button
+     */
     public Button getAccept() {
         return accept;
     }
 
+    /**
+     * @return CardView of this Bid item
+     */
     public CardView getCardView() {
         return cardView;
     }
 
-    public ConstraintLayout getCardLayout(){
-        return cardLayout;
-    }
-
+    /**
+     * @return Background drawn when the item is not expanded
+     */
     public Drawable getDefaultBackground(){
         return defaultBackground;
     }
 
+    /**
+     * Set the default background
+     * @param bg Drawable used as the background when the item is not expanded
+     */
     public void setDefaultBackground(Drawable bg){
         this.defaultBackground = bg;
     }
 
+    /**
+     * @return Drawable background to be used when the item is expanded
+     */
     public Drawable getSelectedBackground(){
         return selectedBackground;
     }
 
+    /**
+     * Set the selected background
+     * @param bg Drawable background to be used when the item is expanded
+     */
     public void setSelectedBackground(Drawable bg){
         this.selectedBackground = bg;
     }
 
+    /**
+     * Set isRequester to given value
+     * @param isRequester true if user is the requester of the task containing this Bid
+     */
     public void setIsRequester(boolean isRequester){
         this.isRequester = isRequester;
     }
 
+    /**
+     * @return True if user is the requester of the task containing this Bid
+     */
     public boolean getIsRequester(){
         return isRequester;
     }

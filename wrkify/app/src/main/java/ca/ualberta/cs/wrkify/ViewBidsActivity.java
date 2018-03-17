@@ -17,26 +17,35 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+/**
+ * ViewBidsActivity shows a list of bids on a task that the viewer can scroll through, and if the
+ * viewer is a requester of said task, they can accept or reject bids
+ *
+ * Start with an Intent that has extras:
+ * EXTRA_VIEWBIDS_VIEWER: ConcreteUser who is viewing the list
+ * EXTRA_VIEWBIDS_TASK: ConcreteTask that is being viewed
+ */
+public class ViewBidsActivity extends AppCompatActivity {
+    public static final String EXTRA_VIEWBIDS_VIEWER = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_VIEWER";
+    public static final String EXTRA_VIEWBIDS_TASK = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_TASK";
 
-
-public class ViewBidsActivity extends Activity {
-    protected ArrayList<Bid> bids;
     protected RecyclerView recyclerView;
     protected BidListAdapter adapter;
-    protected TextView bidCount;
+    protected TextView bidCountView;
 
-    protected ConcreteUser viewer;
-    protected ConcreteTask task;
     protected Intent intent;
 
+    /**
+     * Initializes activity, setting up all Views and data
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,17 +53,16 @@ public class ViewBidsActivity extends Activity {
 
         intent = getIntent();
 
-        getData();
+        //Get the data
+        ConcreteUser viewer = (ConcreteUser) intent.getSerializableExtra(EXTRA_VIEWBIDS_VIEWER);
+        ConcreteTask task = (ConcreteTask) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+
         boolean isRequester = viewer.getUsername().equals(task.getRequester().getUsername());
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
+        bidCountView = findViewById(R.id.bidListActivity_bidCount);
 
-        adapter = new BidListAdapter(this, bids, isRequester){
-            @Override
-            protected void acceptClicked(int position){
-                accept(position);
-            }
-        };
+        adapter = new BidListAdapter(this, task, isRequester);
         adapter.setAnimationTime(200);
 
         ScrollDisableableLinearLayoutManager manager = new ScrollDisableableLinearLayoutManager(this);
@@ -75,10 +83,13 @@ public class ViewBidsActivity extends Activity {
         adapter.registerAdapterDataObserver(observer);
         setTitle("Bids");
 
-        bidCount = findViewById(R.id.bidListActivity_bidCount);
         updateCount();
     }
 
+
+    /**
+     * Refreshes the View which displays the number of bids in the list
+     */
     protected void updateCount() {
         int count = adapter.getItemCount();
         String message;
@@ -88,20 +99,7 @@ public class ViewBidsActivity extends Activity {
             message = " bids so far";
         }
 
-        this.bidCount.setText(Integer.toString(count) + message);
+        this.bidCountView.setText(Integer.toString(count) + message);
     }
 
-    protected void getData() {
-        bids = new ArrayList<Bid>();
-
-        viewer = (ConcreteUser) intent.getSerializableExtra("viewer");
-        task = (ConcreteTask) intent.getSerializableExtra("task");
-
-        bids = task.getBidList();
-    }
-
-    protected void accept(int position) {
-        task.acceptBid(bids.get(position));
-        finish();
-    }
 }

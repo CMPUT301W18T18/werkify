@@ -22,21 +22,52 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+/**
+ * Normal LinearLayoutManager but can toggle scrolling on and off
+ *
+ * @see LinearLayoutManager
+ * @see ScrollDisableable
+ */
 public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager implements ScrollDisableable {
     private boolean scrollEnabled = true;
 
+    /**
+     * Default constructor for LinearLayoutManager
+     * @param context
+     * @see LinearLayoutManager
+     */
     public ScrollDisableableLinearLayoutManager(Context context) {
         super(context);
     }
 
+    /**
+     * Default constructor for LinearLayoutManager
+     * @param context
+     * @param orientation
+     * @param reverseLayout
+     * @see LinearLayoutManager
+     */
     public ScrollDisableableLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
     }
 
+    /**
+     * Default constructor for LinearLayoutManager
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     * @param defStyleRes
+     * @see LinearLayoutManager
+     */
     public ScrollDisableableLinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+
+    /**
+     * If scrolling is enabled, call super's implementation
+     * @param position to be scrolled to
+     */
     @Override
     public void scrollToPosition(int position) {
         if (!scrollEnabled) {
@@ -45,6 +76,11 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
         super.scrollToPosition(position);
     }
 
+    /**
+     * If scrolling is enabled, call super's implementation
+     * @param position
+     * @param offset
+     */
     @Override
     public void scrollToPositionWithOffset(int position, int offset) {
         if (!scrollEnabled) {
@@ -53,6 +89,13 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
         super.scrollToPositionWithOffset(position, offset);
     }
 
+    /**
+     * If scrolling is enabled, call super's implementation
+     * @param dx
+     * @param recycler
+     * @param state
+     * @return
+     */
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
         if (!scrollEnabled) {
@@ -61,6 +104,13 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
         return super.scrollHorizontallyBy(dx, recycler, state);
     }
 
+    /**
+     * If scrolling is enabled, call super's implementation
+     * @param dy
+     * @param recycler
+     * @param state
+     * @return
+     */
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         if (!scrollEnabled) {
@@ -69,10 +119,16 @@ public class ScrollDisableableLinearLayoutManager extends LinearLayoutManager im
         return super.scrollVerticallyBy(dy, recycler, state);
     }
 
+    /**
+     * @param enabled True if scrolling is allowed, false otherwise
+     */
     public void setScrollEnabled(boolean enabled) {
         this.scrollEnabled = enabled;
     }
 
+    /**
+     * @return If scrolling is enabled
+     */
     public boolean getScrollEnabled() {
         return scrollEnabled;
     }

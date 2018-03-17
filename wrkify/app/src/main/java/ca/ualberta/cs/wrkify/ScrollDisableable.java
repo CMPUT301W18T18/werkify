@@ -17,10 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
+/**
+ * Interface for LayoutManagers whose scrolling can be toggled on and off
+ */
 public interface ScrollDisableable {
 
+    /**
+     * @param enabled True if scrolling is allowed, false otherwise
+     */
     public void setScrollEnabled(boolean enabled);
 
+    /**
+     * @return if scrolling is currently allowed by the LayoutManager
+     */
     public boolean getScrollEnabled();
 
 }
