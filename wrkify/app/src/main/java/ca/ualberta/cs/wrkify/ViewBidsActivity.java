@@ -18,28 +18,39 @@
 package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 
 public class ViewBidsActivity extends Activity {
-    protected ArrayList<User> users;
+    protected ArrayList<User> users; //delete this
     protected ArrayList<Bid> bids;
     protected RecyclerView recyclerView;
     protected BidListAdapter adapter;
+    protected TextView bidCount;
+
+    protected ConcreteUser viewer;
+    protected ConcreteTask task;
+    protected Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-        makeData2(20);
+        intent = getIntent();
+
+        getData();
+        boolean isRequester = viewer.getUsername().equals(task.getRequester().getUsername());
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
 
-        adapter = new BidListAdapter(this, bids, true);
+        adapter = new BidListAdapter(this, bids, isRequester);
         adapter.setAnimationTime(200);
 
         ScrollDisableableLinearLayoutManager manager = new ScrollDisableableLinearLayoutManager(this);
@@ -49,7 +60,42 @@ public class ViewBidsActivity extends Activity {
 
         adapter.notifyDataSetChanged();
 
+
+        RecyclerView.AdapterDataObserver observer = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                updateCount();
+            }
+        };
+        adapter.registerAdapterDataObserver(observer);
         setTitle("Bids");
+
+        bidCount = findViewById(R.id.bidListActivity_bidCount);
+        updateCount();
+    }
+
+    protected void updateCount(){
+        int count = adapter.getItemCount();
+        String message;
+        if (count == 1) {
+            message = " bid so far";
+        } else {
+            message = " bids so far";
+        }
+
+        this.bidCount.setText(Integer.toString(count) + message);
+    }
+
+    protected void getData(){
+        users = new ArrayList<User>();
+        bids = new ArrayList<Bid>();
+
+        viewer = (ConcreteUser) intent.getSerializableExtra("viewer");
+        task = (ConcreteTask) intent.getSerializableExtra("task");
+
+        bids = task.getBidList();
+
     }
 
     protected void makeData() {
