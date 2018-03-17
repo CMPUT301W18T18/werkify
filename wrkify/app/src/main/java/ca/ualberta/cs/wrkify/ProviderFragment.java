@@ -25,10 +25,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ProviderFragment displays the lists of task that a task provider needs to see
@@ -49,34 +53,18 @@ public class ProviderFragment extends Fragment {
         this.tabLayout = view.findViewById(R.id.providerTabBar);
         this.pager = view.findViewById(R.id.providerViewPager);
 
-        pager.setAdapter(new PagerAdapter() {
-            @NonNull
-            @Override
-            public Object instantiateItem(@NonNull ViewGroup container, int position) {
-               TextView pageView = new TextView(getContext());
-               pageView.setText(String.valueOf(position));
-               return pageView;
-            }
+        // TODO get actual tasks
+        List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
+        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(new ArrayList<Task>());
 
-            @Override
-            public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                container.removeView((View) object);
-            }
-
-            @Override
-            public int getCount() {
-                return 3;
-            }
-
-            @Override
-            public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-                return view.equals(object);
-            }
-        });
+        pager.setAdapter(new TaskListFragmentPagerAdapter(getFragmentManager(), pageTaskLists));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                Log.i("-->", "switching to tab " + tab.getPosition());
                 pager.setCurrentItem(tab.getPosition());
             }
 
