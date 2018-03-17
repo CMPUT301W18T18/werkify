@@ -7,4 +7,7 @@
     <color name="colorStatusBidded">#FFEB3B</color>
     <color name="colorStatusDone">#9E9E9E</color>
     <color name="colorStatusRequested">#4CAF50</color>
+
+    <color name="bidListItem_defaultBackground">#FFFFFFFF</color>
+    <color name="bidListItem_selectedBackground">#FFEFEFEF</color>
 </resources>

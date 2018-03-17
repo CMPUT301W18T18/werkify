@@ -9,6 +9,13 @@
     <string name="view_task_deassign">Deassign task</string>
     <string name="view_task_enter_bid_label">Your bid</string>
     <string name="view_task_place_bid">Place bid</string>
+    <string name="bidListItem_taskCompleter">Task Completer</string>
+    <string name="bidListItem_bidAmount">$23</string>
+    <string name="bidListItem_viewProfile">View Profile</string>
+    <string name="bidListItem_reject">Reject</string>
+    <string name="bidListItem_accept">Accept</string>
+    <string name="bidListActivity_taskTitle">Task Name Goes Here</string>
+    <string name="bidListActivity_bidCount">555 bids so far</string>
     <string name="login_username_label">Username</string>
     <string name="login_login">Login</string>
     <string name="login_register_caption">Don\'t have an account?</string>
