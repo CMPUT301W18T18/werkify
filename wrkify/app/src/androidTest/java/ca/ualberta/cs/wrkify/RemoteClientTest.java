@@ -64,7 +64,7 @@ public class RemoteClientTest {
         try {
             cto2 = rc.download(cto.getId(), ConcreteTestObject.class);
             assertEquals(cto2,null);
-        } catch (Exception e) {
+        } catch (IOException e) {
             assertTrue(false);
         }
     }

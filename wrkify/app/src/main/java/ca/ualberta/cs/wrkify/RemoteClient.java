@@ -141,8 +141,10 @@ public class RemoteClient {
         DocumentResult result = this.client.execute(get);
         T obj = result.getSourceAsObject(type);
 
-        obj.setClient(this);
-        obj.setId(result.getId());
+        if (obj != null) {
+            obj.setClient(this);
+            obj.setId(result.getId());
+        }
 
         return obj;
     }
