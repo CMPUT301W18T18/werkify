@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -90,21 +91,34 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
 
         holder.getTaskTitle().setText(task.getTitle());
         holder.getTaskDescription().setText(task.getDescription());
+
         if(this.isRequester) {
-            if(task.getProvider()!=null) {
-                holder.getTaskUser().setText(task.getProvider().getUsername());
+            try {
+                User provider = task.getRemoteProvider(WrkifyClient.getInstance());
+                if(provider!=null) {
+                    holder.getTaskUser().setText(provider.getUsername());
+                }
             }
-            holder.getTaskUser().setText("");
+            catch (IOException e) {
+                holder.getTaskUser().setText("");
+            }
         }
+
         if(!this.isRequester){
-            if(task.getRequester()!=null) {
-                holder.getTaskUser().setText(task.getRequester().getUsername());
+            try {
+                User requester = task.getRemoteRequester(WrkifyClient.getInstance());
+                if (requester != null) {
+                    holder.getTaskUser().setText(requester.getUsername());
+                }
             }
-            holder.getTaskUser().setText("");
+            catch (IOException e){
+                holder.getTaskUser().setText("");
+            }
         }
+
         if(task.getBidList()!=null) {
             if(task.getStatus()!=null) {
-                holder.getTaskStatus().setStatus(task.getStatus(), task.getLowestBid().getValue());
+                holder.getTaskStatus().setStatus(task.getStatus(), task.getBidList().get(0).getValue());
             }
         }
 
@@ -136,7 +150,7 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     public void viewTask(User sessionUser, T task){
         Intent intent = new Intent(this.context, ViewTaskActivity.class);
         if(sessionUser!=null) {
-            intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, task.getProvider());
+            intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
         }
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
 
