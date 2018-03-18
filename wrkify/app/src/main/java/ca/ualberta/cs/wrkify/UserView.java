@@ -35,7 +35,7 @@ public class UserView extends ConstraintLayout {
     public UserView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        this.userNameView = new TextView(context);
+        this.userNameView = new TextView(context, attrs);
         this.addView(userNameView);
     }
 
@@ -45,7 +45,7 @@ public class UserView extends ConstraintLayout {
     public UserView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        this.userNameView = new TextView(context);
+        this.userNameView = new TextView(context, attrs, defStyleAttr);
         this.addView(userNameView);
     }
 

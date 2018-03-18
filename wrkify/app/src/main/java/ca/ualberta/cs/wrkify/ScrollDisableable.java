@@ -18,17 +18,18 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * ConcreteTestObject is Used for testing ElasticClient
+ * Interface for LayoutManagers whose scrolling can be toggled on and off
  */
+public interface ScrollDisableable {
 
-public class ConcreteTestObject extends RemoteObject {
-    public final String param1;
-    public final String param2;
-    public final int param3;
+    /**
+     * @param enabled True if scrolling is allowed, false otherwise
+     */
+    public void setScrollEnabled(boolean enabled);
 
-    public ConcreteTestObject(String param1, String param2, Integer param3) {
-        this.param1 = param1;
-        this.param2 = param2;
-        this.param3 = param3;
-    }
+    /**
+     * @return if scrolling is currently allowed by the LayoutManager
+     */
+    public boolean getScrollEnabled();
+
 }

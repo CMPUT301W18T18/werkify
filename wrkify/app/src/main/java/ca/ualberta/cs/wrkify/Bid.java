@@ -14,15 +14,20 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class Bid implements Comparable<Bid>, Serializable {
     private Double value;
-    private User bidder;
+    private RemoteReference<User> bidder;
 
-    public Bid(Double value, User bidder) {
+    public Bid(Double value, RemoteReference<User> bidder) {
         this.value = value;
         this.bidder = bidder;
+    }
+    
+    public Bid(Double value, User bidder) {
+        this(value, bidder.<User>reference());
     }
 
     public Double getValue() {
@@ -33,15 +38,19 @@ public class Bid implements Comparable<Bid>, Serializable {
         this.value = value;
     }
 
-    public User getBidder() {
+    public User getRemoteBidder(RemoteClient rc) throws IOException {
+        return bidder.getRemote(rc);
+    }
+    
+    public RemoteReference<User> getBidderReference() {
         return bidder;
     }
 
     public void setBidder(User bidder) {
-        this.bidder = bidder;
+        this.bidder = bidder.reference();
     }
 
-    public int compareTo(Bid bid){
-        return bid.getValue().compareTo(this.getValue());
+    public int compareTo(Bid bid) {
+        return this.getValue().compareTo(bid.getValue());
     }
 }

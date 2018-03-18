@@ -36,7 +36,7 @@ public class EditProfileActivityTest {
     public void testEditProfileActivity() {
         Intent intent = new Intent();
 
-        User user = new ConcreteUser("EditingUser", "email@a.com", "1234567890");
+        User user = new User("EditingUser", "email@a.com", "1234567890");
         intent.putExtra(EditProfileActivity.EXTRA_TARGET_USER, user);
         activityTestRule.launchActivity(intent);
     }

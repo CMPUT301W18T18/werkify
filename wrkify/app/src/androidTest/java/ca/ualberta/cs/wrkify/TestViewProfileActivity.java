@@ -36,7 +36,7 @@ public class TestViewProfileActivity {
     public void testViewProfileActivity() {
         Intent intent = new Intent();
 
-        ConcreteUser user = new ConcreteUser("user1", "user1@example.com", "(555) 555-5555");
+        User user = new User("user1", "user1@example.com", "(555) 555-5555");
 
         intent.putExtra(ViewProfileActivity.USER_EXTRA, user);
         activityTestRule.launchActivity(intent);
