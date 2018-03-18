@@ -93,7 +93,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         // Determine if the session user owns this task
         // TODO? this comparison seems like it should be encapsulable as User.equals
-        Boolean sessionUserIsRequester = (task.getRequester().getUsername().equals(sessionUser.getUsername()));
+        Boolean sessionUserIsRequester = (task.getRequester(WrkifyClient.getInstance()).getUsername().equals(sessionUser.getUsername()));
 
         // Set the task title
         TextView titleView = findViewById(R.id.taskViewTitle);
@@ -101,7 +101,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         // Set the task user view
         UserView userView = findViewById(R.id.taskViewUser);
-        userView.setUserName(task.getRequester().getUsername());
+        userView.setUserName(task.getRequester(WrkifyClient.getInstance()).getUsername());
 
         // Set the task description
         TextView descriptionView = findViewById(R.id.taskViewDescription);

@@ -329,7 +329,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      */
     private void viewProfileClicked(int position) {
         Intent profileIntent = new Intent(context, ViewProfileActivity.class);
-        profileIntent.putExtra(ViewProfileActivity.USER_EXTRA, data.get(position).getBidder());
+        profileIntent.putExtra(ViewProfileActivity.USER_EXTRA, data.get(position).getBidder(WrkifyClient.getInstance()));
         context.startActivity(profileIntent);
     }
 

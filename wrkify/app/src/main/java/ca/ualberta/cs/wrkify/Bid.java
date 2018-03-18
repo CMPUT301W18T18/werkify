@@ -37,8 +37,8 @@ public class Bid implements Comparable<Bid>, Serializable {
         this.value = value;
     }
 
-    public User getBidder() {
-        return bidder.getRemote();
+    public User getBidder(RemoteClient rc) {
+        return bidder.getRemote(rc);
     }
     
     public RemoteReference<User> getBidderReference() {
