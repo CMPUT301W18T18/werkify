@@ -27,4 +27,7 @@
     <string name="edit_profile_contact_header">Contact information</string>
     <string name="edit_task_title_label">Task title</string>
     <string name="edit_task_description_label">Description</string>
+    <string name="overview_view_profile">View profile</string>
+    <string name="overview_logout">Logout</string>
+    <string name="task_list_empty">Nothing here</string>
 </resources>
