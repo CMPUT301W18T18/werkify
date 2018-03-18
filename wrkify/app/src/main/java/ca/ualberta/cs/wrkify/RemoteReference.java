@@ -17,18 +17,20 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * ConcreteTestObject is Used for testing ElasticClient
- */
 
-public class ConcreteTestObject extends RemoteObject {
-    public final String param1;
-    public final String param2;
-    public final int param3;
+import java.io.IOException;
+import java.io.Serializable;
 
-    public ConcreteTestObject(String param1, String param2, Integer param3) {
-        this.param1 = param1;
-        this.param2 = param2;
-        this.param3 = param3;
+public class RemoteReference<T extends RemoteObject> implements Serializable {
+    private String refId;
+    transient private Class<T> tClass;
+    
+    public RemoteReference(String refId, Class<T> tClass) {
+        this.refId = refId;
+        this.tClass = tClass;
+    }
+    
+    public T getRemote(RemoteClient client) throws IOException {
+        return client.download(this.refId, this.tClass);
     }
 }

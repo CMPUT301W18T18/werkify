@@ -23,10 +23,6 @@ import android.support.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
-
 /**
  * Tests for ViewTaskActivity.
  * Launches ViewTaskActivity for a variety of task/session user configurations.
@@ -58,11 +54,11 @@ public class ViewTaskActivityTest {
             "additional content like images and locations will probably make long tasks more " +
             "common, but even with just a sufficiently long description, it could overflow. ";
 
-    private static ConcreteUser exampleUser1 = new ConcreteUser(
+    private static User exampleUser1 = new User(
             "Username1", "test@example.com", "5555550001");
-    private static ConcreteUser exampleUser2 = new ConcreteUser(
+    private static User exampleUser2 = new User(
             "Username2", "test2@example.com", "5555550002");
-    private static ConcreteUser exampleUser3 = new ConcreteUser(
+    private static User exampleUser3 = new User(
             "Username3", "test3@example.com", "5555550003");
 
     private void startViewTaskActivityWith(Task task, User sessionUser) {
@@ -79,12 +75,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewTaskActivity() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example task with no bids");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.REQUESTED);
-        task.setBidList(new ArrayList<Bid>());
+        Task task = new Task("Example task with no bids", exampleUser1, aLongDescription);
         startViewTaskActivityWith(task, exampleUser2);
     }
 
@@ -94,12 +85,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewBiddedTask() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example task with bids");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.BIDDED);
-        task.setBidList(new ArrayList<Bid>());
+        Task task = new Task("Example task with bids", exampleUser1, aLongDescription);
         task.addBid(new Bid(20.00, exampleUser2));
         task.addBid(new Bid(30.00, exampleUser2));
         startViewTaskActivityWith(task, exampleUser3);
@@ -113,12 +99,7 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewSelfBiddedTask() {
         // TODO This doesn't currently work any differently from a normal bidded task
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example task that session user has bidded on");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.BIDDED);
-        task.setBidList(new ArrayList<Bid>());
+        Task task = new Task("Example task that session user has bidded on", exampleUser1, aLongDescription);
         task.addBid(new Bid(20.00, exampleUser2));
         task.addBid(new Bid(30.00, exampleUser3));
         startViewTaskActivityWith(task, exampleUser3);
@@ -130,12 +111,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnUnbiddedTask() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example requested task");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.REQUESTED);
-        task.setBidList(new ArrayList<Bid>());
+        Task task = new Task("Example requested task", exampleUser1, aLongDescription);
         startViewTaskActivityWith(task, exampleUser1);
     }
 
@@ -145,12 +121,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnBiddedTask() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example bidded requested task");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.BIDDED);
-        task.setBidList(new ArrayList<Bid>());
+        Task task = new Task("Example bidded requested task", exampleUser1, aLongDescription);
         task.addBid(new Bid(15.15, exampleUser2));
         task.addBid(new Bid(20.25, exampleUser3));
         startViewTaskActivityWith(task, exampleUser1);
@@ -163,13 +134,8 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewAssignedTask() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example assigned task");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.ASSIGNED);
+        Task task = new Task("Example assigned task", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
-        task.setPrice(20.20);
         startViewTaskActivityWith(task, exampleUser3);
     }
 
@@ -180,13 +146,8 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewAssignedToSelfTask() {
         // TODO This doesn't currently work any differently from a task assigned to another user
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example task assigned to self");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.ASSIGNED);
+        Task task = new Task("Example task assigned to self", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
-        task.setPrice(5.15);
         startViewTaskActivityWith(task, exampleUser2);
     }
 
@@ -197,13 +158,8 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnAssignedTask() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Example task assigned to other");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.ASSIGNED);
+        Task task = new Task("Example task assigned to other", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
-        task.setPrice(99.99);
         startViewTaskActivityWith(task, exampleUser1);
     }
 
@@ -213,13 +169,8 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewCompletedTask() {
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(exampleUser1);
-        task.setTitle("Closed task");
-        task.setDescription(aLongDescription);
-        task.setStatus(TaskStatus.DONE);
+        Task task = new Task("Closed task", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
-        task.setPrice(15.29);
         startViewTaskActivityWith(task, exampleUser3);
     }
 }

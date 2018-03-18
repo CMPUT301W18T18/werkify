@@ -17,20 +17,15 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.TransitionManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.io.IOError;
-import java.io.IOException;
 
 /**
  * Allows a user to log in.
@@ -97,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void trySubmitAndFinish(String username) {
         // TODO actually look up user on the server
-        User user = new ConcreteUser(username, "testuser@example.com", "0000000000");
+        User user = new User(username, "testuser@example.com", "0000000000");
         getIntent().putExtra(EXTRA_SESSION_USER, user);
         setResult(RESULT_OK, getIntent());
         finish();

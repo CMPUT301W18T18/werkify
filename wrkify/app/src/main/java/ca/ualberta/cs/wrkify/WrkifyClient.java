@@ -18,26 +18,29 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * ElasticTestObject wraps ConcreteTestObject and is used for
- * testing ElasticClient
+ * WrkifyClient provides a singleton of RemoteClient
+ * with the default app settings.
  *
- * @see ConcreteTestObject
- * @see ElasticClientTest
+ * @see RemoteClient
  */
-public class ElasticTestObject extends ElasticObject<ConcreteTestObject> {
-    public ElasticTestObject(String id) {
-        super(id, ConcreteTestObject.class);
+
+public class WrkifyClient {
+    public static final String URL = "http://cmput301.softwareprocess.es:8080";
+    public static final String INDEX = "cmput301w18t18";
+
+    private static RemoteClient instance;
+
+    /**
+     * gets the one instance of RemoteClient
+     * used throughout the wrkify app
+     * @return the one true instance
+     */
+    public static RemoteClient getInstance() {
+        if (instance == null) {
+            instance = new RemoteClient(URL, INDEX);
+        }
+        return instance;
     }
 
-    public ElasticTestObject(String id, ElasticClient ec) {
-        super(id, ConcreteTestObject.class, ec);
-    }
-
-    public ElasticTestObject(ConcreteTestObject obj) {
-        super(obj, ConcreteTestObject.class);
-    }
-
-    public ElasticTestObject(ConcreteTestObject obj, ElasticClient ec) {
-        super(obj, ConcreteTestObject.class, ec);
-    }
+    private WrkifyClient() {}
 }

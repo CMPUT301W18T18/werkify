@@ -3,8 +3,8 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 import android.graphics.Bitmap;
@@ -13,20 +13,21 @@ import android.location.Location;
 /**
  * Created by Craig on 2018-02-24.
  *
- * Test Cases fot ConcreteTask class
+ * Test Cases fot Task class
  *
  * Modified 2018-02-25
  */
 
-public class ConcreteTaskTest {
+public class TaskTest {
+    private static final MockRemoteClient remoteClient = new MockRemoteClient();
 
     @Test
     public void testFailConstructor() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
+        User use = new User("a", "a@a.com", "7");
 
         boolean error = false;
         try {
-            ConcreteTask concTask = new ConcreteTask("", use);
+            Task concTask = new Task("", use, "");
         } catch (IllegalArgumentException e){
             error = true;
         }
@@ -34,7 +35,7 @@ public class ConcreteTaskTest {
 
         error = false;
         try {
-            ConcreteTask concTask = new ConcreteTask("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", use);
+            Task concTask = new Task("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", use, "");
         } catch (IllegalArgumentException e){
             error = true;
         }
@@ -47,7 +48,7 @@ public class ConcreteTaskTest {
 
         error = false;
         try {
-            ConcreteTask concTask = new ConcreteTask("hello", use, outputBuffer.toString());
+            Task concTask = new Task("hello", use, outputBuffer.toString());
         } catch (IllegalArgumentException e){
             error = true;
         }
@@ -57,8 +58,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetTitle() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
         concTask.setTitle("Test Title");
 
         assertEquals("Test Title", concTask.getTitle());
@@ -66,8 +67,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetDescription() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use, "def descr");
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "def descr");
         concTask.setDescription("Test Description");
 
         assertEquals("Test Description",concTask.getDescription());
@@ -75,8 +76,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testCancelBid() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
 
         Bid bid = new Bid(5.0, use);
 
@@ -89,8 +90,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetImageList() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
 
         Bitmap image = null; // Bitmap.createBitmap(1,1, Bitmap.Config.ARGB_8888); is not mocked
         concTask.addImage(image);
@@ -100,8 +101,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetLocation() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
         Location location = new Location("Test");
 
         concTask.setLocation(location);
@@ -111,8 +112,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetChecklist() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
         CheckList checklist = new CheckList();
 
         concTask.setCheckList(checklist);
@@ -122,8 +123,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testAddBid() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
 
         Bid bid = new Bid(5.0, use);
         Bid bid2 = new Bid(3.0, use);
@@ -141,13 +142,15 @@ public class ConcreteTaskTest {
 
     @Test
     public void testSetGetProvider() {
-        ConcreteUser concUser = new ConcreteUser("Test", "Test@Test.com", "12 345 67890");
-        ConcreteTask concTask = new ConcreteTask("def", concUser);
+        User concUser = remoteClient.create(User.class, "Test", "Test@Test.com", "12 345 67890");
+        Task concTask = new Task("def", concUser, "");
 
 
         concTask.setProvider(concUser);
 
-        assertEquals(concUser, concTask.getProvider());
+        try {
+            assertEquals(concUser, concTask.getRemoteProvider(remoteClient));
+        } catch (IOException e) { fail(); }
     }
 
 
@@ -155,15 +158,15 @@ public class ConcreteTaskTest {
     public void testBidSorting() {
         Random rand = new Random();
         double lowbid = 20.0;
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
 
         for(int i=0; i < 10; i++) {
             double number = rand.nextDouble() * 20;
             if (number < lowbid) {
                 lowbid = number;
             }
-            User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
+            User bidder = new User("username", "email@example.com", "(555) 555-5555");
             Bid bid = new Bid(number, bidder);
             concTask.addBid(bid);
         }
@@ -173,9 +176,9 @@ public class ConcreteTaskTest {
 
     @Test
     public void testAcceptUnassignBid() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
-        User bidder = new ConcreteUser("username", "email@example.com", "(555) 555-5555");
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
+        User bidder = new User("username", "email@example.com", "(555) 555-5555");
         Bid bid = new Bid(20.0, bidder);
 
         concTask.acceptBid(bid);
@@ -189,8 +192,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testGetPrice() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
         concTask.addBid(new Bid(20.0, use));
         concTask.addBid(new Bid(10.0, use));
 
@@ -203,8 +206,8 @@ public class ConcreteTaskTest {
 
     @Test
     public void testComplete() {
-        User use = new ConcreteUser("a", "a@a.com", "7");
-        ConcreteTask concTask = new ConcreteTask("def title", use);
+        User use = new User("a", "a@a.com", "7");
+        Task concTask = new Task("def title", use, "");
 
         Bid bid = new Bid(10.0, use);
         concTask.addBid(bid);

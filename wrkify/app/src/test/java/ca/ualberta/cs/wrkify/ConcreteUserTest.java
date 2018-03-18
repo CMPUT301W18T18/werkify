@@ -19,10 +19,10 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * unit tests for the ConcreteUser class
+ * unit tests for the User class
  *
  * @author Taylor Folkersen
- * @see ConcreteUser
+ * @see User
  */
 public class ConcreteUserTest {
 
@@ -32,7 +32,7 @@ public class ConcreteUserTest {
         String email = "name@website.com";
         String phoneNumber = "780-123-4567";
 
-        ConcreteUser user = new ConcreteUser(username, email, phoneNumber);
+        User user = new User(username, email, phoneNumber);
         String resultUsername = user.getUsername();
         String resultEmail = user.getEmail();
         String resultPhoneNumber = user.getPhoneNumber();
@@ -51,12 +51,12 @@ public class ConcreteUserTest {
         String phoneNumber = "(587)-987-7654";
 
 
-        ConcreteUser allowedUser = new ConcreteUser(allowed, email, phoneNumber);
+        User allowedUser = new User(allowed, email, phoneNumber);
 
         boolean failed = false;
 
         try {
-            ConcreteUser disallowedUser = new ConcreteUser(disallowed, email, phoneNumber);
+            User disallowedUser = new User(disallowed, email, phoneNumber);
         } catch (IllegalArgumentException e) {
             failed = true;
         }
@@ -78,7 +78,7 @@ public class ConcreteUserTest {
         String phoneNumber2 = "123.456.7643";
         String phoneNumber3 = "123-567-5232";
 
-        ConcreteUser user = new ConcreteUser(A_username, email1, phoneNumber1);
+        User user = new User(A_username, email1, phoneNumber1);
 
         user.setUsername(A2_username);
         assertEquals(user.getUsername(), A2_username);
