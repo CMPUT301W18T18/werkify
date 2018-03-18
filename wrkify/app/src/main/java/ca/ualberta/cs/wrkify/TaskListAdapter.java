@@ -25,6 +25,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.List;
 
 /**
@@ -37,11 +39,12 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     public boolean isRequester;
     public User sessionUser;
     public AppCompatActivity context;
+    private RecyclerView recyclerView;
 
-    public TaskListAdapter(AppCompatActivity context,List<Task> taskList,boolean isRequester,User sessionUser){
+    public TaskListAdapter(AppCompatActivity context,List<Task> taskList,boolean isRequester){
         this.taskList = taskList;
         this.isRequester = isRequester;
-        this.sessionUser = sessionUser;
+//        this.sessionUser = sessionUser;
         this.context = context;
     }
 
@@ -55,17 +58,26 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        holder.getTaskTitle().setText(taskList.get(position).getTitle());
-        holder.getTaskDescription().setText(taskList.get(position).getDescription());
+        final Task task = taskList.get(position);
+
+        holder.getTaskTitle().setText(task.getTitle());
+        holder.getTaskDescription().setText(task.getDescription());
         if(this.isRequester) {
-            holder.getTaskUser().setText(taskList.get(position).getRequester().getUsername());
+            if(task.getProvider()!=null) {
+                holder.getTaskUser().setText(task.getProvider().getUsername());
+            }
+            holder.getTaskUser().setText("");
         }
         if(!this.isRequester){
-            holder.getTaskUser().setText(taskList.get(position).getProvider().getUsername());
+            if(task.getRequester()!=null) {
+                holder.getTaskUser().setText(task.getRequester().getUsername());
+            }
+            holder.getTaskUser().setText("");
         }
-        holder.getTaskStatus().setStatus(taskList.get(position).getStatus(),taskList.get(position).getLowestBid().getValue());
-        holder.setTask(taskList.get(position));
-        final Task task = holder.getTask();
+        if(task.getBidList()!=null) {
+            holder.getTaskStatus().setStatus(task.getStatus(), task.getLowestBid().getValue());
+        }
+        holder.setTask(task);
 
         holder.getTaskView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,9 +94,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     public void viewTask(User sessionUser, Task task){
         Intent intent = new Intent(this.context, ViewTaskActivity.class);
-        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
+        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, task.getProvider());
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
 
         context.startActivity(intent);
     }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
 }

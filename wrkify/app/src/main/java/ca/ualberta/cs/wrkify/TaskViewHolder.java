@@ -36,9 +36,9 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     protected StatusView taskStatus;
     protected Task task;
 
-    TaskViewHolder(View taskView){
-        super(taskView);
-        this.taskView = (CardView) taskView.findViewById(R.id.taskCardView);
+    TaskViewHolder(View view){
+        super(view);
+        this.taskView = (CardView) view.findViewById(R.id.taskCardView);
         this.taskTitle = (TextView) this.taskView.findViewById(R.id.taskTitle);
         this.taskDescription = (TextView) this.taskView.findViewById(R.id.taskDescription);
         this.taskUser = (TextView) this.taskView.findViewById(R.id.taskUser);

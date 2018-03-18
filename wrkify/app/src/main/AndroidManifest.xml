@@ -36,7 +36,6 @@
             android:name=".EditTaskActivity"
             android:parentActivityName=".ViewTaskActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".lamechump"></activity>
     </application>
 
 </manifest>
