@@ -33,7 +33,9 @@ public class Searcher {
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByRequester(RemoteClient client, User requester) throws IOException {
-        return null;
+        String query = "{\"query\": {\"match\": {\"requester\": {\"refId\": \""
+                + requester.getId() + "\"}}}}";
+        return client.search(query, Task.class);
     }
 
     /**
