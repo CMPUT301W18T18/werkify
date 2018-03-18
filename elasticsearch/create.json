@@ -13,6 +13,13 @@
                 "email": {"type": "string"},
                 "phoneNumber": {"type": "string"}
             }
+        },
+        "ca.ualberta.cs.wrkify.Task": {
+            "properties": {
+                "title": {"type": "string"},
+                "description": {"type": "string"},
+                "statsu": {"type": "string"}
+            }
         }
     }
 }
