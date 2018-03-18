@@ -18,7 +18,8 @@
             "properties": {
                 "title": {"type": "string"},
                 "description": {"type": "string"},
-                "statsu": {"type": "string"}
+                "status": {"type": "string"},
+                "requester": {"type": "nested"}
             }
         }
     }

@@ -51,10 +51,17 @@ public class SearcherTest {
         user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
         user3 = rc.create(User.class, "john", "john@a.com", "3");
 
-        task1 = rc.create(Task.class, "task 1", user1);
-        task2 = rc.create(Task.class, "task 2", user1);
-        task3 = rc.create(Task.class, "task 3", user2);
-        task4 = rc.create(Task.class, "task 4", user2);
+        task1 = rc.create(Task.class, "task 1", user1, "");
+        task2 = rc.create(Task.class, "task 2", user1, "");
+        task3 = rc.create(Task.class, "task 3", user2, "");
+        task4 = rc.create(Task.class, "task 4", user2, "");
+
+        // give elasticsearch time to index
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+
+        }
     }
 
     @After
@@ -80,7 +87,7 @@ public class SearcherTest {
             return;
         }
 
-        assertEquals(res1.size(), 2);
+        assertEquals(2, res1.size());
         assertTrue(res1.contains(task1));
         assertTrue(res1.contains(task2));
 
@@ -92,6 +99,6 @@ public class SearcherTest {
             return;
         }
 
-        assertEquals(0, res1.size());
+        assertEquals(0, res3.size());
     }
 }
