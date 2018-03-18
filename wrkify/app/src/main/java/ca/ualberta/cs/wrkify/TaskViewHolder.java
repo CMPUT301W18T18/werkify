@@ -35,7 +35,12 @@ public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
     protected TextView taskUser;
     protected StatusView taskStatus;
     protected T task;
-
+    /*
+    *Sets the root view of the card view
+    * and child views.
+    *
+    * @param view Root view of calling adapter
+    */
     TaskViewHolder(View view){
         super(view);
         this.taskView = (CardView) view.findViewById(R.id.taskCardView);
@@ -45,50 +50,105 @@ public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
         this.taskStatus = (StatusView) this.taskView.findViewById(R.id.taskStatus);
     }
 
+
+    /*
+    *Sets the task card view.
+    *
+    * @param cv allows for post init customization of card view
+    */
     public void setTaskView(CardView cv){
         this.taskView = cv;
     }
-
+    
+    /*
+    * Returns the task card view for this holder
+     */
     public CardView getTaskView(){
         return  this.taskView;
     }
 
+
+    /*
+    *Sets the task title TextView
+    *
+    *@param tv Textview from a layout
+    */
     public void setTaskTitle(TextView tv){
         this.taskTitle = tv;
     }
 
+    /*
+    *Returns the TextView that contains the task title for this holder
+     */
     public TextView getTaskTitle(){
         return this.taskTitle;
     }
 
+
+    /*
+    *Sets the task description TextView
+    *
+    *@param tv Textview from a layout
+    */
     public void setTaskDescription(TextView tv){
         this.taskDescription = tv;
     }
 
+    /*
+    *Returns the TextView that contains the task description for this holder
+     */
     public TextView getTaskDescription(){
         return this.taskDescription;
     }
 
+
+    /*
+   *Sets the task user TextView
+   *
+   *@param tv Textview from a layout
+   */
     public void setTaskUser(TextView tv){
         this.taskUser = tv;
     }
 
+    /*
+    *Returns the TextView that contains the username for this holder
+     */
     public TextView getTaskUser(){
         return this.taskUser;
     }
 
+
+    /*
+   *Sets the task description StatusView
+   *
+   *@param sv StatusView from a layout
+   *@see StatusView
+   */
     public void setTaskStatus(StatusView sv){
         this.taskStatus = sv;
     }
 
+    /*
+   *Returns the StatusView contained by this holder
+   */
     public StatusView getTaskStatus(){
         return this.taskStatus;
     }
 
+
+    /*
+   *Sets the task that is displayed by this holder
+   *
+   *@param task Task or any subclass of task
+   */
     public void setTask(T task){
         this.task = task;
     }
 
+    /*
+    *Returns the task contained by this holder
+    */
     public Task getTask(){
         return this.task;
     }
