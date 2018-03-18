@@ -39,15 +39,14 @@ public class TaskListAdapterTest {
     @Test
     public void constructorTestConcreteTask(){
         AppCompatActivity context = new AppCompatActivity();
-        List<ConcreteTask> taskList = new ArrayList<>();
-        User user = new ConcreteUser("user","abc@abc.com","111-1111");
-        ConcreteTask task = new ConcreteTask();
-        task.setTitle("Task 1");
+        List<Task> taskList = new ArrayList<>();
+        User user = new User("user","abc@abc.com","111-1111");
+        RemoteReference<User> rUser = null;
+        Task task = new Task("Task 1",rUser,"description");
         taskList.add(task);
-        TaskListAdapter<ConcreteTask> adapter = new TaskListAdapter<>(context,taskList,true,user);
+        TaskListAdapter<Task> adapter = new TaskListAdapter<>(context,taskList,true,user);
         assertEquals(adapter.getTaskList(),taskList);
         assertEquals(adapter.getTaskList().get(0).getTitle(),"Task 1");
-        assertEquals(adapter.sessionUser,user);
     }
 }
 
