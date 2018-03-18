@@ -149,4 +149,20 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
         this.recyclerView = recyclerView;
     }
 
+
+    /*
+    *Sets the list to be adapted for a recycler view
+    *
+    * @param taskList List of objects in Task family
+    */
+    public void setTaskList(List<T> taskList){
+        this.taskList = taskList;
+    }
+
+    /*
+    *Returns the List of tasks that are being adapted
+     */
+    public List<T> getTaskList(){
+        return this.taskList;
+    }
 }

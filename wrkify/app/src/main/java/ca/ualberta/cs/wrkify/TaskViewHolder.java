@@ -25,7 +25,13 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 /**
- * Created by Stefan on 2018-03-17.
+ *TaskViewHolder acts as a cache for task CardViews
+ * for us in tandem with an adapter (TaskListAdapter)
+ * and a RecyclerView to minimize costly findViewById calls
+ * for a potentially large RecyclerView lists of tasks.
+ *
+ * @see TaskListAdapter
+ * @see SearchFragment
  */
 
 public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
@@ -59,7 +65,7 @@ public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
     public void setTaskView(CardView cv){
         this.taskView = cv;
     }
-    
+
     /*
     * Returns the task card view for this holder
      */
