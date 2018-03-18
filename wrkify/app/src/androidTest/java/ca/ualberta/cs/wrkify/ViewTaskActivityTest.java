@@ -23,8 +23,6 @@ import android.support.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 /**
  * Tests for ViewTaskActivity.
  * Launches ViewTaskActivity for a variety of task/session user configurations.
@@ -77,7 +75,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewTaskActivity() {
-        Task task = new Task("Example task with no bids", exampleUser1.reference(), aLongDescription);
+        Task task = new Task("Example task with no bids", exampleUser1, aLongDescription);
         startViewTaskActivityWith(task, exampleUser2);
     }
 
@@ -87,9 +85,9 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewBiddedTask() {
-        Task task = new Task("Example task with bids", exampleUser1.reference(), aLongDescription);
-        task.addBid(new Bid(20.00, exampleUser2.reference()));
-        task.addBid(new Bid(30.00, exampleUser2.reference()));
+        Task task = new Task("Example task with bids", exampleUser1, aLongDescription);
+        task.addBid(new Bid(20.00, exampleUser2));
+        task.addBid(new Bid(30.00, exampleUser2));
         startViewTaskActivityWith(task, exampleUser3);
     }
 
@@ -101,9 +99,9 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewSelfBiddedTask() {
         // TODO This doesn't currently work any differently from a normal bidded task
-        Task task = new Task("Example task that session user has bidded on", exampleUser1.reference(), aLongDescription);
-        task.addBid(new Bid(20.00, exampleUser2.reference()));
-        task.addBid(new Bid(30.00, exampleUser3.reference()));
+        Task task = new Task("Example task that session user has bidded on", exampleUser1, aLongDescription);
+        task.addBid(new Bid(20.00, exampleUser2));
+        task.addBid(new Bid(30.00, exampleUser3));
         startViewTaskActivityWith(task, exampleUser3);
     }
 
@@ -113,7 +111,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnUnbiddedTask() {
-        Task task = new Task("Example requested task", exampleUser1.reference(), aLongDescription);
+        Task task = new Task("Example requested task", exampleUser1, aLongDescription);
         startViewTaskActivityWith(task, exampleUser1);
     }
 
@@ -123,9 +121,9 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnBiddedTask() {
-        Task task = new Task("Example bidded requested task", exampleUser1.reference(), aLongDescription);
-        task.addBid(new Bid(15.15, exampleUser2.reference()));
-        task.addBid(new Bid(20.25, exampleUser3.reference()));
+        Task task = new Task("Example bidded requested task", exampleUser1, aLongDescription);
+        task.addBid(new Bid(15.15, exampleUser2));
+        task.addBid(new Bid(20.25, exampleUser3));
         startViewTaskActivityWith(task, exampleUser1);
     }
 
@@ -136,7 +134,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewAssignedTask() {
-        Task task = new Task("Example assigned task", exampleUser1.reference(), aLongDescription);
+        Task task = new Task("Example assigned task", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
         startViewTaskActivityWith(task, exampleUser3);
     }
@@ -148,7 +146,7 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewAssignedToSelfTask() {
         // TODO This doesn't currently work any differently from a task assigned to another user
-        Task task = new Task("Example task assigned to self", exampleUser1.reference(), aLongDescription);
+        Task task = new Task("Example task assigned to self", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
         startViewTaskActivityWith(task, exampleUser2);
     }
@@ -160,7 +158,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnAssignedTask() {
-        Task task = new Task("Example task assigned to other", exampleUser1.reference(), aLongDescription);
+        Task task = new Task("Example task assigned to other", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
         startViewTaskActivityWith(task, exampleUser1);
     }
@@ -171,7 +169,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewCompletedTask() {
-        Task task = new Task("Closed task", exampleUser1.reference(), aLongDescription);
+        Task task = new Task("Closed task", exampleUser1, aLongDescription);
         task.setProvider(exampleUser2);
         startViewTaskActivityWith(task, exampleUser3);
     }

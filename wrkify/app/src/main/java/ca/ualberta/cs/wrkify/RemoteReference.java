@@ -19,8 +19,9 @@ package ca.ualberta.cs.wrkify;
 
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class RemoteReference<T extends RemoteObject> {
+public class RemoteReference<T extends RemoteObject> implements Serializable {
     private String refId;
     transient private Class<T> tClass;
     transient private RemoteClient client;

@@ -54,22 +54,22 @@ public class ViewBidsActivityTest {
         User user15 = new User("UserName15", "UserName10@email.com", "780-123-1243");
         User user16 = new User("UserName16", "UserName10@email.com", "780-123-1243");
         
-        Task task = new Task("title", user1.reference(), "");
-        task.addBid(new Bid(20.01, user2.reference()));
-        task.addBid(new Bid(31.25, user3.reference()));
-        task.addBid(new Bid(50.12, user4.reference()));
-        task.addBid(new Bid(0.50, user5.reference()));
-        task.addBid(new Bid(25.42, user6.reference()));
-        task.addBid(new Bid(53.23, user7.reference()));
-        task.addBid(new Bid(500.12, user8.reference()));
-        task.addBid(new Bid(9000.00, user9.reference()));
-        task.addBid(new Bid(401.12, user10.reference()));
-        task.addBid(new Bid(23.12, user11.reference()));
-        task.addBid(new Bid(12.50, user12.reference()));
-        task.addBid(new Bid(3.50, user13.reference()));
-        task.addBid(new Bid(4.12, user14.reference()));
-        task.addBid(new Bid(9.16, user15.reference()));
-        task.addBid(new Bid(42.19, user16.reference()));
+        Task task = new Task("title", user1, "");
+        task.addBid(new Bid(20.01, user2));
+        task.addBid(new Bid(31.25, user3));
+        task.addBid(new Bid(50.12, user4));
+        task.addBid(new Bid(0.50, user5));
+        task.addBid(new Bid(25.42, user6));
+        task.addBid(new Bid(53.23, user7));
+        task.addBid(new Bid(500.12, user8));
+        task.addBid(new Bid(9000.00, user9));
+        task.addBid(new Bid(401.12, user10));
+        task.addBid(new Bid(23.12, user11));
+        task.addBid(new Bid(12.50, user12));
+        task.addBid(new Bid(3.50, user13));
+        task.addBid(new Bid(4.12, user14));
+        task.addBid(new Bid(9.16, user15));
+        task.addBid(new Bid(42.19, user16));
 
         intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
         //intent.putExtra("viewer", user2); //We are NOT the requester
