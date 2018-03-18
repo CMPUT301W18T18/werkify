@@ -17,14 +17,16 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.io.Serializable;
+
 import io.searchbox.annotations.JestId;
 
 /**
  * Created by peter on 17/03/18.
  */
 
-public abstract class RemoteObject {
-    transient private String id;
+public abstract class RemoteObject implements Serializable {
+    transient private @JestId String id;
     transient private RemoteClient client;
 
     public void setId(String id) {
@@ -41,5 +43,13 @@ public abstract class RemoteObject {
 
     public void upload() {
         this.client.upload(this);
+    }
+    
+    public RemoteClient getClient() {
+        return this.client;
+    }
+    
+    public <T extends RemoteObject> RemoteReference<T> reference() {
+        return new RemoteReference(client, id, this.getClass());
     }
 }

@@ -25,7 +25,7 @@ public class TaskTest {
 
         boolean error = false;
         try {
-            Task concTask = new Task("", use);
+            Task concTask = new Task("", use, "");
         } catch (IllegalArgumentException e){
             error = true;
         }
@@ -33,7 +33,7 @@ public class TaskTest {
 
         error = false;
         try {
-            Task concTask = new Task("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", use);
+            Task concTask = new Task("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", use, "");
         } catch (IllegalArgumentException e){
             error = true;
         }
@@ -57,7 +57,7 @@ public class TaskTest {
     @Test
     public void testSetGetTitle() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
         concTask.setTitle("Test Title");
 
         assertEquals("Test Title", concTask.getTitle());
@@ -75,7 +75,7 @@ public class TaskTest {
     @Test
     public void testCancelBid() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
 
         Bid bid = new Bid(5.0, use);
 
@@ -89,7 +89,7 @@ public class TaskTest {
     @Test
     public void testSetGetImageList() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
 
         Bitmap image = null; // Bitmap.createBitmap(1,1, Bitmap.Config.ARGB_8888); is not mocked
         concTask.addImage(image);
@@ -100,7 +100,7 @@ public class TaskTest {
     @Test
     public void testSetGetLocation() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
         Location location = new Location("Test");
 
         concTask.setLocation(location);
@@ -111,7 +111,7 @@ public class TaskTest {
     @Test
     public void testSetGetChecklist() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
         CheckList checklist = new CheckList();
 
         concTask.setCheckList(checklist);
@@ -122,7 +122,7 @@ public class TaskTest {
     @Test
     public void testAddBid() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
 
         Bid bid = new Bid(5.0, use);
         Bid bid2 = new Bid(3.0, use);
@@ -141,7 +141,7 @@ public class TaskTest {
     @Test
     public void testSetGetProvider() {
         User concUser = new User("Test", "Test@Test.com", "12 345 67890");
-        Task concTask = new Task("def", concUser);
+        Task concTask = new Task("def", concUser, "");
 
 
         concTask.setProvider(concUser);
@@ -155,7 +155,7 @@ public class TaskTest {
         Random rand = new Random();
         double lowbid = 20.0;
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
 
         for(int i=0; i < 10; i++) {
             double number = rand.nextDouble() * 20;
@@ -173,7 +173,7 @@ public class TaskTest {
     @Test
     public void testAcceptUnassignBid() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
         User bidder = new User("username", "email@example.com", "(555) 555-5555");
         Bid bid = new Bid(20.0, bidder);
 
@@ -189,7 +189,7 @@ public class TaskTest {
     @Test
     public void testGetPrice() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
         concTask.addBid(new Bid(20.0, use));
         concTask.addBid(new Bid(10.0, use));
 
@@ -203,7 +203,7 @@ public class TaskTest {
     @Test
     public void testComplete() {
         User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use);
+        Task concTask = new Task("def title", use, "");
 
         Bid bid = new Bid(10.0, use);
         concTask.addBid(bid);

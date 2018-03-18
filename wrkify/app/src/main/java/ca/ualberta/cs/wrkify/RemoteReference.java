@@ -18,13 +18,17 @@
 package ca.ualberta.cs.wrkify;
 
 
+import java.io.IOException;
+
 public class RemoteReference<T extends RemoteObject> {
     private String refId;
+    transient private Class<T> tClass;
     transient private RemoteClient client;
     
-    public RemoteReference(RemoteClient client, String refId) {
+    public RemoteReference(RemoteClient client, String refId, Class<T> tClass) {
         this.client = client;
         this.refId = refId;
+        this.tClass = tClass;
     }
     
     public void setClient(RemoteClient client) {
@@ -32,6 +36,10 @@ public class RemoteReference<T extends RemoteObject> {
     }
     
     public T getRemote() {
-        return client.download(this.refId);
+        try {
+            return client.download(this.refId, this.tClass);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

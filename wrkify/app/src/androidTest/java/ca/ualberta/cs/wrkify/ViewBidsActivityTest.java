@@ -54,7 +54,7 @@ public class ViewBidsActivityTest {
         User user15 = new User("UserName15", "UserName10@email.com", "780-123-1243");
         User user16 = new User("UserName16", "UserName10@email.com", "780-123-1243");
         
-        Task task = new Task("title", user1.reference());
+        Task task = new Task("title", user1.reference(), "");
         task.addBid(new Bid(20.01, user2.reference()));
         task.addBid(new Bid(31.25, user3.reference()));
         task.addBid(new Bid(50.12, user4.reference()));
@@ -71,9 +71,9 @@ public class ViewBidsActivityTest {
         task.addBid(new Bid(9.16, user15.reference()));
         task.addBid(new Bid(42.19, user16.reference()));
 
-        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1.reference()); //We are the requester
+        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
         //intent.putExtra("viewer", user2); //We are NOT the requester
-        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task.reference());
+        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
 
 
 

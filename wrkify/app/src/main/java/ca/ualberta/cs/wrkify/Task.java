@@ -82,6 +82,10 @@ public class Task extends RemoteObject {
         this.imageList = new ArrayList<Bitmap>();
         this.bidList = new ArrayList<Bid>();
     }
+    
+    public Task(String title, User requester, String description) {
+        this(title, requester.<User>reference(), description);
+    }
 
     // begin the setters
 

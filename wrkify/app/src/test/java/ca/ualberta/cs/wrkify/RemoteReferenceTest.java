@@ -19,6 +19,9 @@ package ca.ualberta.cs.wrkify;
 
 
 import org.junit.Test;
+
+import java.io.IOException;
+
 import static junit.framework.Assert.*;
 
 /**
@@ -35,12 +38,16 @@ public class RemoteReferenceTest {
         local.setRRTO(remote);
         assertEquals(remote, local.getRRTO());
         
-        ObjectWithRemoteReference local1 = remoteClient.download(local.getId());
-        assertEquals(local, local1);
-        assertEquals(local.getRRTO(), local1.getRRTO());
-        
-        RemoteReferredToObject remote1 = remoteClient.download(remote.getId());
-        assertEquals(remote, remote1);
+        try {
+            ObjectWithRemoteReference local1 = remoteClient.download(local.getId(), local.getClass());
+            assertEquals(local, local1);
+            assertEquals(local.getRRTO(), local1.getRRTO());
+    
+            RemoteReferredToObject remote1 = remoteClient.download(remote.getId(), remote.getClass());
+            assertEquals(remote, remote1);
+        } catch (IOException e) {
+            fail();
+        }
         
         RemoteReferredToObject newRemote = remoteClient.create(RemoteReferredToObject.class, 789);
         
@@ -62,7 +69,7 @@ public class RemoteReferenceTest {
     /**
      * Simple mock class that has a RemoteReference.
      */
-    static class ObjectWithRemoteReference {
+    static class ObjectWithRemoteReference extends RemoteObject {
         private Integer field;
         
         private RemoteReference<RemoteReferredToObject> rrto;

@@ -24,6 +24,10 @@ public class Bid implements Comparable<Bid>, Serializable {
         this.value = value;
         this.bidder = bidder;
     }
+    
+    public Bid(Double value, User bidder) {
+        this(value, bidder.<User>reference());
+    }
 
     public Double getValue() {
         return value;

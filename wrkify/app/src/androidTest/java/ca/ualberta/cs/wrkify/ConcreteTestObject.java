@@ -19,8 +19,6 @@ package ca.ualberta.cs.wrkify;
 
 /**
  * ConcreteTestObject is Used for testing ElasticClient
- *
- * @see ElasticClient
  */
 
 public class ConcreteTestObject extends RemoteObject {
