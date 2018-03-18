@@ -59,7 +59,9 @@ public class Searcher {
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByBidder(RemoteClient client, User bidder) throws IOException {
-        return null;
+        String query = "{\"query\":{\"nested\":{\"path\": \"bidList.bidder\",\"query\":"
+                +"{\"match\":{\"bidList.bidder.refId\": \"" + bidder.getId() + "\"}}}}}";
+        return client.search(query, Task.class);
     }
 
     /**

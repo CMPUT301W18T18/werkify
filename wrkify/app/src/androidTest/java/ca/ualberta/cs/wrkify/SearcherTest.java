@@ -17,8 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,19 +32,19 @@ import static junit.framework.Assert.*;
 
 public class SearcherTest {
 
-    private User user1;
-    private User user2;
-    private User user3;
+    private static User user1;
+    private static User user2;
+    private static User user3;
 
-    private Task task1;
-    private Task task2;
-    private Task task3;
-    private Task task4;
+    private static Task task1;
+    private static Task task2;
+    private static Task task3;
+    private static Task task4;
 
-    RemoteClient rc;
+    private static RemoteClient rc;
 
-    @Before
-    public void createData() {
+    @BeforeClass
+    public static void createData() {
         rc = WrkifyClient.getInstance();
 
         user1 = rc.create(User.class, "peter", "peter@a.com", "1");
@@ -59,6 +59,9 @@ public class SearcherTest {
         task2.acceptBid(new Bid(1.0, user3));
         rc.upload(task2);
 
+        task4.addBid(new Bid(1.0, user3));
+        rc.upload(task4);
+
         // give elasticsearch time to index
         try {
             Thread.sleep(1000);
@@ -67,8 +70,8 @@ public class SearcherTest {
         }
     }
 
-    @After
-    public void removeData() {
+    @AfterClass
+    public static void removeData() {
         rc.delete(user1);
         rc.delete(user2);
         rc.delete(user3);
@@ -106,7 +109,7 @@ public class SearcherTest {
     }
 
     @Test
-    public void findTasksByProvider() {
+    public void testfindTasksByProvider() {
         List<Task> res2;
         try {
             res2 = Searcher.findTasksByProvider(rc, user3);
@@ -117,5 +120,29 @@ public class SearcherTest {
 
         assertEquals(1, res2.size());
         assertTrue(res2.contains(task2));
+    }
+
+    @Test
+    public void testfindTasksByBidder() {
+        List<Task> res3;
+        try {
+            res3 = Searcher.findTasksByBidder(rc, user3);
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(1, res3.size());
+        assertTrue(res3.contains(task4));
+
+        List<Task> res1;
+        try {
+            res1 = Searcher.findTasksByBidder(rc, user1);
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(0, res1.size());
     }
 }
