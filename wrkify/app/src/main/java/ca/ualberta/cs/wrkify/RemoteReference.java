@@ -24,19 +24,13 @@ import java.io.Serializable;
 public class RemoteReference<T extends RemoteObject> implements Serializable {
     private String refId;
     transient private Class<T> tClass;
-    transient private RemoteClient client;
     
-    public RemoteReference(RemoteClient client, String refId, Class<T> tClass) {
-        this.client = client;
+    public RemoteReference(String refId, Class<T> tClass) {
         this.refId = refId;
         this.tClass = tClass;
     }
     
-    public void setClient(RemoteClient client) {
-        this.client = client;
-    }
-    
-    public T getRemote() {
+    public T getRemote(RemoteClient client) {
         try {
             return client.download(this.refId, this.tClass);
         } catch (IOException e) {

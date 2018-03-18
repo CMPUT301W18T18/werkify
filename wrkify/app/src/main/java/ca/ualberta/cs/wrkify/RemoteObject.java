@@ -26,8 +26,7 @@ import java.io.Serializable;
  */
 
 public abstract class RemoteObject implements Serializable {
-    transient private String id;
-    transient private RemoteClient client;
+    private String id;
 
     /**
      * sets the id of the RemoteObject.
@@ -47,25 +46,13 @@ public abstract class RemoteObject implements Serializable {
     }
 
     /**
-     * sets the Client we will use for internal operations
-     * @param client
-     */
-    public void setClient(RemoteClient client) {
-        this.client = client;
-    }
-
-    /**
      * reuploads the object.
      */
-    public void upload() {
-        this.client.upload(this);
-    }
-    
-    public RemoteClient getClient() {
-        return this.client;
+    public void upload(RemoteClient client) {
+        client.upload(this);
     }
     
     public <T extends RemoteObject> RemoteReference<T> reference() {
-        return new RemoteReference(client, id, this.getClass());
+        return new RemoteReference(id, this.getClass());
     }
 }
