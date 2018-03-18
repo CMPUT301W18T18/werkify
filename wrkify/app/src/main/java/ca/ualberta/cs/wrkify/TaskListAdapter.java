@@ -33,15 +33,15 @@ import java.util.List;
  * Created by Stefan on 2018-03-17.
  */
 
-public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
+public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskViewHolder> {
     private static int taskLayoutID = R.layout.taskcardview;
-    protected List<Task> taskList;
+    protected List<T> taskList;
     public boolean isRequester;
     public User sessionUser;
     public AppCompatActivity context;
     private RecyclerView recyclerView;
 
-    public TaskListAdapter(AppCompatActivity context,List<Task> taskList,boolean isRequester){
+    public TaskListAdapter(AppCompatActivity context,List<T> taskList,boolean isRequester){
         this.taskList = taskList;
         this.isRequester = isRequester;
 //        this.sessionUser = sessionUser;
@@ -58,7 +58,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        final Task task = taskList.get(position);
+        final T task = taskList.get(position);
 
         holder.getTaskTitle().setText(task.getTitle());
         holder.getTaskDescription().setText(task.getDescription());
@@ -92,7 +92,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         return this.taskList.size();
     }
 
-    public void viewTask(User sessionUser, Task task){
+    public void viewTask(User sessionUser, T task){
         Intent intent = new Intent(this.context, ViewTaskActivity.class);
         intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, task.getProvider());
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);

@@ -28,13 +28,13 @@ import org.w3c.dom.Text;
  * Created by Stefan on 2018-03-17.
  */
 
-public class TaskViewHolder extends RecyclerView.ViewHolder {
+public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
     protected CardView taskView;
     protected TextView taskTitle;
     protected TextView taskDescription;
     protected TextView taskUser;
     protected StatusView taskStatus;
-    protected Task task;
+    protected T task;
 
     TaskViewHolder(View view){
         super(view);
@@ -85,7 +85,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         return this.taskStatus;
     }
 
-    public void setTask(Task task){
+    public void setTask(T task){
         this.task = task;
     }
 
