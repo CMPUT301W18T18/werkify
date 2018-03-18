@@ -151,6 +151,16 @@ public class RemoteClient {
         return obj;
     }
 
+    /**
+     * take an elasticsearch json query, and returns a List of remote
+     * objects according to the search.
+     *
+     * @param query the json elasticsearch query
+     * @param type a remote object you are searching for
+     * @param <T> the type of remote object you are searching for
+     * @return a list<T>
+     * @throws IOException according to execute
+     */
     public <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
         Search search = new Search.Builder(query).addIndex(this.index)
                 .addType(type.getName()).build();
