@@ -19,7 +19,8 @@
                 "title": {"type": "string"},
                 "description": {"type": "string"},
                 "status": {"type": "string"},
-                "requester": {"type": "nested"}
+                "requester": {"type": "nested"},
+                "provider": {"type": "nested"}
             }
         }
     }

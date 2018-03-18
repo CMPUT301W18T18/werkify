@@ -46,7 +46,9 @@ public class Searcher {
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByProvider(RemoteClient client, User provider) throws IOException {
-        return null;
+        String query = "{\"query\":{\"nested\":{\"path\":\"provider\",\"query\":"
+                + "{\"match\":{\"provider.refId\":\"" + provider.getId() + "\"}}}}}";
+        return client.search(query, Task.class);
     }
 
     /**

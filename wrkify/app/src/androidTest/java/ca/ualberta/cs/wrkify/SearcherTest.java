@@ -56,6 +56,9 @@ public class SearcherTest {
         task3 = rc.create(Task.class, "task 3", user2, "");
         task4 = rc.create(Task.class, "task 4", user2, "");
 
+        task2.acceptBid(new Bid(1.0, user3));
+        rc.upload(task2);
+
         // give elasticsearch time to index
         try {
             Thread.sleep(1000);
@@ -100,5 +103,19 @@ public class SearcherTest {
         }
 
         assertEquals(0, res3.size());
+    }
+
+    @Test
+    public void findTasksByProvider() {
+        List<Task> res2;
+        try {
+            res2 = Searcher.findTasksByProvider(rc, user3);
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(1, res2.size());
+        assertTrue(res2.contains(task2));
     }
 }
