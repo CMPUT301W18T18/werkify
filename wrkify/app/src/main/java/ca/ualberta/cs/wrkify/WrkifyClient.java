@@ -18,19 +18,29 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * Created by peter on 17/03/18.
+ * WrkifyClient provides a singleton of RemoteClient
+ * with the default app settings.
+ *
+ * @see RemoteClient
  */
 
-public class wrkifyClient {
-    private static final String URL = "http://cmput301.softwareprocess.es:8080";
-    private static final String INDEX = "cmput301w18t18";
+public class WrkifyClient {
+    public static final String URL = "http://cmput301.softwareprocess.es:8080";
+    public static final String INDEX = "cmput301w18t18";
 
     private static RemoteClient instance;
 
+    /**
+     * gets the one instance of RemoteClient
+     * used throughout the wrkify app
+     * @return the one true instance
+     */
     public static RemoteClient getInstance() {
         if (instance == null) {
             instance = new RemoteClient(URL, INDEX);
         }
         return instance;
     }
+
+    private WrkifyClient() {}
 }

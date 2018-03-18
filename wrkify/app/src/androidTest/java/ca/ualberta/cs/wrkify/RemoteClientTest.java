@@ -41,7 +41,7 @@ public class RemoteClientTest {
 
     @Test
     public void TestCreateGetDelete() {
-        RemoteClient rc = wrkifyClient.getInstance();
+        RemoteClient rc = WrkifyClient.getInstance();
 
         ConcreteTestObject cto = rc.create(ConcreteTestObject.class, "p1", "p2", 1);
 

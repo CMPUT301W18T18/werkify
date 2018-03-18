@@ -19,28 +19,44 @@ package ca.ualberta.cs.wrkify;
 
 import java.io.Serializable;
 
-import io.searchbox.annotations.JestId;
 
 /**
- * Created by peter on 17/03/18.
+ * RemoteObject is an abstract class for defining
+ * behaviors of objects that are uploaded to RemoteClients
  */
 
 public abstract class RemoteObject implements Serializable {
-    transient private @JestId String id;
+    transient private String id;
     transient private RemoteClient client;
 
+    /**
+     * sets the id of the RemoteObject.
+     * this should only be used by RemoteClient
+     * @param id
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * gets the id of the object
+     * @return the id
+     */
     public String getId() {
         return this.id;
     }
 
+    /**
+     * sets the Client we will use for internal operations
+     * @param client
+     */
     public void setClient(RemoteClient client) {
         this.client = client;
     }
 
+    /**
+     * reuploads the object.
+     */
     public void upload() {
         this.client.upload(this);
     }
