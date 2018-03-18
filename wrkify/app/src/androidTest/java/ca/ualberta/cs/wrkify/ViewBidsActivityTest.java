@@ -53,33 +53,27 @@ public class ViewBidsActivityTest {
         User user14 = new User("UserName14", "UserName10@email.com", "780-123-1243");
         User user15 = new User("UserName15", "UserName10@email.com", "780-123-1243");
         User user16 = new User("UserName16", "UserName10@email.com", "780-123-1243");
+        
+        Task task = new Task("title", user1.reference());
+        task.addBid(new Bid(20.01, user2.reference()));
+        task.addBid(new Bid(31.25, user3.reference()));
+        task.addBid(new Bid(50.12, user4.reference()));
+        task.addBid(new Bid(0.50, user5.reference()));
+        task.addBid(new Bid(25.42, user6.reference()));
+        task.addBid(new Bid(53.23, user7.reference()));
+        task.addBid(new Bid(500.12, user8.reference()));
+        task.addBid(new Bid(9000.00, user9.reference()));
+        task.addBid(new Bid(401.12, user10.reference()));
+        task.addBid(new Bid(23.12, user11.reference()));
+        task.addBid(new Bid(12.50, user12.reference()));
+        task.addBid(new Bid(3.50, user13.reference()));
+        task.addBid(new Bid(4.12, user14.reference()));
+        task.addBid(new Bid(9.16, user15.reference()));
+        task.addBid(new Bid(42.19, user16.reference()));
 
-        ArrayList<Bid> bidList = new ArrayList<Bid>();
-        bidList.add(new Bid(20.01, user2));
-        bidList.add(new Bid(31.25, user3));
-        bidList.add(new Bid(50.12, user4));
-        bidList.add(new Bid(0.50, user5));
-        bidList.add(new Bid(25.42, user6));
-        bidList.add(new Bid(53.23, user7));
-        bidList.add(new Bid(500.12, user8));
-        bidList.add(new Bid(9000.00, user9));
-        bidList.add(new Bid(401.12, user10));
-        bidList.add(new Bid(23.12, user11));
-        bidList.add(new Bid(12.50, user12));
-        bidList.add(new Bid(3.50, user13));
-        bidList.add(new Bid(4.12, user14));
-        bidList.add(new Bid(9.16, user15));
-        bidList.add(new Bid(42.19, user16));
-
-
-
-        Task task = new Task();
-        task.setRequester(user1);
-        task.setBidList(bidList);
-
-        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
+        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1.reference()); //We are the requester
         //intent.putExtra("viewer", user2); //We are NOT the requester
-        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
+        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task.reference());
 
 
 
