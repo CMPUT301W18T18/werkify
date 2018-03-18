@@ -20,8 +20,10 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static junit.framework.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by peter on 18/03/18.
@@ -58,5 +60,42 @@ public class RemoteUserIntegrationTest {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    @Test
+    public void testSearch() {
+        RemoteClient rc = WrkifyClient.getInstance();
+
+        User use1 = rc.create(User.class, "john", "john@example.com", "(780) 666-6666");
+        User use2 = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");
+
+        assertNotEquals(null, use1);
+        assertNotEquals(null, use2);
+
+
+        List<User> arr;
+
+
+        try {
+            // give elasticsearch time to index
+            Thread.sleep(1000);
+            arr = rc.search(
+                    "{\"query\": {\"match\": {\"username\": \"peter\"}}}",
+                    User.class
+            );
+        } catch (Exception e) {
+            fail();
+            return;
+        }
+
+        User res = arr.get(0);
+
+        assertNotEquals(null, res);
+
+        assertEquals(res.getUsername(), "peter");
+        assertEquals(use2.getId(), res.getId());
+
+        rc.delete(use1);
+        rc.delete(use2);
     }
 }
