@@ -17,23 +17,34 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ProviderFragment displays the lists of task that a task provider needs to see
  * this Fragment is displayed by MainActivity
- * TODO: this class has not been implemented
  *
  * @see MainActivity
  */
-public class ProviderFragment extends Fragment {
-    // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
+public class ProviderFragment extends TasksOverviewFragment {
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_provider, container, false);
+    protected List<ArrayList<Task>> getTaskLists() {
+        // TODO get actual tasks
+        List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
+        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(new ArrayList<Task>());
+
+        return pageTaskLists;
+    }
+
+    @Override
+    protected String[] getTabTitles() {
+        return new String[]{"Assigned", "Bidded", "Completed"};
+    }
+    
+    @Override
+    protected String getAppBarTitle() {
+        return "My tasks";
     }
 }

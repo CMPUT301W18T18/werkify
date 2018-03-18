@@ -30,7 +30,7 @@ import java.util.Locale;
 public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragment {
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
-        Bid lowestBid = task.getLowestBid();
+        Bid lowestBid = task.getBidList().get(0);
 
         setDetailString(container,
                 String.format(Locale.US, "%d bids so far", task.getBidList().size()));

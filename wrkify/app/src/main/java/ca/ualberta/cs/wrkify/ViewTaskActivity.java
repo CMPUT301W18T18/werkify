@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.security.InvalidParameterException;
 
 /**
@@ -93,7 +94,13 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         // Determine if the session user owns this task
         // TODO? this comparison seems like it should be encapsulable as User.equals
-        Boolean sessionUserIsRequester = (task.getRequester().getUsername().equals(sessionUser.getUsername()));
+        Boolean sessionUserIsRequester;
+        try {
+            sessionUserIsRequester = (task.getRemoteRequester(WrkifyClient.getInstance()).getUsername().equals(sessionUser.getUsername()));
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
 
         // Set the task title
         TextView titleView = findViewById(R.id.taskViewTitle);
@@ -101,7 +108,12 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         // Set the task user view
         UserView userView = findViewById(R.id.taskViewUser);
-        userView.setUserName(task.getRequester().getUsername());
+        try {
+            userView.setUserName(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
 
         // Set the task description
         TextView descriptionView = findViewById(R.id.taskViewDescription);

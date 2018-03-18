@@ -17,27 +17,18 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
-
-import org.junit.Rule;
-import org.junit.Test;
-
 /**
- * Runs EditProfileActivity
+ * ConcreteTestObject is Used for testing ElasticClient
  */
 
-public class EditProfileActivityTest {
-    @Rule
-    public ActivityTestRule<EditProfileActivity> activityTestRule = new ActivityTestRule<>(
-            EditProfileActivity.class, false, false);
+public class ConcreteTestObject extends RemoteObject {
+    public final String param1;
+    public final String param2;
+    public final int param3;
 
-    @Test
-    public void testEditProfileActivity() {
-        Intent intent = new Intent();
-
-        User user = new User("EditingUser", "email@a.com", "1234567890");
-        intent.putExtra(EditProfileActivity.EXTRA_TARGET_USER, user);
-        activityTestRule.launchActivity(intent);
+    public ConcreteTestObject(String param1, String param2, Integer param3) {
+        this.param1 = param1;
+        this.param2 = param2;
+        this.param3 = param3;
     }
 }

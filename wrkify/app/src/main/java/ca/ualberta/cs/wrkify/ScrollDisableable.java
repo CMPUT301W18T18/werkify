@@ -17,27 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
-
-import org.junit.Rule;
-import org.junit.Test;
-
 /**
- * Runs EditProfileActivity
+ * Interface for LayoutManagers whose scrolling can be toggled on and off
  */
+public interface ScrollDisableable {
 
-public class EditProfileActivityTest {
-    @Rule
-    public ActivityTestRule<EditProfileActivity> activityTestRule = new ActivityTestRule<>(
-            EditProfileActivity.class, false, false);
+    /**
+     * @param enabled True if scrolling is allowed, false otherwise
+     */
+    public void setScrollEnabled(boolean enabled);
 
-    @Test
-    public void testEditProfileActivity() {
-        Intent intent = new Intent();
+    /**
+     * @return if scrolling is currently allowed by the LayoutManager
+     */
+    public boolean getScrollEnabled();
 
-        User user = new User("EditingUser", "email@a.com", "1234567890");
-        intent.putExtra(EditProfileActivity.EXTRA_TARGET_USER, user);
-        activityTestRule.launchActivity(intent);
-    }
 }

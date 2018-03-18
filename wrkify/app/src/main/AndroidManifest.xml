@@ -11,9 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ViewBidsActivity"></activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main">
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,9 +31,11 @@
             android:name=".RegisterActivity"
             android:parentActivityName=".LoginActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".EditProfileActivity"
+        <activity
+            android:name=".EditProfileActivity"
             android:parentActivityName=".ViewProfileActivity" />
-        <activity android:name=".EditTaskActivity"
+        <activity
+            android:name=".EditTaskActivity"
             android:parentActivityName=".ViewTaskActivity"
             android:windowSoftInputMode="adjustResize" />
     </application>
