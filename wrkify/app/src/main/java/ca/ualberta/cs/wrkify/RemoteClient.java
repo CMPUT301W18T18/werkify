@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
@@ -26,6 +28,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import io.searchbox.core.Delete;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
@@ -57,6 +60,7 @@ public class RemoteClient {
         try {
             instance = newInstance(type, conArgs);
         } catch (Exception e) {
+            Log.e("RemoteClient.create", Log.getStackTraceString(e));
             return null;
         }
 
@@ -67,7 +71,7 @@ public class RemoteClient {
             instance.setId(result.getId());
         } catch (IOException e) {
             //TODO buffer and return pseudo id
-            instance.setId(null);
+            return null;
         }
 
         instance.setClient(this);
@@ -82,6 +86,17 @@ public class RemoteClient {
             DocumentResult result = this.client.execute(index);
         } catch (IOException e) {
             //TODO buffer update
+        }
+    }
+
+    public void delete(RemoteObject obj) {
+        Delete del = new Delete.Builder(obj.getId()).index(this.index)
+                .type(obj.getClass().getName()).build();
+
+        try {
+            this.client.execute(del);
+        } catch (IOException e) {
+            //TODO buffer deletion
         }
     }
 

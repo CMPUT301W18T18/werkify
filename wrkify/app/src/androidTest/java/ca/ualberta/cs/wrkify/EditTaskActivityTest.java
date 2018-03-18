@@ -48,10 +48,7 @@ public class EditTaskActivityTest {
     @Test
     public void testEditExistingTaskActivity() {
         Intent intent = new Intent();
-        Task task = new ConcreteTask();
-        task.setProvider(testUser);
-        task.setTitle("Task being edited");
-        task.setDescription("Description of task");
+        Task task = new ConcreteTask("Task being edited", testUser, "Description of task");
         intent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, task);
         activityTestRule.launchActivity(intent);
     }
