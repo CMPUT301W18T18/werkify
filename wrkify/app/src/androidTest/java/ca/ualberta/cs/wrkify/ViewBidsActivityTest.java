@@ -54,28 +54,26 @@ public class ViewBidsActivityTest {
         ConcreteUser user15 = new ConcreteUser("UserName15", "UserName10@email.com", "780-123-1243");
         ConcreteUser user16 = new ConcreteUser("UserName16", "UserName10@email.com", "780-123-1243");
 
-        ArrayList<Bid> bidList = new ArrayList<Bid>();
-        bidList.add(new Bid(20.01, user2));
-        bidList.add(new Bid(31.25, user3));
-        bidList.add(new Bid(50.12, user4));
-        bidList.add(new Bid(0.50, user5));
-        bidList.add(new Bid(25.42, user6));
-        bidList.add(new Bid(53.23, user7));
-        bidList.add(new Bid(500.12, user8));
-        bidList.add(new Bid(9000.00, user9));
-        bidList.add(new Bid(401.12, user10));
-        bidList.add(new Bid(23.12, user11));
-        bidList.add(new Bid(12.50, user12));
-        bidList.add(new Bid(3.50, user13));
-        bidList.add(new Bid(4.12, user14));
-        bidList.add(new Bid(9.16, user15));
-        bidList.add(new Bid(42.19, user16));
+        ConcreteTask task = new ConcreteTask("title", user1);
+        task.addBid(new Bid(20.01, user2));
+        task.addBid(new Bid(31.25, user3));
+        task.addBid(new Bid(50.12, user4));
+        task.addBid(new Bid(0.50, user5));
+        task.addBid(new Bid(25.42, user6));
+        task.addBid(new Bid(53.23, user7));
+        task.addBid(new Bid(500.12, user8));
+        task.addBid(new Bid(9000.00, user9));
+        task.addBid(new Bid(401.12, user10));
+        task.addBid(new Bid(23.12, user11));
+        task.addBid(new Bid(12.50, user12));
+        task.addBid(new Bid(3.50, user13));
+        task.addBid(new Bid(4.12, user14));
+        task.addBid(new Bid(9.16, user15));
+        task.addBid(new Bid(42.19, user16));
 
 
 
-        ConcreteTask task = new ConcreteTask();
-        task.setRequester(user1);
-        task.setBidList(bidList);
+        
 
         intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
         //intent.putExtra("viewer", user2); //We are NOT the requester

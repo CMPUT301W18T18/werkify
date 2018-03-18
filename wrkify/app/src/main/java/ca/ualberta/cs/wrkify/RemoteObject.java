@@ -17,20 +17,29 @@
 
 package ca.ualberta.cs.wrkify;
 
+import io.searchbox.annotations.JestId;
+
 /**
- * ConcreteTestObject is Used for testing ElasticClient
- *
- * @see ElasticClient
+ * Created by peter on 17/03/18.
  */
 
-public class ConcreteTestObject extends RemoteObject {
-    public final String param1;
-    public final String param2;
-    public final int param3;
+public abstract class RemoteObject {
+    transient private String id;
+    transient private RemoteClient client;
 
-    public ConcreteTestObject(String param1, String param2, Integer param3) {
-        this.param1 = param1;
-        this.param2 = param2;
-        this.param3 = param3;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setClient(RemoteClient client) {
+        this.client = client;
+    }
+
+    public void upload() {
+        this.client.upload(this);
     }
 }
