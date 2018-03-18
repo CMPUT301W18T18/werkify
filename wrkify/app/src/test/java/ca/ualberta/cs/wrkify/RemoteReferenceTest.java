@@ -41,15 +41,20 @@ public class RemoteReferenceTest {
         
         RemoteReferredToObject remote1 = remoteClient.download(remote.getId());
         assertEquals(remote, remote1);
+        
+        RemoteReferredToObject newRemote = remoteClient.create(RemoteReferredToObject.class, 789);
+        
+        local.setRRTO(newRemote);
+        assertEquals(newRemote, local.getRRTO());
     }
     
     /**
      * Simple class to use as a mock referent.
      */
     static class RemoteReferredToObject extends RemoteObject {
-        private int field;
+        private Integer field;
         
-        public RemoteReferredToObject(int field) {
+        public RemoteReferredToObject(Integer field) {
             this.field = field;
         }
     }
@@ -58,11 +63,11 @@ public class RemoteReferenceTest {
      * Simple mock class that has a RemoteReference.
      */
     static class ObjectWithRemoteReference {
-        private int field;
+        private Integer field;
         
         private RemoteReference<RemoteReferredToObject> rrto;
         
-        public ObjectWithRemoteReference(int field) {
+        public ObjectWithRemoteReference(Integer field) {
             this.field = field;
         }
         
@@ -71,7 +76,7 @@ public class RemoteReferenceTest {
         }
         
         public void setRRTO(RemoteReferredToObject rrto) {
-            this.rrto.setRemote(rrto);
+            this.rrto = rrto.reference();
         }
     }
 }

@@ -51,7 +51,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private List<Bid> data;
     private RecyclerView recyclerView;
     private boolean isRequester;
-    private ConcreteTask task;
+    private Task task;
 
     private long animationTime = 20;
     private int currentSelectedPos = -1; //List position of the currently selected item
@@ -61,13 +61,13 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     private boolean deleteAnimation = false; //True if a deletion animation is playing
 
     /**
-     * Sets up Bid data from given ConcreteTask, initializes other variables
+     * Sets up Bid data from given Task, initializes other variables
      *
      * @param context AppCompatActivity of the ViewBidsActivity
-     * @param task ConcreteTask being viewed currently
+     * @param task Task being viewed currently
      * @param isRequester If the user is the requester of the given Task
      */
-    public BidListAdapter(AppCompatActivity context, ConcreteTask task, boolean isRequester) {
+    public BidListAdapter(AppCompatActivity context, Task task, boolean isRequester) {
         this.context = context;
         this.task = task;
         this.data = task.getBidList();
@@ -179,7 +179,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
     }
 
     /**
-     * @return True if the viewer is the Requester of the current ConcreteTask
+     * @return True if the viewer is the Requester of the current Task
      */
     public boolean getIsRequester() {
         return isRequester;

@@ -28,8 +28,8 @@ import android.widget.TextView;
  * viewer is a requester of said task, they can accept or reject bids
  *
  * Start with an Intent that has extras:
- * EXTRA_VIEWBIDS_VIEWER: ConcreteUser who is viewing the list
- * EXTRA_VIEWBIDS_TASK: ConcreteTask that is being viewed
+ * EXTRA_VIEWBIDS_VIEWER: User who is viewing the list
+ * EXTRA_VIEWBIDS_TASK: Task that is being viewed
  */
 public class ViewBidsActivity extends AppCompatActivity {
     public static final String EXTRA_VIEWBIDS_VIEWER = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_VIEWER";
@@ -54,8 +54,8 @@ public class ViewBidsActivity extends AppCompatActivity {
         intent = getIntent();
 
         //Get the data
-        ConcreteUser viewer = (ConcreteUser) intent.getSerializableExtra(EXTRA_VIEWBIDS_VIEWER);
-        ConcreteTask task = (ConcreteTask) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+        User viewer = (User) intent.getSerializableExtra(EXTRA_VIEWBIDS_VIEWER);
+        Task task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
 
         boolean isRequester = viewer.getUsername().equals(task.getRequester().getUsername());
 

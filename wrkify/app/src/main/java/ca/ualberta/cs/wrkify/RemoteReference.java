@@ -34,8 +34,4 @@ public class RemoteReference<T extends RemoteObject> {
     public T getRemote() {
         return client.download(this.refId);
     }
-    
-    public void setRemote(T newObject) {
-        client.upload(this.refId, newObject);
-    }
 }

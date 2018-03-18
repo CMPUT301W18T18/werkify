@@ -18,9 +18,9 @@ import java.io.Serializable;
 
 public class Bid implements Comparable<Bid>, Serializable {
     private Double value;
-    private User bidder;
+    private RemoteReference<User> bidder;
 
-    public Bid(Double value, User bidder) {
+    public Bid(Double value, RemoteReference<User> bidder) {
         this.value = value;
         this.bidder = bidder;
     }
@@ -34,14 +34,18 @@ public class Bid implements Comparable<Bid>, Serializable {
     }
 
     public User getBidder() {
+        return bidder.getRemote();
+    }
+    
+    public RemoteReference<User> getBidderReference() {
         return bidder;
     }
 
     public void setBidder(User bidder) {
-        this.bidder = bidder;
+        this.bidder = bidder.reference();
     }
 
-    public int compareTo(Bid bid){
+    public int compareTo(Bid bid) {
         return this.getValue().compareTo(bid.getValue());
     }
 }

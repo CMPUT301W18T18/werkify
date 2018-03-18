@@ -72,7 +72,7 @@ public class EditTaskActivity extends AppCompatActivity {
         if (this.task == null) {
             // TODO this may or may not need to be changed to allow server connectivity
             // TODO change the new user thing later
-            this.task = new ConcreteTask("fix", new ConcreteUser("fix", "fix@fix.com", "7"));
+            this.task = new Task("fix", new User("fix", "fix@fix.com", "7"));
             this.taskIsNew = true;
             if (actionBar != null) {
                 actionBar.setTitle("New task");

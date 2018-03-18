@@ -24,9 +24,9 @@ import java.io.IOException;
  *
  * @see ElasticObject
  * @see User
- * @see ConcreteUser
+ * @see User
  */
-public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
+public class ElasticUser extends ElasticObject<User> implements User {
 
     /**
      * create an ElasticUser from id and the
@@ -34,7 +34,7 @@ public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
      * @param id the elasticsearch id
      */
     public ElasticUser(String id) {
-        super(id, ConcreteUser.class);
+        super(id, User.class);
     }
 
     /**
@@ -44,26 +44,26 @@ public class ElasticUser extends ElasticObject<ConcreteUser> implements User {
      * @param client an ElasticClient
      */
     public ElasticUser(String id, ElasticClient client) {
-        super(id, ConcreteUser.class, client);
+        super(id, User.class, client);
     }
 
     /**
-     * create an ElasticUser around an existing ConcreteUser
+     * create an ElasticUser around an existing User
      * and the ElasticClient singleton
-     * @param user a ConcreteUser
+     * @param user a User
      */
-    public ElasticUser(ConcreteUser user) {
-        super(user, ConcreteUser.class);
+    public ElasticUser(User user) {
+        super(user, User.class);
     }
 
     /**
-     * create an ElasticUser around an existing ConcreteUser
+     * create an ElasticUser around an existing User
      * and a provided ElasticClient
-     * @param user a ConcreteUser
+     * @param user a User
      * @param client an ElasticClient
      */
-    public ElasticUser(ConcreteUser user, ElasticClient client) {
-        super(user, ConcreteUser.class, client);
+    public ElasticUser(User user, ElasticClient client) {
+        super(user, User.class, client);
     }
 
     /**

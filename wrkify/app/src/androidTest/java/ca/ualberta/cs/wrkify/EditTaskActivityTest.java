@@ -31,7 +31,7 @@ public class EditTaskActivityTest {
     public ActivityTestRule<EditTaskActivity> activityTestRule = new ActivityTestRule<>(
             EditTaskActivity.class, false, false);
 
-    User testUser = new ConcreteUser("user", "email@a.com", "1234567890");
+    User testUser = new User("user", "email@a.com", "1234567890");
 
     /**
      * Test creating a new task
@@ -48,7 +48,7 @@ public class EditTaskActivityTest {
     @Test
     public void testEditExistingTaskActivity() {
         Intent intent = new Intent();
-        Task task = new ConcreteTask();
+        Task task = new Task();
         task.setProvider(testUser);
         task.setTitle("Task being edited");
         task.setDescription("Description of task");

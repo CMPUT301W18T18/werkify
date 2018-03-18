@@ -30,7 +30,7 @@ public class ElasticUserTest {
     public void testGetSetUsername() {
         MockElasticClient client = new MockElasticClient();
 
-        ConcreteUser user = new ConcreteUser("user", "user@example.com", "(780) 555-5555");
+        User user = new User("user", "user@example.com", "(780) 555-5555");
 
         ElasticUser elu = new ElasticUser(user, client);
 
@@ -46,7 +46,7 @@ public class ElasticUserTest {
     public void testGetSetEmail() {
         MockElasticClient client = new MockElasticClient();
 
-        ConcreteUser user = new ConcreteUser("user", "user@example.com", "(780) 555-5555");
+        User user = new User("user", "user@example.com", "(780) 555-5555");
 
         ElasticUser elu = new ElasticUser(user, client);
 
@@ -62,7 +62,7 @@ public class ElasticUserTest {
     public void testGetSetPhoneNumber() {
         MockElasticClient client = new MockElasticClient();
 
-        ConcreteUser user = new ConcreteUser("user", "user@example.com", "(780) 555-5555");
+        User user = new User("user", "user@example.com", "(780) 555-5555");
 
         ElasticUser elu = new ElasticUser(user, client);
 

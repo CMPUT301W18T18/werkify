@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
-
 /**
  * Tests for ViewTaskActivity.
  * Launches ViewTaskActivity for a variety of task/session user configurations.
@@ -58,11 +56,11 @@ public class ViewTaskActivityTest {
             "additional content like images and locations will probably make long tasks more " +
             "common, but even with just a sufficiently long description, it could overflow. ";
 
-    private static ConcreteUser exampleUser1 = new ConcreteUser(
+    private static User exampleUser1 = new User(
             "Username1", "test@example.com", "5555550001");
-    private static ConcreteUser exampleUser2 = new ConcreteUser(
+    private static User exampleUser2 = new User(
             "Username2", "test2@example.com", "5555550002");
-    private static ConcreteUser exampleUser3 = new ConcreteUser(
+    private static User exampleUser3 = new User(
             "Username3", "test3@example.com", "5555550003");
 
     private void startViewTaskActivityWith(Task task, User sessionUser) {
@@ -79,7 +77,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewTaskActivity() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example task with no bids");
         task.setDescription(aLongDescription);
@@ -94,7 +92,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewBiddedTask() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example task with bids");
         task.setDescription(aLongDescription);
@@ -113,7 +111,7 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewSelfBiddedTask() {
         // TODO This doesn't currently work any differently from a normal bidded task
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example task that session user has bidded on");
         task.setDescription(aLongDescription);
@@ -130,7 +128,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnUnbiddedTask() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example requested task");
         task.setDescription(aLongDescription);
@@ -145,7 +143,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnBiddedTask() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example bidded requested task");
         task.setDescription(aLongDescription);
@@ -163,7 +161,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewAssignedTask() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example assigned task");
         task.setDescription(aLongDescription);
@@ -180,7 +178,7 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewAssignedToSelfTask() {
         // TODO This doesn't currently work any differently from a task assigned to another user
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example task assigned to self");
         task.setDescription(aLongDescription);
@@ -197,7 +195,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewOwnAssignedTask() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Example task assigned to other");
         task.setDescription(aLongDescription);
@@ -213,7 +211,7 @@ public class ViewTaskActivityTest {
      */
     @Test
     public void testViewCompletedTask() {
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(exampleUser1);
         task.setTitle("Closed task");
         task.setDescription(aLongDescription);

@@ -78,7 +78,7 @@ public class RegisterActivity extends Activity {
      */
     private void tryRegisterAndFinish(String username) {
         // TODO actually add user on server
-        User user = new ConcreteUser(username, "testuser@example.com", "0000000000");
+        User user = new User(username, "testuser@example.com", "0000000000");
         getIntent().putExtra(EXTRA_SESSION_USER, user);
         setResult(RESULT_OK, getIntent());
         finish();

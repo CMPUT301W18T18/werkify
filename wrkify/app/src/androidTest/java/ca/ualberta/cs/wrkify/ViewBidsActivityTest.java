@@ -37,22 +37,22 @@ public class ViewBidsActivityTest {
     public void runActivity() {
         Intent intent = new Intent();
 
-        ConcreteUser user1 = new ConcreteUser("UserName1", "UserName@email.com", "780-123-1234");
-        ConcreteUser user2 = new ConcreteUser("UserName2", "UserName2@email.com", "780-123-1235");
-        ConcreteUser user3 = new ConcreteUser("UserName3", "UserName3@email.com", "780-123-1236");
-        ConcreteUser user4 = new ConcreteUser("UserName4", "UserName4@email.com", "780-123-1237");
-        ConcreteUser user5 = new ConcreteUser("UserName5", "UserName5@email.com", "780-123-1238");
-        ConcreteUser user6 = new ConcreteUser("UserName6", "UserName6@email.com", "780-123-1239");
-        ConcreteUser user7 = new ConcreteUser("UserName7", "UserName7@email.com", "780-123-1240");
-        ConcreteUser user8 = new ConcreteUser("UserName8", "UserName8@email.com", "780-123-1241");
-        ConcreteUser user9 = new ConcreteUser("UserName9", "UserName9@email.com", "780-123-1242");
-        ConcreteUser user10 = new ConcreteUser("UserName10", "UserName10@email.com", "780-123-1243");
-        ConcreteUser user11 = new ConcreteUser("UserName11", "UserName10@email.com", "780-123-1243");
-        ConcreteUser user12 = new ConcreteUser("UserName12", "UserName10@email.com", "780-123-1243");
-        ConcreteUser user13 = new ConcreteUser("UserName13", "UserName10@email.com", "780-123-1243");
-        ConcreteUser user14 = new ConcreteUser("UserName14", "UserName10@email.com", "780-123-1243");
-        ConcreteUser user15 = new ConcreteUser("UserName15", "UserName10@email.com", "780-123-1243");
-        ConcreteUser user16 = new ConcreteUser("UserName16", "UserName10@email.com", "780-123-1243");
+        User user1 = new User("UserName1", "UserName@email.com", "780-123-1234");
+        User user2 = new User("UserName2", "UserName2@email.com", "780-123-1235");
+        User user3 = new User("UserName3", "UserName3@email.com", "780-123-1236");
+        User user4 = new User("UserName4", "UserName4@email.com", "780-123-1237");
+        User user5 = new User("UserName5", "UserName5@email.com", "780-123-1238");
+        User user6 = new User("UserName6", "UserName6@email.com", "780-123-1239");
+        User user7 = new User("UserName7", "UserName7@email.com", "780-123-1240");
+        User user8 = new User("UserName8", "UserName8@email.com", "780-123-1241");
+        User user9 = new User("UserName9", "UserName9@email.com", "780-123-1242");
+        User user10 = new User("UserName10", "UserName10@email.com", "780-123-1243");
+        User user11 = new User("UserName11", "UserName10@email.com", "780-123-1243");
+        User user12 = new User("UserName12", "UserName10@email.com", "780-123-1243");
+        User user13 = new User("UserName13", "UserName10@email.com", "780-123-1243");
+        User user14 = new User("UserName14", "UserName10@email.com", "780-123-1243");
+        User user15 = new User("UserName15", "UserName10@email.com", "780-123-1243");
+        User user16 = new User("UserName16", "UserName10@email.com", "780-123-1243");
 
         ArrayList<Bid> bidList = new ArrayList<Bid>();
         bidList.add(new Bid(20.01, user2));
@@ -73,7 +73,7 @@ public class ViewBidsActivityTest {
 
 
 
-        ConcreteTask task = new ConcreteTask();
+        Task task = new Task();
         task.setRequester(user1);
         task.setBidList(bidList);
 
