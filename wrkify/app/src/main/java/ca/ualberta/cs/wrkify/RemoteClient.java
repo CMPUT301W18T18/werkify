@@ -26,11 +26,15 @@ import com.searchly.jestdroid.JestDroidClient;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.searchbox.core.Delete;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 /**
  * RemoteClient exposes key elasticsearch functionality through
@@ -145,6 +149,23 @@ public class RemoteClient {
         }
 
         return obj;
+    }
+
+    public <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+        Search search = new Search.Builder(query).addIndex(this.index)
+                .addType(type.getName()).build();
+
+        SearchResult result = this.client.execute(search);
+        List<SearchResult.Hit<T, Void>> hits = result.getHits(type);
+
+        ArrayList<T> remotehits = new ArrayList<T>();
+        for (SearchResult.Hit<T, Void> hit : hits) {
+            T obj = hit.source;
+            obj.setId(hit.id);
+            remotehits.add(obj);
+        }
+
+        return remotehits;
     }
 
     /**
