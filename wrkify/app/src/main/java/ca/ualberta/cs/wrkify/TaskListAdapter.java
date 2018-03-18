@@ -30,7 +30,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import java.util.List;
 
 /**
- * Created by Stefan on 2018-03-17.
+ * Adapter for lists of Tasks or objects in that family.
+ * To be used as an adapter for RecyclerView whenever
+ * a potentially large list of Tasks is to be displayed
+ * Tasks are displayed as CardViews but can
+ * be easily changed to something else in TaskViewHolder.
+ *
+ * @see TaskViewHolder
+ * @see SearchFragment
  */
 
 public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskViewHolder> {
@@ -41,13 +48,27 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     public AppCompatActivity context;
     private RecyclerView recyclerView;
 
-    public TaskListAdapter(AppCompatActivity context,List<T> taskList,boolean isRequester){
+    /*
+    *Sets the task list to be used for a RecyclerView, sets sessionUser
+    *
+    * @param context AppCompatActivity of calling Activity
+    * @param List<T> where T is anything that extends Task
+    * @param isRequester, boolean indicating calling perspective (Requester/Provider)
+     */
+    public TaskListAdapter(AppCompatActivity context,List<T> taskList,boolean isRequester,User sessionUser){
         this.taskList = taskList;
         this.isRequester = isRequester;
-//        this.sessionUser = sessionUser;
+        this.sessionUser = sessionUser;
         this.context = context;
     }
 
+
+    /*
+    *Creates TaskViewHolder for caching Task CardViews
+    *
+    * @param parent ViewGroup of parent activity
+    * @param viewType
+     */
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -56,6 +77,13 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
         return holder;
     }
 
+
+    /*
+    *Binds a holder to a the recyvler view
+    *
+    * @param holder TaskViewHolder containing a Task Card View
+    * @param position Index in the recycler list
+     */
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         final T task = taskList.get(position);
@@ -75,8 +103,11 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
             holder.getTaskUser().setText("");
         }
         if(task.getBidList()!=null) {
-            holder.getTaskStatus().setStatus(task.getStatus(), task.getLowestBid().getValue());
+            if(task.getStatus()!=null) {
+                holder.getTaskStatus().setStatus(task.getStatus(), task.getLowestBid().getValue());
+            }
         }
+
         holder.setTask(task);
 
         holder.getTaskView().setOnClickListener(new View.OnClickListener() {
@@ -87,14 +118,26 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
         });
     }
 
+    /*
+    *Returns the size of recycler list.
+     */
     @Override
     public int getItemCount() {
         return this.taskList.size();
     }
 
+    /*
+    *Runs the ViewTaskActivity when a task is selected
+    * from the recycler view list
+    *
+    * @param sessionUser app User
+    * @param task The task that was clicked
+    */
     public void viewTask(User sessionUser, T task){
         Intent intent = new Intent(this.context, ViewTaskActivity.class);
-        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, task.getProvider());
+        if(sessionUser!=null) {
+            intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, task.getProvider());
+        }
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
 
         context.startActivity(intent);
