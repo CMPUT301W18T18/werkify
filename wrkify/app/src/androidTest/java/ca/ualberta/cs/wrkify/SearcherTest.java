@@ -51,10 +51,10 @@ public class SearcherTest {
         user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
         user3 = rc.create(User.class, "john", "john@a.com", "3");
 
-        task1 = rc.create(Task.class, "task 1", user1, "");
-        task2 = rc.create(Task.class, "task 2", user1, "");
-        task3 = rc.create(Task.class, "task 3", user2, "");
-        task4 = rc.create(Task.class, "task 4", user2, "");
+        task1 = rc.create(Task.class, "task 1", user1, "do nothing");
+        task2 = rc.create(Task.class, "task 2", user1, "blah");
+        task3 = rc.create(Task.class, "task 3", user2, "blah blah");
+        task4 = rc.create(Task.class, "task 4", user2, "do something");
 
         task2.acceptBid(new Bid(1.0, user3));
         rc.upload(task2);
@@ -123,7 +123,7 @@ public class SearcherTest {
     }
 
     @Test
-    public void testfindTasksByBidder() {
+    public void testFindTasksByBidder() {
         List<Task> res3;
         try {
             res3 = Searcher.findTasksByBidder(rc, user3);
@@ -144,5 +144,42 @@ public class SearcherTest {
         }
 
         assertEquals(0, res1.size());
+    }
+
+    @Test
+    public void testFindTasksByKeywords() {
+        List<Task> results;
+        try {
+            results = Searcher.findTasksByKeywords(rc, "blah rah");
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(2, results.size());
+        assertTrue(results.contains(task2));
+        assertTrue(results.contains(task3));
+
+        try {
+            results = Searcher.findTasksByKeywords(rc, "task");
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(4, results.size());
+        assertTrue(results.contains(task1));
+        assertTrue(results.contains(task2));
+        assertTrue(results.contains(task3));
+        assertTrue(results.contains(task4));
+
+        try {
+            results = Searcher.findTasksByKeywords(rc, "kjdsfla");
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(0, results.size());
     }
 }
