@@ -18,6 +18,7 @@ import android.location.Location;
  */
 
 public class TaskTest {
+    private static final MockRemoteClient remoteClient = new MockRemoteClient();
 
     @Test
     public void testFailConstructor() {
@@ -140,13 +141,13 @@ public class TaskTest {
 
     @Test
     public void testSetGetProvider() {
-        User concUser = new User("Test", "Test@Test.com", "12 345 67890");
+        User concUser = remoteClient.create(User.class, "Test", "Test@Test.com", "12 345 67890");
         Task concTask = new Task("def", concUser, "");
 
 
         concTask.setProvider(concUser);
 
-        assertEquals(concUser, concTask.getProvider());
+        assertEquals(concUser, concTask.getProvider(remoteClient));
     }
 
 

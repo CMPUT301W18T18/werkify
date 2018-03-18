@@ -25,15 +25,16 @@ import static org.junit.Assert.*;
  * @see Bid
  */
 public class BidTest {
+    private static final MockRemoteClient remoteClient = new MockRemoteClient();
 
     @Test
     public void testBid() throws Exception {
         Double value = 123.45;
-        User bidder = new User("A", "A@example.com", "(555) 555-555");
+        User bidder = remoteClient.create(User.class, "A", "A@example.com", "(555) 555-555");
 
         Bid user = new Bid(value, bidder);
         Double resultvalue = user.getValue();
-        User resultbidder = user.getBidder();
+        User resultbidder = user.getBidder(remoteClient);
 
         assertEquals(resultvalue, value);
         assertEquals(resultbidder, bidder);
@@ -46,15 +47,15 @@ public class BidTest {
         Double B_value = 456.78;
         Double C_value = 0.00;
 
-        User A_bidder = new User("ABC", "ABC@example.com", "(555) 555-555");
-        User B_bidder = new User("CDE", "CDE@example.com", "(666) 666-666");
+        User A_bidder = remoteClient.create(User.class, "ABC", "ABC@example.com", "(555) 555-555");
+        User B_bidder = remoteClient.create(User.class, "CDE", "CDE@example.com", "(666) 666-666");
 
         Bid user = new Bid(A_value, A_bidder);
         user.setValue(B_value);
         assertEquals(user.getValue(), B_value);
 
         user.setBidder(B_bidder);
-        assertEquals(user.getBidder(), B_bidder);
+        assertEquals(user.getBidder(remoteClient), B_bidder);
 
         boolean failed = false;
         try {

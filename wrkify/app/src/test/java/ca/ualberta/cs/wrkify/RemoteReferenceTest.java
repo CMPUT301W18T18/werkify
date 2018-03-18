@@ -28,10 +28,10 @@ import static junit.framework.Assert.*;
  * Tests for RemoteReference.
  */
 public class RemoteReferenceTest {
+    private static final MockRemoteClient remoteClient = new MockRemoteClient();
+
     @Test
     public void testRemoteReference() {
-        MockRemoteClient remoteClient = new MockRemoteClient();
-        
         ObjectWithRemoteReference local = remoteClient.create(ObjectWithRemoteReference.class, 123);
         RemoteReferredToObject remote = remoteClient.create(RemoteReferredToObject.class, 456);
         
@@ -79,7 +79,7 @@ public class RemoteReferenceTest {
         }
         
         public RemoteReferredToObject getRRTO() {
-            return this.rrto.getRemote();
+            return this.rrto.getRemote(remoteClient);
         }
         
         public void setRRTO(RemoteReferredToObject rrto) {

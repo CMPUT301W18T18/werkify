@@ -44,7 +44,6 @@ class MockRemoteClient extends RemoteClient {
         String id = UUID.randomUUID().toString();
         this.hmap.put(id, instance);
         instance.setId(id);
-        instance.setClient(this);
         
         return instance;
     }
