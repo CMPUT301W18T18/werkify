@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -67,5 +68,42 @@ public class RemoteClientTest {
         } catch (IOException e) {
             assertTrue(false);
         }
+    }
+
+    @Test
+    public void testSearch() {
+        RemoteClient rc = WrkifyClient.getInstance();
+
+        ConcreteTestObject co = rc.create(ConcreteTestObject.class,"t1", "t1", 0);
+        ConcreteTestObject co2 = rc.create(ConcreteTestObject.class,"t2", "t1", 0);
+
+        assertNotEquals(null, co);
+        assertNotEquals(null, co2);
+
+
+        List<ConcreteTestObject> arr;
+
+
+        try {
+            // give elasticsearch time to index
+            Thread.sleep(1000);
+            arr = rc.search(
+                    "{\"query\": {\"match\": {\"param1\": \"t2\"}}}",
+                    ConcreteTestObject.class
+            );
+        } catch (Exception e) {
+            fail();
+            return;
+        }
+
+        ConcreteTestObject obj = arr.get(0);
+
+        assertNotEquals(null, obj);
+
+        assertEquals(obj.param1, "t2");
+        assertEquals(co2.getId(), obj.getId());
+
+        rc.delete(co);
+        rc.delete(co2);
     }
 }
