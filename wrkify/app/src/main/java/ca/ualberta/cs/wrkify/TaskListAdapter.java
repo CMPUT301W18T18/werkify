@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -34,10 +35,14 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     private static int taskLayoutID = R.layout.taskcardview;
     protected List<Task> taskList;
     public boolean isRequester;
+    public User sessionUser;
+    public AppCompatActivity context;
 
-    public TaskListAdapter(AppCompatActivity context,List<Task> taskList,boolean isRequester){
+    public TaskListAdapter(AppCompatActivity context,List<Task> taskList,boolean isRequester,User sessionUser){
         this.taskList = taskList;
         this.isRequester = isRequester;
+        this.sessionUser = sessionUser;
+        this.context = context;
     }
 
     @NonNull
@@ -50,19 +55,36 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        holder.taskTitle.setText(taskList.get(position).getTitle());
-        holder.taskDescription.setText(taskList.get(position).getDescription());
+        holder.getTaskTitle().setText(taskList.get(position).getTitle());
+        holder.getTaskDescription().setText(taskList.get(position).getDescription());
         if(this.isRequester) {
-            holder.taskUser.setText(taskList.get(position).getRequester().getUsername());
+            holder.getTaskUser().setText(taskList.get(position).getRequester().getUsername());
         }
         if(!this.isRequester){
-            holder.taskUser.setText(taskList.get(position).getProvider().getUsername());
+            holder.getTaskUser().setText(taskList.get(position).getProvider().getUsername());
         }
-        holder.taskStatus.setStatus(taskList.get(position).getStatus(),taskList.get(position).getLowestBid().getValue());
+        holder.getTaskStatus().setStatus(taskList.get(position).getStatus(),taskList.get(position).getLowestBid().getValue());
+        holder.setTask(taskList.get(position));
+        final Task task = holder.getTask();
+
+        holder.getTaskView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewTask(sessionUser, task);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return this.taskList.size();
+    }
+
+    public void viewTask(User sessionUser, Task task){
+        Intent intent = new Intent(this.context, ViewTaskActivity.class);
+        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
+        intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
+
+        context.startActivity(intent);
     }
 }

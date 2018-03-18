@@ -34,6 +34,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     protected TextView taskDescription;
     protected TextView taskUser;
     protected StatusView taskStatus;
+    protected Task task;
 
     TaskViewHolder(View taskView){
         super(taskView);
@@ -44,4 +45,51 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         this.taskStatus = (StatusView) this.taskView.findViewById(R.id.taskStatus);
     }
 
+    public void setTaskView(CardView cv){
+        this.taskView = cv;
+    }
+
+    public CardView getTaskView(){
+        return  this.taskView;
+    }
+
+    public void setTaskTitle(TextView tv){
+        this.taskTitle = tv;
+    }
+
+    public TextView getTaskTitle(){
+        return this.taskTitle;
+    }
+
+    public void setTaskDescription(TextView tv){
+        this.taskDescription = tv;
+    }
+
+    public TextView getTaskDescription(){
+        return this.taskDescription;
+    }
+
+    public void setTaskUser(TextView tv){
+        this.taskUser = tv;
+    }
+
+    public TextView getTaskUser(){
+        return this.taskUser;
+    }
+
+    public void setTaskStatus(StatusView sv){
+        this.taskStatus = sv;
+    }
+
+    public StatusView getTaskStatus(){
+        return this.taskStatus;
+    }
+
+    public void setTask(Task task){
+        this.task = task;
+    }
+
+    public Task getTask(){
+        return this.task;
+    }
 }
