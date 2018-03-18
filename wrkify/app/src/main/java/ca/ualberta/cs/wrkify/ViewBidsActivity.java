@@ -23,6 +23,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * ViewBidsActivity shows a list of bids on a task that the viewer can scroll through, and if the
  * viewer is a requester of said task, they can accept or reject bids
@@ -57,7 +59,13 @@ public class ViewBidsActivity extends AppCompatActivity {
         User viewer = (User) intent.getSerializableExtra(EXTRA_VIEWBIDS_VIEWER);
         Task task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
 
-        boolean isRequester = viewer.getUsername().equals(task.getRequester(WrkifyClient.getInstance()).getUsername());
+        boolean isRequester;
+        try {
+            isRequester = viewer.getUsername().equals(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
         bidCountView = findViewById(R.id.bidListActivity_bidCount);

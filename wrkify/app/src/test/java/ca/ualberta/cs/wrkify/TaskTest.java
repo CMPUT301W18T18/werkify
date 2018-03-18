@@ -3,6 +3,7 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -147,7 +148,9 @@ public class TaskTest {
 
         concTask.setProvider(concUser);
 
-        assertEquals(concUser, concTask.getProvider(remoteClient));
+        try {
+            assertEquals(concUser, concTask.getRemoteProvider(remoteClient));
+        } catch (IOException e) { fail(); }
     }
 
 

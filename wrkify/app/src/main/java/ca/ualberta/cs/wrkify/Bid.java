@@ -14,6 +14,7 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class Bid implements Comparable<Bid>, Serializable {
@@ -37,7 +38,7 @@ public class Bid implements Comparable<Bid>, Serializable {
         this.value = value;
     }
 
-    public User getBidder(RemoteClient rc) {
+    public User getRemoteBidder(RemoteClient rc) throws IOException {
         return bidder.getRemote(rc);
     }
     

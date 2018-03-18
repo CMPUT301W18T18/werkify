@@ -17,6 +17,7 @@ package ca.ualberta.cs.wrkify;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -141,7 +142,7 @@ public class Task extends RemoteObject {
      * gets the User that requested the Task
      * @return the requester
      */
-    public User getRequester(RemoteClient rc) {
+    public User getRemoteRequester(RemoteClient rc) throws IOException {
         return requester.getRemote(rc);
     }
 
@@ -149,7 +150,7 @@ public class Task extends RemoteObject {
      * gets the provider of the task
      * @return the provider (or null)
      */
-    public User getProvider(RemoteClient rc) {
+    public User getRemoteProvider(RemoteClient rc) throws IOException {
         return provider.getRemote(rc);
     }
 

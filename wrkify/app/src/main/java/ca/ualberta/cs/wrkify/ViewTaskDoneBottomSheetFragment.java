@@ -21,6 +21,7 @@ package ca.ualberta.cs.wrkify;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -40,7 +41,13 @@ public class ViewTaskDoneBottomSheetFragment extends ViewTaskBottomSheetFragment
 
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
-        User assignee = task.getProvider(WrkifyClient.getInstance());
+        User assignee;
+        try {
+            assignee = task.getRemoteProvider(WrkifyClient.getInstance());
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
         if (assignee != null) {
             setDetailString(container,
                     String.format(Locale.US, "Completed by %s", assignee.getUsername()));

@@ -34,7 +34,7 @@ public class BidTest {
 
         Bid user = new Bid(value, bidder);
         Double resultvalue = user.getValue();
-        User resultbidder = user.getBidder(remoteClient);
+        User resultbidder = user.getRemoteBidder(remoteClient);
 
         assertEquals(resultvalue, value);
         assertEquals(resultbidder, bidder);
@@ -55,7 +55,7 @@ public class BidTest {
         assertEquals(user.getValue(), B_value);
 
         user.setBidder(B_bidder);
-        assertEquals(user.getBidder(remoteClient), B_bidder);
+        assertEquals(user.getRemoteBidder(remoteClient), B_bidder);
 
         boolean failed = false;
         try {

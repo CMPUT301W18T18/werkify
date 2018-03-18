@@ -25,6 +25,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * Used by BidListAdapter. Holds Views in the inflated layout representing a Bid item.
  * Handles setting of Bid data given a Bid
@@ -71,7 +73,12 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
      * @param b Bid whose data is to be displayed in the View
      */
     public void setData(Bid b) {
-        taskCompleter.setText(b.getBidder(WrkifyClient.getInstance()).getUsername());
+        try {
+            taskCompleter.setText(b.getRemoteBidder(WrkifyClient.getInstance()).getUsername());
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
         bidAmount.setText("$" + b.getValue().toString());
     }
 

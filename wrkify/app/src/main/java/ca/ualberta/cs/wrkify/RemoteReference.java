@@ -30,11 +30,7 @@ public class RemoteReference<T extends RemoteObject> implements Serializable {
         this.tClass = tClass;
     }
     
-    public T getRemote(RemoteClient client) {
-        try {
-            return client.download(this.refId, this.tClass);
-        } catch (IOException e) {
-            return null;
-        }
+    public T getRemote(RemoteClient client) throws IOException {
+        return client.download(this.refId, this.tClass);
     }
 }

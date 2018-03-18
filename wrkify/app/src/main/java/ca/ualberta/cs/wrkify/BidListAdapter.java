@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -329,7 +330,12 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      */
     private void viewProfileClicked(int position) {
         Intent profileIntent = new Intent(context, ViewProfileActivity.class);
-        profileIntent.putExtra(ViewProfileActivity.USER_EXTRA, data.get(position).getBidder(WrkifyClient.getInstance()));
+        try {
+            profileIntent.putExtra(ViewProfileActivity.USER_EXTRA, data.get(position).getRemoteBidder(WrkifyClient.getInstance()));
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
         context.startActivity(profileIntent);
     }
 

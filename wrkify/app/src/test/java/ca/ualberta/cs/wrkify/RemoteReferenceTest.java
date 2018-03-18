@@ -34,25 +34,25 @@ public class RemoteReferenceTest {
     public void testRemoteReference() {
         ObjectWithRemoteReference local = remoteClient.create(ObjectWithRemoteReference.class, 123);
         RemoteReferredToObject remote = remoteClient.create(RemoteReferredToObject.class, 456);
-        
-        local.setRRTO(remote);
-        assertEquals(remote, local.getRRTO());
-        
+
         try {
+            local.setRemoteRRTO(remote);
+            assertEquals(remote, local.getRemoteRRTO());
+
             ObjectWithRemoteReference local1 = remoteClient.download(local.getId(), local.getClass());
             assertEquals(local, local1);
-            assertEquals(local.getRRTO(), local1.getRRTO());
+            assertEquals(local.getRemoteRRTO(), local1.getRemoteRRTO());
     
             RemoteReferredToObject remote1 = remoteClient.download(remote.getId(), remote.getClass());
             assertEquals(remote, remote1);
+        
+            RemoteReferredToObject newRemote = remoteClient.create(RemoteReferredToObject.class, 789);
+
+            local.setRemoteRRTO(newRemote);
+            assertEquals(newRemote, local.getRemoteRRTO());
         } catch (IOException e) {
             fail();
         }
-        
-        RemoteReferredToObject newRemote = remoteClient.create(RemoteReferredToObject.class, 789);
-        
-        local.setRRTO(newRemote);
-        assertEquals(newRemote, local.getRRTO());
     }
     
     /**
@@ -78,11 +78,11 @@ public class RemoteReferenceTest {
             this.field = field;
         }
         
-        public RemoteReferredToObject getRRTO() {
+        public RemoteReferredToObject getRemoteRRTO() throws IOException {
             return this.rrto.getRemote(remoteClient);
         }
         
-        public void setRRTO(RemoteReferredToObject rrto) {
+        public void setRemoteRRTO(RemoteReferredToObject rrto) {
             this.rrto = rrto.reference();
         }
     }
