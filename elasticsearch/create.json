@@ -6,6 +6,13 @@
                 "param2": {"type": "string"},
                 "param3": {"type": "integer"}
             }
+        },
+        "ca.ualberta.cs.wrkify.User": {
+            "properties": {
+                "username": {"type": "string"},
+                "email": {"type": "string"},
+                "phoneNumber": {"type": "string"}
+            }
         }
     }
 }

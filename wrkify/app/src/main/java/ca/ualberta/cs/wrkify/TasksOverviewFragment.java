@@ -77,7 +77,8 @@ abstract class TasksOverviewFragment extends Fragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         // View profile menu item
                         Intent viewUserIntent = new Intent(getContext(), ViewProfileActivity.class);
-                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, new ConcreteUser("...", "x@x", ""));
+                        User a = null;
+                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, a);
                         startActivity(viewUserIntent);
                         
                         return true;
