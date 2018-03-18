@@ -21,8 +21,6 @@ package ca.ualberta.cs.wrkify;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.UUID;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -93,45 +91,13 @@ public class ElasticObjectTest {
             assertTrue(false);
         }
     }
-}
-
-/**
- * MockElasticClient is a fake ElasticClient
- * that uses HashMap internaly.
- *
- * note: the execute function is not supported
- *
- * @author Peter Elliott
- * @see ElasticClient
- */
-class MockElasticClient extends ElasticClient {
-    private HashMap<String, Object> hmap;
-
-    public MockElasticClient() {
-        this.hmap = new HashMap<String, Object>();
-    }
-
-    public <T> String create(T obj, Class<T> type) {
-        String id = UUID.randomUUID().toString();
-
-        hmap.put(id, obj);
-
-        return id;
-    }
-
-    public <T> void update(String id, T obj, Class<T> type) {
-        hmap.put(id, obj);
-    }
-
-    public <T> T get(String id, Class<T> type) {
-        return type.cast(hmap.get(id));
+    
+    static class SimpleObject {
+        public String str;
+    
+        public SimpleObject(String str) {
+            this.str = str;
+        }
     }
 }
 
-class SimpleObject {
-    public String str;
-
-    public SimpleObject(String str) {
-        this.str = str;
-    }
-}
