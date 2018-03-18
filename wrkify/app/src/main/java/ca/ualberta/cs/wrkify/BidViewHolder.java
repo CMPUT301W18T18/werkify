@@ -71,7 +71,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
      * @param b Bid whose data is to be displayed in the View
      */
     public void setData(Bid b) {
-        taskCompleter.setText(b.getBidder().getUsername());
+        taskCompleter.setText(b.getBidder(WrkifyClient.getInstance()).getUsername());
         bidAmount.setText("$" + b.getValue().toString());
     }
 

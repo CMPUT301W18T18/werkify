@@ -141,16 +141,16 @@ public class Task extends RemoteObject {
      * gets the User that requested the Task
      * @return the requester
      */
-    public User getRequester() {
-        return requester.getRemote();
+    public User getRequester(RemoteClient rc) {
+        return requester.getRemote(rc);
     }
 
     /**
      * gets the provider of the task
      * @return the provider (or null)
      */
-    public User getProvider() {
-        return provider.getRemote();
+    public User getProvider(RemoteClient rc) {
+        return provider.getRemote(rc);
     }
 
     /**

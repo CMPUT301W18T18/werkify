@@ -29,7 +29,7 @@ import java.util.Locale;
 public class ViewTaskAssignedBottomSheetFragment extends ViewTaskBottomSheetFragment {
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
-        User assignee = task.getProvider();
+        User assignee = task.getProvider(WrkifyClient.getInstance());
         if (assignee != null) {
             setDetailString(container,
                     String.format(Locale.US, "to %s", assignee.getUsername()));

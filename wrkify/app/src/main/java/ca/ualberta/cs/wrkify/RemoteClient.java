@@ -93,7 +93,6 @@ public class RemoteClient {
             return null;
         }
 
-        instance.setClient(this);
         return instance;
     }
 
@@ -142,7 +141,6 @@ public class RemoteClient {
         T obj = result.getSourceAsObject(type);
 
         if (obj != null) {
-            obj.setClient(this);
             obj.setId(result.getId());
         }
 

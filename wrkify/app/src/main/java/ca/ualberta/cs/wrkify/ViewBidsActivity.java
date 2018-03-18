@@ -57,7 +57,7 @@ public class ViewBidsActivity extends AppCompatActivity {
         User viewer = (User) intent.getSerializableExtra(EXTRA_VIEWBIDS_VIEWER);
         Task task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
 
-        boolean isRequester = viewer.getUsername().equals(task.getRequester().getUsername());
+        boolean isRequester = viewer.getUsername().equals(task.getRequester(WrkifyClient.getInstance()).getUsername());
 
         recyclerView = findViewById(R.id.bidListRecyclerView);
         bidCountView = findViewById(R.id.bidListActivity_bidCount);

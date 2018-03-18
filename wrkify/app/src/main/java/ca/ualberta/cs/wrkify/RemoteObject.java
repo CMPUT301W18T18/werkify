@@ -19,6 +19,8 @@ package ca.ualberta.cs.wrkify;
 
 import java.io.Serializable;
 
+import io.searchbox.annotations.JestId;
+
 
 /**
  * RemoteObject is an abstract class for defining
@@ -26,6 +28,7 @@ import java.io.Serializable;
  */
 
 public abstract class RemoteObject implements Serializable {
+    @JestId
     private String id;
 
     /**
@@ -43,13 +46,6 @@ public abstract class RemoteObject implements Serializable {
      */
     public String getId() {
         return this.id;
-    }
-
-    /**
-     * reuploads the object.
-     */
-    public void upload(RemoteClient client) {
-        client.upload(this);
     }
     
     public <T extends RemoteObject> RemoteReference<T> reference() {
