@@ -75,18 +75,27 @@ public class TaskListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i("-->", "created view");
         View view = inflater.inflate(R.layout.fragment_task_list, container, false);
         if (tasks.size() == 0) {
             view.findViewById(R.id.taskListView).setVisibility(View.GONE);
             view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
         }
-        else {
-            TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
-            RecyclerView recyclerView = view.findViewById(R.id.taskListView);
-            recyclerView.setAdapter(taskListAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        }
+
+        TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
+        RecyclerView recyclerView = view.findViewById(R.id.taskListView);
+        recyclerView.setAdapter(taskListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (this.getView() != null) {
+            this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
+            this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
+        }
     }
 }
