@@ -60,6 +60,10 @@ public class ViewBidsActivity extends AppCompatActivity {
         User viewer = Session.getInstance(this).getUser();
         this.task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
 
+        TextView titleView = findViewById(R.id.bidListActivity_taskTitle);
+        titleView.setText(task.getTitle());
+
+
         boolean isRequester;
         try {
             isRequester = viewer.equals(task.getRemoteRequester(WrkifyClient.getInstance()));
