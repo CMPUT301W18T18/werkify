@@ -31,11 +31,11 @@ import java.util.List;
 public class ProviderFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> biddedTasks;
+        List<Task> rawBiddedTasks;
         List<Task> rawProvidedTasks;
         try {
             rawProvidedTasks = Searcher.findTasksByProvider(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
-            biddedTasks = Searcher.findTasksByProvider(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
+            rawBiddedTasks = Searcher.findTasksByBidder(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
         } catch (IOException e) {
             // TODO You are offline.
             return new ArrayList<>();
@@ -48,14 +48,24 @@ public class ProviderFragment extends TasksOverviewFragment {
             switch (t.getStatus()) {
                 case ASSIGNED:
                     assignedTasks.add(t);
+                    break;
                 case DONE:
                     completedTasks.add(t);
             }
         }
 
+        // Only show bidded tasks (you can also be a bidder on an assigned task)
+        ArrayList<Task> biddedTasks = new ArrayList<>();
+        for (Task t: rawBiddedTasks) {
+            switch (t.getStatus()) {
+                case BIDDED:
+                    biddedTasks.add(t);
+            }
+        }
+
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
         pageTaskLists.add(assignedTasks);
-        pageTaskLists.add(new ArrayList<>(biddedTasks));
+        pageTaskLists.add(biddedTasks);
         pageTaskLists.add(completedTasks);
 
         return pageTaskLists;

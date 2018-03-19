@@ -57,6 +57,7 @@ public class RequesterFragment extends TasksOverviewFragment {
                     break;
                 case ASSIGNED:
                     assignedTasks.add(t);
+                    break;
                 case DONE:
                     completedTasks.add(t);
             }
