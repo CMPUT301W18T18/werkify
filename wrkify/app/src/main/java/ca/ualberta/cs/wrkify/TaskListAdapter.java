@@ -58,7 +58,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     * @param taskList a List of tasks
     * @param isRequester, boolean indicating calling perspective (Requester/Provider)
      */
-    public TaskListAdapter(Context context,List<Task> taskList,boolean isRequester,User sessionUser){
+    public TaskListAdapter(Context context,List<Task> taskList,boolean isRequester, User sessionUser){
         this.taskList = taskList;
         this.context = context;
         Log.i("Adapter: size", Integer.toString(this.taskList.size()));

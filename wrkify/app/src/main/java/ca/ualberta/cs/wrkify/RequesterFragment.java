@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -33,52 +34,20 @@ import java.util.List;
 public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        // TODO get actual tasks
 
 
-
-        User u1 = WrkifyClient.getInstance().create(User.class, "Peter2", "peter@example.com", "1234567890");
-        User u2 = WrkifyClient.getInstance().create(User.class,"Stefan2", "stefan@example.com", "1234567890");
-        User u3 = WrkifyClient.getInstance().create(User.class,"Stefan3", "stefan@example.com", "1234567890");
-        User u4 = WrkifyClient.getInstance().create(User.class,"Stefan4", "stefan@example.com", "1234567890");
-
-        //Temp tasks
-
-        Task t1 = WrkifyClient.getInstance().create(Task.class, "Taskk 1", u1, "This is task 1");
-        Task t2 = WrkifyClient.getInstance().create(Task.class,"Taskk 2", u2, "This is task 2");
-        t2.addBid(new Bid(24.0, u3));
-        t2.addBid(new Bid(325.3, u4));
-
-        //remove these later
-
-        ArrayList<Task> tasks1 = new ArrayList<>();
-        tasks1.add(t1);
-        tasks1.add(t2);
-
-
-
-        /*
-        List<Task> tasksReturned = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
 
         try {
-            tasksReturned = Searcher.findTasksByRequester(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
+            tasks = Searcher.findTasksByRequester(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
         } catch (Exception e) {
-            Log.e("RequesterFragment", "Some IO Exception");
+            Log.e("RequesterFragment", "Some exception happened while searching");
         }
-        */
-
-        //Requested, assigned, closed
-
 
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(tasks1);
-        pageTaskLists.add(tasks1);
-        pageTaskLists.add(tasks1);
-        /*
-        pageTaskLists.add(new ArrayList<Task>(tasksReturned));
-        pageTaskLists.add(new ArrayList<Task>(tasksReturned));
-        pageTaskLists.add(new ArrayList<Task>(tasksReturned));
-        */
+        pageTaskLists.add(new ArrayList<Task>(tasks));
+        pageTaskLists.add(new ArrayList<Task>(tasks));
+        pageTaskLists.add(new ArrayList<Task>(tasks));
 
         return pageTaskLists;
     }
