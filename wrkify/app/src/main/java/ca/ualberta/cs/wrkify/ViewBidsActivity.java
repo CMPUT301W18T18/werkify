@@ -35,6 +35,7 @@ import java.io.IOException;
  */
 public class ViewBidsActivity extends AppCompatActivity {
     public static final String EXTRA_VIEWBIDS_TASK = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_TASK";
+    public static final String EXTRA_RETURNED_TASK = "ca.ualberta.cs.wrkify.EXTRA_RETURNED_TASK";
 
     protected RecyclerView recyclerView;
     protected BidListAdapter adapter;
