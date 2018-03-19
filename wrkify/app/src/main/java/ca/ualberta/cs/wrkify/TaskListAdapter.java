@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -173,4 +174,5 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     public List<T> getTaskList(){
         return this.taskList;
     }
+
 }

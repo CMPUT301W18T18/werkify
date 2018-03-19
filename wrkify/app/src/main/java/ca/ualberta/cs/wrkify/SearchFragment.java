@@ -61,6 +61,7 @@ public class SearchFragment extends Fragment {
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     private List<Task> taskList = new ArrayList<>();
     private TaskListAdapter<Task> adapter;
+    private RecyclerView recycler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class SearchFragment extends Fragment {
         TaskListAdapter<Task> ad = new TaskListAdapter<Task>(context,this.taskList);
         recyclerView.setAdapter(ad);
         this.adapter = ad;
+        this.recycler = recyclerView;
 
         final EditText searchBar = (EditText) rootView.findViewById(R.id.searchBar);
         searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -107,7 +109,7 @@ public class SearchFragment extends Fragment {
     /**
      * Updates the list of tasks to be displayed according
      * to a search query. Uses Searcher for searching.
-     * 
+     *
      * @param query String search query.
      * @return
      */
@@ -123,8 +125,25 @@ public class SearchFragment extends Fragment {
             this.taskList = new ArrayList<>();
             return true;
         }
-        this.taskList = tasks;
-        this.adapter.setTaskList(tasks);
+        updateDataSet(tasks);
         return true;
+    }
+
+
+    /**
+     * Safely updates TaskListAdapter to data changes
+     * that occured as a result of a search.
+     *
+     * @param newList List of tasks returned by a keyword search
+     */
+    public void updateDataSet(List<Task> newList){
+        for(int i = 0;i<this.taskList.size();i++){
+            this.taskList.remove(i);
+            this.recycler.removeViewAt(i);
+            this.adapter.notifyItemRemoved(i);
+            this.adapter.notifyItemRangeChanged(i, this.taskList.size());
+        }
+        this.taskList = newList;
+        this.adapter.notifyDataSetChanged();
     }
 }
