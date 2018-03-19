@@ -47,7 +47,7 @@ public class Searcher {
      * Find all tasks where the given User is the assigned task provider.
      * @param client RemoteClient to search in
      * @param provider User to search for
-     * @return List of tasks matching the search
+     * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByProvider(RemoteClient client, User provider) throws IOException {
@@ -60,7 +60,7 @@ public class Searcher {
      * Find all tasks where the given User has placed a bid.
      * @param client RemoteClient to search in
      * @param bidder User to search for
-     * @return List of tasks matching the search
+     * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByBidder(RemoteClient client, User bidder) throws IOException {
@@ -73,7 +73,7 @@ public class Searcher {
      * Find all tasks matching a search string.
      * @param client RemoteClient to search in
      * @param keywords Keywords to search for
-     * @return List of tasks matching the search
+     * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByKeywords(RemoteClient client, String keywords) throws IOException {

@@ -21,13 +21,29 @@ package ca.ualberta.cs.wrkify;
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * A RemoteReference is an object consisting of a remote ID that can be
+ * dereferenced to produce an object of a specific type.
+ * @param <T> type of the target object
+ */
 public class RemoteReference<T extends RemoteObject> implements Serializable {
     private String refId;
-    
+
+    /**
+     * Creates a remote reference to the object with remote ID refID.
+     * @param refId ID of the remote object
+     */
     public RemoteReference(String refId) {
         this.refId = refId;
     }
-    
+
+    /**
+     * Retrieves the referred-to object from the given client.
+     * @param client RemoteClient to find the reference in
+     * @param tClass type of the remote object
+     * @return retrieved remote object
+     * @throws IOException if RemoteClient failed to download the object
+     */
     public T getRemote(RemoteClient client, Class<T> tClass) throws IOException {
         return client.download(this.refId, tClass);
     }
