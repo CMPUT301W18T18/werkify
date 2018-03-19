@@ -175,9 +175,9 @@ public class EditTaskActivity extends AppCompatActivity {
                             this.descriptionField.getText().toString()
                     );
         } else {
-            WrkifyClient.getInstance().upload(this.task);
             task.setTitle(titleField.getText().toString());
             task.setDescription(descriptionField.getText().toString());
+            WrkifyClient.getInstance().upload(this.task);
         }
 
         if (task == null) return;
