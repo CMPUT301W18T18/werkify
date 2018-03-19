@@ -18,10 +18,14 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
+import static ca.ualberta.cs.wrkify.ViewTaskActivity.REQUEST_VIEW_BIDS;
 
 /**
  * Bottom sheet to use for a task requester viewing a task
@@ -29,8 +33,6 @@ import java.util.Locale;
  * but will be bound to open a view of the current BidList on click.
  */
 public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragment {
-    private static final int REQUEST_VIEW_BIDS = 13;
-
     @Override
     protected void initializeWithTask(ViewGroup container, final Task task) {
         Bid lowestBid = task.getBidList().get(0);
@@ -45,7 +47,7 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
         container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ViewBidsActivity.class);
+                Intent intent = new Intent(getContext(), ViewBidsActivity.class);
                 intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
                 startActivityForResult(intent, REQUEST_VIEW_BIDS);
             }
@@ -65,5 +67,15 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
     @Override
     protected View getContentLayout(ViewGroup root) {
         return null;
+    }
+
+    /**
+     * Refresh the parent ViewTaskActivity when exiting the bid list.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_VIEW_BIDS && resultCode == RESULT_OK) {
+            ((ViewTaskActivity) getActivity()).replaceTask((Task) data.getSerializableExtra(ViewBidsActivity.EXTRA_RETURNED_TASK));
+        }
     }
 }

@@ -26,6 +26,7 @@ import android.transition.AutoTransition;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -427,11 +428,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
         Intent resultIntent = context.getIntent();
         resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
-        context.setResult(RESULT_OK);
+        context.setResult(RESULT_OK, resultIntent);
         context.finish();
-        // TODO ViewTaskActivity should reinitialize when it receives RESULT_OK
-        // (initializeFromTask on EXTRA_RETURNED_TASK)
-        // ViewTaskActivity may need to be adjusted to use replace(fragment)
-        //     instead of add(fragment)
     }
 }

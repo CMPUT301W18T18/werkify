@@ -45,8 +45,18 @@ public class ViewTaskActivity extends AppCompatActivity {
     private static final String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
     private static final int REQUEST_EDIT_TASK = 18;
 
+    protected static final int REQUEST_VIEW_BIDS = 19;
+
     private Task task;
     private User sessionUser;
+
+    /**
+     * Replaces the Task that the activity is displaying.
+     * @param task task to display
+     */
+    public void replaceTask(Task task) {
+        this.initializeFromTask(task);
+    }
 
     /**
      * Create the ViewTaskActivity.
@@ -81,6 +91,9 @@ public class ViewTaskActivity extends AppCompatActivity {
                 // Exit if the task was deleted
                 finish();
             }
+        } else {
+            // delegate to fragments
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -91,7 +104,7 @@ public class ViewTaskActivity extends AppCompatActivity {
      * changes will not be reflected in the UI.
      * @param task task to display
      */
-    private void initializeFromTask(Task task) {
+     private void initializeFromTask(Task task) {
         this.task = task;
 
         // Determine if the session user owns this task
@@ -133,17 +146,16 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Add the bottom sheet if it doesn't exist already from a previous initialization
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (fragmentManager.findFragmentByTag(FRAGMENT_BOTTOM_SHEET) == null) {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-            ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
-            Bundle arguments = new Bundle();
-            arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
-            bottomSheet.setArguments(arguments);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-            transaction.add(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
-            transaction.commit();
-        }
+        ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
+        bottomSheet.setArguments(arguments);
+
+        transaction.replace(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
+        transaction.commit();
 
         // Set up the app bar
         setTitle("Task");
