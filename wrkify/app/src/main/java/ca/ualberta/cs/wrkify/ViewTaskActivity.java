@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.os.StrictMode;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
@@ -56,6 +57,7 @@ public class ViewTaskActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_task);
 
@@ -95,8 +97,14 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Determine if the session user owns this task
         // TODO? this comparison seems like it should be encapsulable as User.equals
         Boolean sessionUserIsRequester;
+
         try {
-            sessionUserIsRequester = task.getRemoteRequester(WrkifyClient.getInstance()).equals(Session.getInstance(this).getUser());
+            User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+            if (remoteRequester == null) {
+                sessionUserIsRequester = false;
+            } else {
+                sessionUserIsRequester = remoteRequester.equals(Session.getInstance(this).getUser());
+            }
         } catch (IOException e) {
             // TODO handle this correctly
             return;
@@ -109,7 +117,10 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Set the task user view
         UserView userView = findViewById(R.id.taskViewUser);
         try {
-            userView.setUserName(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+            User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+            if (remoteRequester != null) {
+                userView.setUserName(remoteRequester.getUsername());
+            }
         } catch (IOException e) {
             // TODO handle this correctly
             return;

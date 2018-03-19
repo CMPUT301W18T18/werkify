@@ -100,17 +100,6 @@ public class TaskTest {
     }
 
     @Test
-    public void testSetGetLocation() {
-        User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use, "");
-        Location location = new Location("Test");
-
-        concTask.setLocation(location);
-
-        assertEquals(location, concTask.getLocation());
-    }
-
-    @Test
     public void testSetGetChecklist() {
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");

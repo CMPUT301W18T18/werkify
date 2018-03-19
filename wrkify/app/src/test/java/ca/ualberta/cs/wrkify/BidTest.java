@@ -57,13 +57,5 @@ public class BidTest {
         user.setBidder(B_bidder);
         assertEquals(user.getRemoteBidder(remoteClient), B_bidder);
 
-        boolean failed = false;
-        try {
-            user.setValue(C_value);
-        } catch (IllegalArgumentException e) {
-            failed = true;
-        }
-
-        assertTrue(failed);
     }
 }
