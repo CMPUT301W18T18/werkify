@@ -51,6 +51,14 @@ public class ViewTaskActivity extends AppCompatActivity {
     private User sessionUser;
 
     /**
+     * Replaces the Task that the activity is displaying.
+     * @param task task to display
+     */
+    public void replaceTask(Task task) {
+        this.initializeFromTask(task);
+    }
+
+    /**
      * Create the ViewTaskActivity.
      * Populates the layout with details from the intended
      * Task and creates the appropriate bottom sheet.
@@ -74,7 +82,6 @@ public class ViewTaskActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("-->", "req: " + requestCode + ", res: " + resultCode);
         if (requestCode == REQUEST_EDIT_TASK) {
             // TODO sync these changes to the database
             if (resultCode == RESULT_OK) {
@@ -84,6 +91,9 @@ public class ViewTaskActivity extends AppCompatActivity {
                 // Exit if the task was deleted
                 finish();
             }
+        } else {
+            // delegate to fragments
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -94,7 +104,7 @@ public class ViewTaskActivity extends AppCompatActivity {
      * changes will not be reflected in the UI.
      * @param task task to display
      */
-    private void initializeFromTask(Task task) {
+     private void initializeFromTask(Task task) {
         this.task = task;
 
         // Determine if the session user owns this task

@@ -18,11 +18,13 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Locale;
 
+import static android.app.Activity.RESULT_OK;
 import static ca.ualberta.cs.wrkify.ViewTaskActivity.REQUEST_VIEW_BIDS;
 
 /**
@@ -45,7 +47,7 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
         container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ViewBidsActivity.class);
+                Intent intent = new Intent(getContext(), ViewBidsActivity.class);
                 intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
                 startActivityForResult(intent, REQUEST_VIEW_BIDS);
             }
@@ -65,5 +67,15 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
     @Override
     protected View getContentLayout(ViewGroup root) {
         return null;
+    }
+
+    /**
+     * Refresh the parent ViewTaskActivity when exiting the bid list.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_VIEW_BIDS && resultCode == RESULT_OK) {
+            ((ViewTaskActivity) getActivity()).replaceTask((Task) data.getSerializableExtra(ViewBidsActivity.EXTRA_RETURNED_TASK));
+        }
     }
 }

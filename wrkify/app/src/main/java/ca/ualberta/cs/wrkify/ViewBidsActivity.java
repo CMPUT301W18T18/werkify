@@ -44,6 +44,8 @@ public class ViewBidsActivity extends AppCompatActivity {
 
     protected Intent intent;
 
+    private Task task;
+
     /**
      * Initializes activity, setting up all Views and data
      *
@@ -59,7 +61,7 @@ public class ViewBidsActivity extends AppCompatActivity {
 
         //Get the data
         User viewer = Session.getInstance(this).getUser();
-        Task task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+        this.task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
 
         boolean isRequester;
         try {
@@ -112,4 +114,13 @@ public class ViewBidsActivity extends AppCompatActivity {
         this.bidCountView.setText(Integer.toString(count) + message);
     }
 
+    /**
+     * Pass back changes to the task when the activity is exited.
+     */
+    @Override
+    public void onBackPressed() {
+        intent.putExtra(EXTRA_RETURNED_TASK, this.task);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
