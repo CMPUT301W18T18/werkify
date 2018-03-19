@@ -17,7 +17,9 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Rule;
@@ -36,23 +38,7 @@ public class ViewTaskActivityTest {
             "A task can have a description, and that description can be fairly " +
             "long. It may or may not be likely for an actual description to be long enough " +
             "to cause the view to scroll, but it is theoretically allowed, probably. Adding " +
-            "additional content like images and locations will probably make long tasks more " +
-            "common, but even with just a sufficiently long description, it could overflow. " +
-            "A task can have a description, and that description can be fairly " +
-            "long. It may or may not be likely for an actual description to be long enough " +
-            "to cause the view to scroll, but it is theoretically allowed, probably. Adding " +
-            "additional content like images and locations will probably make long tasks more " +
-            "common, but even with just a sufficiently long description, it could overflow. " +
-            "A task can have a description, and that description can be fairly " +
-            "long. It may or may not be likely for an actual description to be long enough " +
-            "to cause the view to scroll, but it is theoretically allowed, probably. Adding " +
-            "additional content like images and locations will probably make long tasks more " +
-            "common, but even with just a sufficiently long description, it could overflow. " +
-            "A task can have a description, and that description can be fairly " +
-            "long. It may or may not be likely for an actual description to be long enough " +
-            "to cause the view to scroll, but it is theoretically allowed, probably. Adding " +
-            "additional content like images and locations will probably make long tasks more " +
-            "common, but even with just a sufficiently long description, it could overflow. ";
+            "additional content like images and locations will probably make long tasks more ";
 
     private static User exampleUser1 = new User(
             "Username1", "test@example.com", "5555550001");
@@ -64,7 +50,14 @@ public class ViewTaskActivityTest {
     private void startViewTaskActivityWith(Task task, User sessionUser) {
         Intent intent = new Intent();
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
-//        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
+
+        try {
+            Context ctx = InstrumentationRegistry.getContext();
+            Session.getInstance(ctx).setUser(sessionUser, ctx);
+        } catch (RuntimeException e) {
+            // saveing doesent work in test, but it doesnt matter
+        }
+
         activityTestRule.launchActivity(intent);
     }
 
@@ -99,7 +92,7 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewSelfBiddedTask() {
         // TODO This doesn't currently work any differently from a normal bidded task
-        Task task = new Task("Example task that session user has bidded on", exampleUser1, aLongDescription);
+        Task task = new Task("Example task of session user", exampleUser1, aLongDescription);
         task.addBid(new Bid(20.00, exampleUser2));
         task.addBid(new Bid(30.00, exampleUser3));
         startViewTaskActivityWith(task, exampleUser3);
