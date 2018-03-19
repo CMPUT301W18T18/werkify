@@ -27,6 +27,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -137,13 +138,9 @@ public class SearchFragment extends Fragment {
      * @param newList List of tasks returned by a keyword search
      */
     public void updateDataSet(List<Task> newList){
-        for(int i = 0;i<this.taskList.size();i++){
-            this.taskList.remove(i);
-            this.recycler.removeViewAt(i);
-            this.adapter.notifyItemRemoved(i);
-            this.adapter.notifyItemRangeChanged(i, this.taskList.size());
-        }
+
         this.taskList = newList;
-        this.adapter.notifyDataSetChanged();
+        TaskListAdapter<Task> newAdapter = new TaskListAdapter<>(new AppCompatActivity(),this.taskList);
+        this.recycler.setAdapter(newAdapter);
     }
 }
