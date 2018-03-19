@@ -24,6 +24,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 /**
@@ -51,6 +53,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
     /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
+
 
     private Task task;
     private boolean taskIsNew = false;
@@ -149,6 +152,12 @@ public class EditTaskActivity extends AppCompatActivity {
     private void deleteAndFinish() {
         WrkifyClient.getInstance().delete(this.task);
         setResult(RESULT_TASK_DELETED);
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         finish();
     }
 

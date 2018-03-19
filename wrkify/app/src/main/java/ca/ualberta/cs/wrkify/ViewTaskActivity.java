@@ -158,7 +158,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                     // Edit the task
                     Intent editIntent = new Intent(ViewTaskActivity.this,
                             EditTaskActivity.class);
-                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);                    
                     startActivityForResult(editIntent, REQUEST_EDIT_TASK);
                 }
             });
