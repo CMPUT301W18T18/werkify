@@ -30,8 +30,7 @@ import java.io.IOException;
  * ViewBidsActivity shows a list of bids on a task that the viewer can scroll through, and if the
  * viewer is a requester of said task, they can accept or reject bids
  *
- * Start with an Intent that has extras:
- * EXTRA_VIEWBIDS_VIEWER: User who is viewing the list
+ * Start with an Intent that has extra:
  * EXTRA_VIEWBIDS_TASK: Task that is being viewed
  */
 public class ViewBidsActivity extends AppCompatActivity {
@@ -46,8 +45,6 @@ public class ViewBidsActivity extends AppCompatActivity {
 
     /**
      * Initializes activity, setting up all Views and data
-     *
-     * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
