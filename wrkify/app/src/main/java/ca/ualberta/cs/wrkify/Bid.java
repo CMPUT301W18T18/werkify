@@ -39,7 +39,7 @@ public class Bid implements Comparable<Bid>, Serializable {
     }
 
     public User getRemoteBidder(RemoteClient rc) throws IOException {
-        return bidder.getRemote(rc);
+        return bidder.getRemote(rc, User.class);
     }
     
     public RemoteReference<User> getBidderReference() {
