@@ -98,7 +98,11 @@ public class Searcher {
      */
     static User getUser(RemoteClient client, String username) throws IOException {
         String query = "{\"query\":{\"match\":{\"username\": \"" + username + "\"}}}";
-        return client.search(query, User.class).get(0);
+        List<User> results = client.search(query, User.class);
+        if (results.size() == 0) {
+            return null;
+        }
+        return results.get(0);
     }
 
     // TODO findTasksByLocation?

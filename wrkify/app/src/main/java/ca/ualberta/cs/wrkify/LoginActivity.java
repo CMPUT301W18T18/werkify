@@ -107,8 +107,10 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             User user = Searcher.getUser(WrkifyClient.getInstance(), username);
-            session.setUser(user, this);
-            startActivity(new Intent(this, MainActivity.class));
+            if (user != null) {
+                session.setUser(user, this);
+                startActivity(new Intent(this, MainActivity.class));
+            }
         } catch (IOException e) {
 
         }
