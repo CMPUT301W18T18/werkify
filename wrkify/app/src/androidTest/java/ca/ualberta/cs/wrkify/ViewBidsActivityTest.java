@@ -71,7 +71,7 @@ public class ViewBidsActivityTest {
         task.addBid(new Bid(9.16, user15));
         task.addBid(new Bid(42.19, user16));
 
-        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
+//        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
         //intent.putExtra("viewer", user2); //We are NOT the requester
         intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
 

@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -35,10 +37,17 @@ public class Searcher {
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
-    static List<Task> findTasksByRequester(RemoteClient client, User requester) throws IOException {
-        String query = "{\"query\":{\"nested\":{\"path\":\"requester\",\"query\":"
-                + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}}}}}";
+    static List<Task> findTasksByRequester(RemoteClient client, User requester, TaskStatus... statuses) throws IOException {
+        String query = "{\"query\":{\"bool\":{\"must\":[\"nested\":{\"path\":\"requester\",\"query\":"
+                + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}},"
+                + getRequestQuery(statuses)+ "]}}}";
+        Log.e("query", query);
         return client.search(query, Task.class);
+    }
+
+    static List<Task> findTasksByRequester(RemoteClient client, User requester) throws IOException {
+        return findTasksByRequester(client, requester,
+                TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
     /**
@@ -106,4 +115,10 @@ public class Searcher {
     }
 
     // TODO findTasksByLocation?
+
+    private static String getRequestQuery(TaskStatus... statuses) {
+        Gson gson = new Gson();
+        String json = gson.toJson(statuses);
+        return String.format("\"terms\": {\"status\": %s, \"minimum_should_match\": 1}", json);
+    }
 }
