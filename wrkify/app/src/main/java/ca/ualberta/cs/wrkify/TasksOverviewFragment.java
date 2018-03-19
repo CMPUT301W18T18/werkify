@@ -94,6 +94,8 @@ abstract class TasksOverviewFragment extends Fragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         // Logout menu item
+                        Session.getInstance(getContext()).logout(getContext());
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
                         getActivity().finish();
                         
                         return false;

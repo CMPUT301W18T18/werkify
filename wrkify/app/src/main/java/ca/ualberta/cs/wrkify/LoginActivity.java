@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (sessionuser != null) {
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
 
         this.loginField = findViewById(R.id.loginField);
@@ -110,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
             if (user != null) {
                 session.setUser(user, this);
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
             }
         } catch (IOException e) {
 
@@ -127,6 +129,7 @@ public class LoginActivity extends AppCompatActivity {
             User sessionuser = Session.getInstance(this).getUser();
             if (sessionuser != null) {
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
             }
         }
     }
