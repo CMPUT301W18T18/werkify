@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,8 +29,10 @@ import java.util.Locale;
  * but will be bound to open a view of the current BidList on click.
  */
 public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragment {
+    private static final int REQUEST_VIEW_BIDS = 13;
+
     @Override
-    protected void initializeWithTask(ViewGroup container, Task task) {
+    protected void initializeWithTask(ViewGroup container, final Task task) {
         Bid lowestBid = task.getBidList().get(0);
 
         setDetailString(container,
@@ -38,6 +41,15 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
             setRightStatusString(container,
                     String.format(Locale.US, "$%.2f", lowestBid.getValue()));
         }
+
+        container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ViewBidsActivity.class);
+                intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
+                startActivityForResult(intent, REQUEST_VIEW_BIDS);
+            }
+        });
     }
 
     @Override

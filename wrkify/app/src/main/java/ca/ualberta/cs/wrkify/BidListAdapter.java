@@ -33,6 +33,9 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+import static ca.ualberta.cs.wrkify.ViewBidsActivity.EXTRA_RETURNED_TASK;
+
 /**
  * For use with ViewBidsActivity
  * Creates and manages Bid Views for the RecyclerView in the activity
@@ -347,6 +350,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      * @param position
      */
     private void rejectClicked(final BidViewHolder holder, final int position) {
+        task.cancelBid(data.get(position));
+        WrkifyClient.getInstance().upload(task);
+
         AutoTransition cb = new AutoTransition();
         cb.setDuration((long) (animationTime));
 
@@ -419,7 +425,15 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      */
     protected void acceptClicked(int position) {
         task.acceptBid(data.get(position));
-        context.finish();
-    }
+        WrkifyClient.getInstance().upload(task);
 
+        Intent resultIntent = context.getIntent();
+        resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
+        context.setResult(RESULT_OK);
+        context.finish();
+        // TODO ViewTaskActivity should reinitialize when it receives RESULT_OK
+        // (initializeFromTask on EXTRA_RETURNED_TASK)
+        // ViewTaskActivity may need to be adjusted to use replace(fragment)
+        //     instead of add(fragment)
+    }
 }
