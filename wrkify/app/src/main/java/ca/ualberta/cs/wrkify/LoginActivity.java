@@ -27,6 +27,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * Allows a user to log in.
  * In the current implementation lacking authentication infrastructure,
@@ -92,10 +94,15 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void trySubmitAndFinish(String username) {
         // TODO actually look up user on the server
-        User user = new User(username, "testuser@example.com", "0000000000");
-        getIntent().putExtra(EXTRA_SESSION_USER, user);
-        setResult(RESULT_OK, getIntent());
-        finish();
+        Session session = Session.getInstance(this);
+
+        try {
+            User user = Searcher.getUser(WrkifyClient.getInstance(), username);
+            session.setUser(user, this);
+            startActivity(new Intent(this, MainActivity.class));
+        } catch (IOException e) {
+
+        }
     }
 
     /**
