@@ -18,7 +18,14 @@
             "properties": {
                 "title": {"type": "string"},
                 "description": {"type": "string"},
-                "statsu": {"type": "string"}
+                "status": {"type": "string"},
+                "requester": {"type": "nested"},
+                "provider": {"type": "nested"},
+                "bidList": {
+                    "properties": {
+                        "bidder": {"type": "nested"}
+                    }
+                }
             }
         }
     }
