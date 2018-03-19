@@ -46,8 +46,13 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         this.initializeFromUser((User) getIntent().getSerializableExtra(USER_EXTRA));
 
-        // Open EditProfileActivity on edit button press
+        // Show the Edit button if the user being viewed is the session user
         FloatingActionButton editButton = findViewById(R.id.editButton);
+        if (Session.getInstance(this).getUser().equals(user)) {
+            editButton.setVisibility(View.VISIBLE);
+        }
+
+        // Open EditProfileActivity on edit button press
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
