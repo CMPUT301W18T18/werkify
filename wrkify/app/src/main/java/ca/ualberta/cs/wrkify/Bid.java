@@ -39,6 +39,9 @@ public class Bid implements Comparable<Bid>, Serializable {
     }
 
     public User getRemoteBidder(RemoteClient rc) throws IOException {
+        if (bidder == null) {
+            return null;
+        }
         return bidder.getRemote(rc, User.class);
     }
     
