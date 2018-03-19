@@ -59,4 +59,15 @@ public class TaskListFragmentPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return pageTaskLists.size();
     }
+
+    /**
+     * Adds a task to one of the adapter's lists.
+     * Used to update the adapter when tasks are created or otherwise
+     * come into membership of the list.
+     * @param listIndex list to add to
+     * @param task task to add
+     */
+    public void appendTaskToList(int listIndex, Task task) {
+        this.pageTaskLists.get(listIndex).add(task);
+    }
 }

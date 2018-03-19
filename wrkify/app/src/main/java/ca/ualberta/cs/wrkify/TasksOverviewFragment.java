@@ -195,6 +195,14 @@ abstract class TasksOverviewFragment extends Fragment {
     }
 
     /**
+     * Gets a reference to the Fragment's ViewPager.
+     * @return ViewPager containing the TaskListViews
+     */
+    protected ViewPager getPager() {
+        return this.pager;
+    }
+
+    /**
      * Selects which tasks to display in the task lists. Each element
      * in the outer list is a list of tasks that will be displayed in a tab.
      * Length of the list should be the same as the length of the list
