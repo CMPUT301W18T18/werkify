@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import java.io.IOException;
@@ -32,6 +33,8 @@ import java.util.List;
  * @see MainActivity
  */
 public class RequesterFragment extends TasksOverviewFragment {
+    private static final int REQUEST_NEW_TASK = 13;
+
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
         List<Task> rawTasks;
@@ -85,6 +88,16 @@ public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected void onAddButtonClick(View v) {
         Intent newTaskIntent = new Intent(getContext(), EditTaskActivity.class);
-        startActivity(newTaskIntent);
+        startActivityForResult(newTaskIntent, REQUEST_NEW_TASK);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_NEW_TASK && resultCode == EditTaskActivity.RESULT_TASK_CREATED) {
+            // Append the new task to task list
+            TaskListFragmentPagerAdapter adapter = (TaskListFragmentPagerAdapter) getPager().getAdapter();
+            Task task = (Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK);
+            adapter.appendTaskToList(0, task);
+        }
     }
 }
