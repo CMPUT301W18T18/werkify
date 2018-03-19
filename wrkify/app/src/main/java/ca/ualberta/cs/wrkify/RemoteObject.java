@@ -51,7 +51,7 @@ public abstract class RemoteObject implements Serializable {
     }
     
     public <T extends RemoteObject> RemoteReference<T> reference() {
-        return new RemoteReference(id, this.getClass());
+        return new RemoteReference(id);
     }
 
     @Override
