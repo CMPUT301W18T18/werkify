@@ -350,9 +350,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      * @param position
      */
     private void rejectClicked(final BidViewHolder holder, final int position) {
-        task.cancelBid(data.get(position));
-        WrkifyClient.getInstance().upload(task);
-
         AutoTransition cb = new AutoTransition();
         cb.setDuration((long) (animationTime));
 
@@ -377,6 +374,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
                 adapter.deleteItem(holder, position);
+                WrkifyClient.getInstance().upload(task);
             }
 
             @Override
@@ -386,7 +384,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
                 adapter.deleteItem(holder, position);
-
+                WrkifyClient.getInstance().upload(task);
             }
 
             @Override
@@ -412,7 +410,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         currentSelectedPos = -1;
         currentSelected = null;
         selectedIsVisible = false;
-        data.remove(position);
+        task.cancelBid(data.get(position));
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, data.size());
         holder.restoreSize();
