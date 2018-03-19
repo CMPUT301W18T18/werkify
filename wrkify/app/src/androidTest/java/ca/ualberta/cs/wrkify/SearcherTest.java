@@ -45,7 +45,7 @@ public class SearcherTest {
 
     @BeforeClass
     public static void createData() {
-        rc = WrkifyClient.getInstance();
+        rc = new RemoteClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         user1 = rc.create(User.class, "peter", "peter@a.com", "1");
         user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
@@ -181,5 +181,24 @@ public class SearcherTest {
         }
 
         assertEquals(0, results.size());
+    }
+
+    @Test
+    public void testGetUser() {
+        User peter;
+        User taylor;
+        User john;
+        try {
+            peter = Searcher.getUser(rc, "peter");
+            taylor = Searcher.getUser(rc, "taylor");
+            john = Searcher.getUser(rc, "john");
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertEquals(user1, peter);
+        assertEquals(user2, taylor);
+        assertEquals(user3, john);
     }
 }

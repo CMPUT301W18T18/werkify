@@ -39,7 +39,6 @@ import java.security.InvalidParameterException;
  */
 public class ViewTaskActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
-    public static final String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
     private static final String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
     private static final int REQUEST_EDIT_TASK = 18;
@@ -64,10 +63,9 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        this.sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
-        Log.i("Before", "asdasd");
+
+        this.sessionUser = Session.getInstance(this).getUser();
         this.initializeFromTask((Task) intent.getSerializableExtra(EXTRA_TARGET_TASK));
-        Log.i("After", "asdasd");
     }
 
     @Override
