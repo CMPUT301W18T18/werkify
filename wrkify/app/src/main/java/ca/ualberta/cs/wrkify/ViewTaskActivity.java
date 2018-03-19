@@ -79,6 +79,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                 this.initializeFromTask((Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK));
             } else if (resultCode == EditTaskActivity.RESULT_TASK_DELETED) {
                 // Exit if the task was deleted
+                Log.i("WE GET HERE","ADJASLDF00");
                 finish();
             }
         }
@@ -159,6 +160,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                     Intent editIntent = new Intent(ViewTaskActivity.this,
                             EditTaskActivity.class);
                     editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
+//                    editIntent.putExtra(EditTaskActivity.FRAGMENT_BOTTOM_SHEET,FRAGMENT_BOTTOM_SHEET);
                     startActivityForResult(editIntent, REQUEST_EDIT_TASK);
                 }
             });
