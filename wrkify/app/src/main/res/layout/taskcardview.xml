@@ -74,5 +74,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/taskDescription" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1E000000"/>
     </android.support.constraint.ConstraintLayout>
+
 </android.support.v7.widget.CardView>
