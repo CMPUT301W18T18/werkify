@@ -81,7 +81,10 @@ public class TaskListFragment extends Fragment {
         }
         else {
             RecyclerView recyclerView = view.findViewById(R.id.taskListView);
-            recyclerView.setAdapter(null); // TODO adapter doesn't exist yet
+
+            TaskListAdapter adapter = new TaskListAdapter(getContext(), tasks);
+
+            recyclerView.setAdapter(null);
         }
 
         return view;

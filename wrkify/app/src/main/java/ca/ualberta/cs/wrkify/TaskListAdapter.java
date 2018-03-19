@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,9 +43,9 @@ import java.util.List;
  * @see SearchFragment
  */
 
-public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskViewHolder> {
+public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     private static int taskLayoutID = R.layout.taskcardview;
-    protected List<T> taskList;
+    protected List<Task> taskList;
     public AppCompatActivity context;
     private RecyclerView recyclerView;
 
@@ -51,10 +53,10 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     *Sets the task list to be used for a RecyclerView, sets sessionUser
     *
     * @param context AppCompatActivity of calling Activity
-    * @param List<T> where T is anything that extends Task
+    * @param ArrayList<Task> the list of tasks
     * @param isRequester, boolean indicating calling perspective (Requester/Provider)
      */
-    public TaskListAdapter(AppCompatActivity context,List<T> taskList){
+    public TaskListAdapter(Context context, ArrayList<Task> taskList){
         this.taskList = taskList;
         this.context = context;
     }
@@ -83,7 +85,7 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
      */
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        final T task = taskList.get(position);
+        final Task task = taskList.get(position);
 
         holder.getTaskTitle().setText(task.getTitle());
         holder.getTaskDescription().setText(task.getDescription());
@@ -144,7 +146,7 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     * @param sessionUser app User
     * @param task The task that was clicked
     */
-    public void viewTask(User sessionUser, T task){
+    public void viewTask(User sessionUser, Task task){
         Intent intent = new Intent(this.context, ViewTaskActivity.class);
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
 
@@ -163,14 +165,14 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     *
     * @param taskList List of objects in Task family
     */
-    public void setTaskList(List<T> taskList){
+    public void setTaskList(List<Task> taskList){
         this.taskList = taskList;
     }
 
     /*
     *Returns the List of tasks that are being adapted
      */
-    public List<T> getTaskList(){
+    public List<Task> getTaskList(){
         return this.taskList;
     }
 }

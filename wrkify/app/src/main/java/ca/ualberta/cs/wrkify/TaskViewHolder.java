@@ -34,13 +34,13 @@ import org.w3c.dom.Text;
  * @see SearchFragment
  */
 
-public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
+public class TaskViewHolder<Task> extends RecyclerView.ViewHolder {
     protected CardView taskView;
     protected TextView taskTitle;
     protected TextView taskDescription;
     protected TextView taskUser;
     protected StatusView taskStatus;
-    protected T task;
+    protected Task task;
     /*
     *Sets the root view of the card view
     * and child views.
@@ -148,7 +148,7 @@ public class TaskViewHolder<T extends Task> extends RecyclerView.ViewHolder {
    *
    *@param task Task or any subclass of task
    */
-    public void setTask(T task){
+    public void setTask(Task task){
         this.task = task;
     }
 

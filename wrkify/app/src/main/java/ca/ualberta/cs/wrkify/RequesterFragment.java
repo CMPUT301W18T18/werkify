@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -32,9 +33,21 @@ import java.util.List;
 public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        // TODO get actual tasks
+
+
+        List<Task> tasks = new ArrayList<Task>();
+
+
+        try {
+            tasks = Searcher.findTasksByRequester(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
+        } catch (Exception e) {
+            Log.e("RequesterFragment", "Something went wrong while searching");
+        }
+
+        Log.i("RequesterFragment SIZE", Integer.toString(tasks.size()));
+
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(new ArrayList<Task>(tasks));
         pageTaskLists.add(new ArrayList<Task>());
         pageTaskLists.add(new ArrayList<Task>());
 
