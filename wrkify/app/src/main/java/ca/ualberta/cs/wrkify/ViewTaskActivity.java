@@ -146,16 +146,17 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Add the bottom sheet if it doesn't exist already from a previous initialization
         FragmentManager fragmentManager = getSupportFragmentManager();
 
+        if (fragmentManager.findFragmentByTag(FRAGMENT_BOTTOM_SHEET) == null) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+            ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
+            bottomSheet.setArguments(arguments);
 
-        ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
-        bottomSheet.setArguments(arguments);
-
-        transaction.replace(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
-        transaction.commit();
+            transaction.replace(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
+            transaction.commit();
+        }
 
         // Set up the app bar
         setTitle("Task");
