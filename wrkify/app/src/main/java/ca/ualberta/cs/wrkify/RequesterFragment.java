@@ -17,6 +17,9 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,5 +49,16 @@ public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected String getAppBarTitle() {
         return "My posts";
+    }
+
+    @Override
+    protected boolean isAddButtonEnabled(int index) {
+        return (index == 0);
+    }
+
+    @Override
+    protected void onAddButtonClick(View v) {
+        Intent newTaskIntent = new Intent(getContext(), EditTaskActivity.class);
+        startActivity(newTaskIntent);
     }
 }
