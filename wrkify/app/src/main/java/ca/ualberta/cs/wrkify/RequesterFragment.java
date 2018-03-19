@@ -20,6 +20,8 @@ package ca.ualberta.cs.wrkify;
 import android.content.Intent;
 import android.view.View;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +34,35 @@ import java.util.List;
 public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        // TODO get actual tasks
+        List<Task> rawTasks;
+        try {
+            rawTasks = Searcher.findTasksByRequester(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
+        } catch (IOException e) {
+            // TODO You are offline.
+            return new ArrayList<>();
+        }
+
+        // Filter tasks into requested, assigned, completed
+        ArrayList<Task> requestedTasks = new ArrayList<>();
+        ArrayList<Task> assignedTasks = new ArrayList<>();
+        ArrayList<Task> completedTasks = new ArrayList<>();
+        for (Task t: rawTasks) {
+            switch (t.getStatus()) {
+                case REQUESTED:
+                case BIDDED:
+                    requestedTasks.add(t);
+                    break;
+                case ASSIGNED:
+                    assignedTasks.add(t);
+                case DONE:
+                    completedTasks.add(t);
+            }
+        }
+
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(new ArrayList<Task>());
-        pageTaskLists.add(new ArrayList<Task>());
-        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(requestedTasks);
+        pageTaskLists.add(assignedTasks);
+        pageTaskLists.add(completedTasks);
 
         return pageTaskLists;
     }
