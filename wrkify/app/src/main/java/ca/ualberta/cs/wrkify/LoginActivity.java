@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -47,10 +48,18 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         getSupportActionBar().hide();
+
+        User sessionuser = Session.getInstance(this).getUser();
+
+        if (sessionuser != null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
 
         this.loginField = findViewById(R.id.loginField);
         Button loginButton = findViewById(R.id.loginButton);
@@ -113,9 +122,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REGISTER && resultCode == RESULT_OK) {
-            getIntent().putExtra(EXTRA_SESSION_USER, data.getStringExtra(EXTRA_SESSION_USER));
-            setResult(RESULT_OK, getIntent());
-            finish();
+            User sessionuser = Session.getInstance(this).getUser();
+            if (sessionuser != null) {
+                startActivity(new Intent(this, MainActivity.class));
+            }
         }
     }
 }

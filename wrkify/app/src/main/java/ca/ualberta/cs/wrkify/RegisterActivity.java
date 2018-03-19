@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -43,6 +44,7 @@ public class RegisterActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppTheme_TransparentActionBar);
         setContentView(R.layout.activity_register);
@@ -92,7 +94,10 @@ public class RegisterActivity extends Activity {
         RemoteClient rc = WrkifyClient.getInstance();
         Session session = Session.getInstance(this, rc);
         User newUser = rc.create(User.class, username, email, phoneNumber);
-        session.setUser(newUser, this);
-        finish();
+        if (newUser != null) {
+            session.setUser(newUser, this);
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 }
