@@ -111,6 +111,13 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (!valid) { return; }
 
+        WrkifyClient.getInstance().upload(user);
+
+        Session session = Session.getInstance(this);
+        if (session.getUser().equals(user)) {
+            session.setUser(user, this);
+        }
+
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_USER, user);
 
