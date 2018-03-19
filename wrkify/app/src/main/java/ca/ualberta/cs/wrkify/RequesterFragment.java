@@ -30,8 +30,23 @@ public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
         // TODO get actual tasks
+
+
+        User u1 = WrkifyClient.getInstance().create(User.class, "Peter2", "peter@example.com", "1234567890");
+        User u2 = WrkifyClient.getInstance().create(User.class,"Stefan2", "stefan@example.com", "1234567890");
+
+        //Temp tasks
+
+        Task t1 = WrkifyClient.getInstance().create(Task.class, "Taskk 1", u1, "This is task 1");
+        Task t2 = WrkifyClient.getInstance().create(Task.class,"Taskk 2", u2, "This is task 2");
+        //remove these later
+
+        ArrayList<Task> tasks1 = new ArrayList<>();
+        tasks1.add(t1);
+        tasks1.add(t2);
+
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(tasks1);
         pageTaskLists.add(new ArrayList<Task>());
         pageTaskLists.add(new ArrayList<Task>());
 

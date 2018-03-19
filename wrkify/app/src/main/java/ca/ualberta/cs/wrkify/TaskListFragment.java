@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -81,7 +82,15 @@ public class TaskListFragment extends Fragment {
         }
         else {
             RecyclerView recyclerView = view.findViewById(R.id.taskListView);
-            recyclerView.setAdapter(null); // TODO adapter doesn't exist yet
+
+            //Fake user
+            User u3 = new User("John", "asd@soij.ca", "1234567890");
+            TaskListAdapter adapter = new TaskListAdapter(getContext(), this.tasks, false, u3);
+            LinearLayoutManager manager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(manager);
+            recyclerView.setAdapter(adapter); // TODO adapter doesn't exist yet
+            adapter.notifyDataSetChanged();
+            Log.i("TaskListFragment: size", Integer.toString(this.tasks.size()));
         }
 
         return view;
