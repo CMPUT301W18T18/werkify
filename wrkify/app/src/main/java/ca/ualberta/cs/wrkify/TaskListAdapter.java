@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -45,7 +46,7 @@ import java.util.List;
 public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskViewHolder> {
     private static int taskLayoutID = R.layout.taskcardview;
     protected List<T> taskList;
-    public AppCompatActivity context;
+    public Context context;
     private RecyclerView recyclerView;
 
     /*
@@ -55,7 +56,7 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     * @param List<T> where T is anything that extends Task
     * @param isRequester, boolean indicating calling perspective (Requester/Provider)
      */
-    public TaskListAdapter(AppCompatActivity context,List<T> taskList){
+    public TaskListAdapter(Context context, List<T> taskList){
         this.taskList = taskList;
         this.context = context;
     }
@@ -151,10 +152,10 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     * @param task The task that was clicked
     */
     public void viewTask(User sessionUser, T task){
-        Intent intent = new Intent(this.context, ViewTaskActivity.class);
+        Intent intent = new Intent(this.recyclerView.getContext(), ViewTaskActivity.class);
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
 
-        context.startActivity(intent);
+        this.recyclerView.getContext().startActivity(intent);
     }
 
     @Override

@@ -85,7 +85,7 @@ public class SearchFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.taskSearchRecycler);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(llm);
-        AppCompatActivity context = new AppCompatActivity();
+        Context context = getContext();
         TaskListAdapter<Task> ad = new TaskListAdapter<Task>(context,this.taskList);
         recyclerView.setAdapter(ad);
         this.adapter = ad;
