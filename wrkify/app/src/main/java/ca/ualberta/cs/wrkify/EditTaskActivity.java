@@ -180,6 +180,8 @@ public class EditTaskActivity extends AppCompatActivity {
             task.setDescription(descriptionField.getText().toString());
         }
 
+        if (task == null) return;
+
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_TASK, this.task);
 
