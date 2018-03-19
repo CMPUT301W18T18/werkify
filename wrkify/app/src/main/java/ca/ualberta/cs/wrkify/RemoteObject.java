@@ -49,7 +49,12 @@ public abstract class RemoteObject implements Serializable {
     public String getId() {
         return this.id;
     }
-    
+
+    /**
+     * returns a reference to theis object
+     * @param <T> enforcing remotereferences to remoteobjects
+     * @return the RemoteReference
+     */
     public <T extends RemoteObject> RemoteReference<T> reference() {
         return new RemoteReference(id);
     }
