@@ -143,7 +143,7 @@ public class Task extends RemoteObject {
      * @return the requester
      */
     public User getRemoteRequester(RemoteClient rc) throws IOException {
-        return requester.getRemote(rc);
+        return requester.getRemote(rc, User.class);
     }
 
     /**
@@ -151,7 +151,7 @@ public class Task extends RemoteObject {
      * @return the provider (or null)
      */
     public User getRemoteProvider(RemoteClient rc) throws IOException {
-        return provider.getRemote(rc);
+        return provider.getRemote(rc, User.class);
     }
 
     /**
@@ -294,4 +294,5 @@ public class Task extends RemoteObject {
             return this.getBidList().get(0).getValue();
         }
     }
+
 }

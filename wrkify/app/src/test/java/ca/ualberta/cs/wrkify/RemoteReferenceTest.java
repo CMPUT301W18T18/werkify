@@ -79,7 +79,7 @@ public class RemoteReferenceTest {
         }
         
         public RemoteReferredToObject getRemoteRRTO() throws IOException {
-            return this.rrto.getRemote(remoteClient);
+            return this.rrto.getRemote(remoteClient, RemoteReferredToObject.class);
         }
         
         public void setRemoteRRTO(RemoteReferredToObject rrto) {

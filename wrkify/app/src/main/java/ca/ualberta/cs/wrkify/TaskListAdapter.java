@@ -122,7 +122,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
         if(task.getBidList()!=null) {
             if(task.getStatus()!=null) {
-                holder.getTaskStatus().setStatus(task.getStatus(), task.getBidList().get(0).getValue());
+                if (task.getBidList().size() > 0) {
+                    holder.getTaskStatus().setStatus(task.getStatus(), task.getBidList().get(0).getValue());
+                } else {
+                    holder.getTaskStatus().setStatus(TaskStatus.REQUESTED, 0d);
+                }
             }
         }
 

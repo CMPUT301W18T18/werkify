@@ -60,12 +60,14 @@ public class ViewTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_task);
 
 
-        Log.i("-->", "onCreate called");
+        Log.i("-->", "onCreate called viewtaskactivity");
 
         Intent intent = this.getIntent();
 
         this.sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
+        Log.i("Before", "asdasd");
         this.initializeFromTask((Task) intent.getSerializableExtra(EXTRA_TARGET_TASK));
+        Log.i("After", "asdasd");
     }
 
     @Override
