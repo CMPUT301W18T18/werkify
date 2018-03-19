@@ -38,6 +38,8 @@ import static ca.ualberta.cs.wrkify.LoginActivity.EXTRA_SESSION_USER;
  */
 public class RegisterActivity extends Activity {
     private EditText registerField;
+    private EditText registerEmail;
+    private EditText registerPhonenumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +50,19 @@ public class RegisterActivity extends Activity {
         getActionBar().setTitle("Sign up");
 
         this.registerField = findViewById(R.id.registerField);
+        this.registerEmail = findViewById(R.id.registerEmail);
+        this.registerPhonenumber = findViewById(R.id.registerPhoneNumber);
         Button registerButton = findViewById(R.id.registerButton);
 
         // pressing the register button finishes the activity
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tryRegisterAndFinish(registerField.getText().toString());
+                tryRegisterAndFinish(
+                        registerField.getText().toString(),
+                        registerEmail.getText().toString(),
+                        registerPhonenumber.getText().toString()
+                );
             }
         });
 
@@ -63,7 +71,11 @@ public class RegisterActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    tryRegisterAndFinish(registerField.getText().toString());
+                    tryRegisterAndFinish(
+                            registerField.getText().toString(),
+                            registerEmail.getText().toString(),
+                            registerPhonenumber.getText().toString()
+                    );
                     return true;
                 }
                 return false;
@@ -76,11 +88,11 @@ public class RegisterActivity extends Activity {
      * the activity; otherwise sets an error message and does not finish.
      * @param username username to register
      */
-    private void tryRegisterAndFinish(String username) {
-        // TODO actually add user on server
-        User user = new User(username, "testuser@example.com", "0000000000");
-        getIntent().putExtra(EXTRA_SESSION_USER, user);
-        setResult(RESULT_OK, getIntent());
+    private void tryRegisterAndFinish(String username, String email, String phoneNumber) {
+        RemoteClient rc = WrkifyClient.getInstance();
+        Session session = Session.getInstance(this, rc);
+        User newUser = rc.create(User.class, username, email, phoneNumber);
+        session.setUser(newUser, this);
         finish();
     }
 }
