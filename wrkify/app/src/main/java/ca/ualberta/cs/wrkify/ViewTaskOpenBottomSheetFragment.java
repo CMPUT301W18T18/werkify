@@ -1,5 +1,6 @@
 package ca.ualberta.cs.wrkify;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
@@ -22,6 +23,8 @@ import static android.view.View.inflate;
  * Contains controls for placing a bid.
  */
 public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment {
+
+    private Task task;
 
     @Nullable
     @Override
@@ -58,21 +61,28 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
      */
     private void confirmAndSubmitBid(View view) {
         final EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
+        final Task tsk = this.task;
+        final Context ctx = getContext();
         ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
                     String.format(Locale.US, "Bid $%s on this task?", bidField.getText()),
                     "Cancel", "Bid",
                     new ConfirmationDialogFragment.OnConfirmListener() {
                         @Override
                         public void onConfirm() {
-                            // TODO not modifying tasks yet
+                            tsk.addBid(new Bid(
+                                    Double.parseDouble(bidField.getText().toString()),
+                                    Session.getInstance(ctx).getUser()
+                            ));
+                            WrkifyClient.getInstance().upload(tsk);
                         }
                     }
         );
-        dialog.show(getFragmentManager(), null);
+        dialog.show(getActivity().getFragmentManager(), null);
     }
 
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
+        this.task = task;
         Integer bidCount = task.getBidList().size();
         if (bidCount == 0) {
             setDetailString(container,

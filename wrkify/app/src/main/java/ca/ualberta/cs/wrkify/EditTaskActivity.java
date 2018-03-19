@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -72,7 +73,7 @@ public class EditTaskActivity extends AppCompatActivity {
         if (this.task == null) {
             // TODO this may or may not need to be changed to allow server connectivity
             // TODO change the new user thing later
-            this.task = new Task("fix", new User("fix", "fix@fix.com", "7").<User>reference(), "");
+
             this.taskIsNew = true;
             if (actionBar != null) {
                 actionBar.setTitle("New task");
@@ -146,6 +147,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
+        WrkifyClient.getInstance().delete(this.task);
         setResult(RESULT_TASK_DELETED);
         finish();
     }
@@ -156,8 +158,18 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
-        task.setTitle(titleField.getText().toString());
-        task.setDescription(descriptionField.getText().toString());
+        if (this.taskIsNew) {
+            this.task = WrkifyClient.getInstance()
+                    .create(Task.class,
+                            this.titleField.getText().toString(),
+                            Session.getInstance(this).getUser(),
+                            this.descriptionField.getText().toString()
+                    );
+        } else {
+            WrkifyClient.getInstance().upload(this.task);
+            task.setTitle(titleField.getText().toString());
+            task.setDescription(descriptionField.getText().toString());
+        }
 
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_TASK, this.task);

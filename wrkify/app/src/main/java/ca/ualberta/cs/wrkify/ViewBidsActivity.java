@@ -34,8 +34,8 @@ import java.io.IOException;
  * EXTRA_VIEWBIDS_TASK: Task that is being viewed
  */
 public class ViewBidsActivity extends AppCompatActivity {
-    public static final String EXTRA_VIEWBIDS_VIEWER = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_VIEWER";
     public static final String EXTRA_VIEWBIDS_TASK = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_TASK";
+    public static final String EXTRA_RETURNED_TASK = "ca.ualberta.cs.wrkify.EXTRA_RETURNED_TASK";
 
     protected RecyclerView recyclerView;
     protected BidListAdapter adapter;
@@ -56,7 +56,7 @@ public class ViewBidsActivity extends AppCompatActivity {
         intent = getIntent();
 
         //Get the data
-        User viewer = (User) intent.getSerializableExtra(EXTRA_VIEWBIDS_VIEWER);
+        User viewer = Session.getInstance(this).getUser();
         Task task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
 
         boolean isRequester;

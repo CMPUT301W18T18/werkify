@@ -21,10 +21,14 @@ package ca.ualberta.cs.wrkify;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +50,7 @@ import java.util.List;
 abstract class TasksOverviewFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager pager;
+    private FloatingActionButton addButton;
     
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
@@ -56,6 +61,7 @@ abstract class TasksOverviewFragment extends Fragment {
         // Find views
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
+        this.addButton = view.findViewById(R.id.overviewAddButton);
         
         UserView userView = view.findViewById(R.id.overviewSelfView);
         Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
@@ -64,7 +70,7 @@ abstract class TasksOverviewFragment extends Fragment {
         toolbar.setTitle(getAppBarTitle());
 
         // Set user view
-        userView.setUserName("SelfPlaceholder");
+        userView.setUserName(Session.getInstance(getContext()).getUser().getUsername());
         userView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,7 +83,7 @@ abstract class TasksOverviewFragment extends Fragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         // View profile menu item
                         Intent viewUserIntent = new Intent(getContext(), ViewProfileActivity.class);
-                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, new ConcreteUser("...", "x@x", ""));
+                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, Session.getInstance(getContext()).getUser());
                         startActivity(viewUserIntent);
                         
                         return true;
@@ -109,6 +115,15 @@ abstract class TasksOverviewFragment extends Fragment {
         // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
         pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
 
+        // Initialize add button
+        addButton.setVisibility(isAddButtonEnabled(0)? View.VISIBLE : View.GONE);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddButtonClick(v);
+            }
+        });
+
         // Switch pager pages on tab move
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -135,6 +150,12 @@ abstract class TasksOverviewFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 tabLayout.setScrollPosition(position, 0, true);
+
+                if (isAddButtonEnabled(position)) {
+                    showAddButton();
+                } else {
+                    hideAddButton();
+                }
             }
 
             @Override
@@ -145,12 +166,42 @@ abstract class TasksOverviewFragment extends Fragment {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 tabLayout.setScrollPosition(position, positionOffset, true);
+
+                if (positionOffset != 0 && addButton.getVisibility() == View.VISIBLE) {
+                    hideAddButton();
+                } else if (positionOffset == 0 && isAddButtonEnabled(position)) {
+                    showAddButton();
+                }
             }
         });
 
         return view;
     }
-    
+
+    /**
+     * Hides the add button.
+     * TODO add transition
+     */
+    private void hideAddButton() {
+        addButton.setVisibility(View.GONE);
+    }
+
+    /**
+     * Shows the add button.
+     * TODO add transition
+     */
+    private void showAddButton() {
+        addButton.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Gets a reference to the Fragment's ViewPager.
+     * @return ViewPager containing the TaskListViews
+     */
+    protected ViewPager getPager() {
+        return this.pager;
+    }
+
     /**
      * Selects which tasks to display in the task lists. Each element
      * in the outer list is a list of tasks that will be displayed in a tab.
@@ -175,4 +226,19 @@ abstract class TasksOverviewFragment extends Fragment {
      * (It appears in the override app bar.)
      */
     protected abstract String getAppBarTitle();
+
+    /**
+     * Checks whether the Add button should be shown for a tab index.
+     * @param index Index of the current tab
+     * @return true to show the Add button, false to hide it
+     */
+    protected abstract boolean isAddButtonEnabled(int index);
+
+    /**
+     * Called when the add button is clicked.
+     * @param v View corresponding to the add button
+     */
+    protected void onAddButtonClick(View v) {
+
+    }
 }

@@ -143,7 +143,10 @@ public class Task extends RemoteObject {
      * @return the requester
      */
     public User getRemoteRequester(RemoteClient rc) throws IOException {
-        return requester.getRemote(rc);
+        if (requester == null) {
+            return null;
+        }
+        return requester.getRemote(rc, User.class);
     }
 
     /**
@@ -151,7 +154,10 @@ public class Task extends RemoteObject {
      * @return the provider (or null)
      */
     public User getRemoteProvider(RemoteClient rc) throws IOException {
-        return provider.getRemote(rc);
+        if (provider == null) {
+            return null;
+        }
+        return provider.getRemote(rc, User.class);
     }
 
     /**

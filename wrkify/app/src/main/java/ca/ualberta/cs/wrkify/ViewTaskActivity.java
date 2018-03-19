@@ -18,8 +18,9 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -39,7 +40,6 @@ import java.security.InvalidParameterException;
  */
 public class ViewTaskActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_TASK = "ca.ualberta.cs.wrkify.EXTRA_TARGET_TASK";
-    public static final String EXTRA_SESSION_USER = "ca.ualberta.cs.wrkify.EXTRA_SESSION_USER";
 
     private static final String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
     private static final int REQUEST_EDIT_TASK = 18;
@@ -64,7 +64,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        this.sessionUser = (User) intent.getSerializableExtra(EXTRA_SESSION_USER);
+        this.sessionUser = Session.getInstance(this).getUser();
         this.initializeFromTask((Task) intent.getSerializableExtra(EXTRA_TARGET_TASK));
     }
 
@@ -96,7 +96,7 @@ public class ViewTaskActivity extends AppCompatActivity {
         // TODO? this comparison seems like it should be encapsulable as User.equals
         Boolean sessionUserIsRequester;
         try {
-            sessionUserIsRequester = (task.getRemoteRequester(WrkifyClient.getInstance()).getUsername().equals(sessionUser.getUsername()));
+            sessionUserIsRequester = task.getRemoteRequester(WrkifyClient.getInstance()).equals(Session.getInstance(this).getUser());
         } catch (IOException e) {
             // TODO handle this correctly
             return;
@@ -120,7 +120,7 @@ public class ViewTaskActivity extends AppCompatActivity {
         descriptionView.setText(task.getDescription());
 
         // Add the bottom sheet if it doesn't exist already from a previous initialization
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (fragmentManager.findFragmentByTag(FRAGMENT_BOTTOM_SHEET) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -186,7 +186,7 @@ public class ViewTaskActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         ViewTaskBottomSheetFragment bottomSheet = (ViewTaskBottomSheetFragment)
-                getFragmentManager().findFragmentByTag(FRAGMENT_BOTTOM_SHEET);
+                getSupportFragmentManager().findFragmentByTag(FRAGMENT_BOTTOM_SHEET);
         if (bottomSheet.isExpanded()) {
             bottomSheet.collapse();
         } else {

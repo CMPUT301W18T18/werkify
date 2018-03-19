@@ -6,6 +6,27 @@
                 "param2": {"type": "string"},
                 "param3": {"type": "integer"}
             }
+        },
+        "ca.ualberta.cs.wrkify.User": {
+            "properties": {
+                "username": {"type": "string"},
+                "email": {"type": "string"},
+                "phoneNumber": {"type": "string"}
+            }
+        },
+        "ca.ualberta.cs.wrkify.Task": {
+            "properties": {
+                "title": {"type": "string"},
+                "description": {"type": "string"},
+                "status": {"type": "string"},
+                "requester": {"type": "nested"},
+                "provider": {"type": "nested"},
+                "bidList": {
+                    "properties": {
+                        "bidder": {"type": "nested"}
+                    }
+                }
+            }
         }
     }
 }

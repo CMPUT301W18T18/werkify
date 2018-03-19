@@ -41,6 +41,29 @@ public class RemoteClientTest {
     }
 
     @Test
+    public void TestEquals() {
+        RemoteClient rc = WrkifyClient.getInstance();
+
+        ConcreteTestObject cto = rc.create(ConcreteTestObject.class, "p1", "p2", 1);
+        ConcreteTestObject cto1 = rc.create(ConcreteTestObject.class, "p1", "p2", 1);
+        ConcreteTestObject cto2;
+        try {
+             cto2 = rc.download(cto.getId(), ConcreteTestObject.class);
+        } catch(IOException e) {
+            fail();
+            return;
+        }
+
+        assertTrue(cto.equals(cto2));
+        assertEquals(cto, cto2);
+        assertNotEquals(cto, cto1);
+        assertNotEquals(cto2, cto1);
+
+        rc.delete(cto);
+        rc.delete(cto1);
+    }
+
+    @Test
     public void TestCreateGetDelete() {
         RemoteClient rc = WrkifyClient.getInstance();
 

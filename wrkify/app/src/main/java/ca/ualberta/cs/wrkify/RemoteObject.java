@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 import io.searchbox.annotations.JestId;
@@ -49,6 +51,17 @@ public abstract class RemoteObject implements Serializable {
     }
     
     public <T extends RemoteObject> RemoteReference<T> reference() {
-        return new RemoteReference(id, this.getClass());
+        return new RemoteReference(id);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other.getClass() != this.getClass()) {
+            Log.e("RemoteClient", "not the same type");
+            return false;
+        }
+        
+        RemoteObject obj = (RemoteObject) other;
+        return this.getId().equals(obj.getId());
     }
 }

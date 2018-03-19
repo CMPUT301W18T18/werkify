@@ -28,7 +28,7 @@ public class User extends RemoteObject {
 
     // from https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email
     // (2018-02-26)
-    private final String emailRegex = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@"
+    private static final String emailRegex = "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@"
             + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\."
             + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
