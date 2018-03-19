@@ -47,22 +47,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SeachFragment allows users to search for tasks
+ * SearchFragment allows users to search for tasks
  * this Fragment is displayed by MainActivity
- * TODO: this class has not been implemented
+ * Uses Searcher for search queries and TaskListAdapter
+ * for usage in a RecyclerView of tasks. Selecting a
+ * task from the search results list launches a ViewTaskActivity
  *
  * @see MainActivity
+ * @see ViewTaskActivity
+ * @see TaskListAdapter
  */
 public class SearchFragment extends Fragment {
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     private List<Task> taskList = new ArrayList<>();
     private TaskListAdapter<Task> adapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-
+    /**
+     * Creates the fragment view. And sets search bar
+     * 'on submit' method.
+     *
+     * @param inflater Parent inflater to be inflated
+     * @param container Parent ViewGroup, root of fragment
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
@@ -91,7 +104,13 @@ public class SearchFragment extends Fragment {
     }
 
 
-
+    /**
+     * Updates the list of tasks to be displayed according
+     * to a search query. Uses Searcher for searching.
+     * 
+     * @param query String search query.
+     * @return
+     */
     public boolean searchTasks(String query){
         List<Task> tasks;
         try {
