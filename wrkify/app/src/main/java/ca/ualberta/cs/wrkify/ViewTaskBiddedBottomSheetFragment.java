@@ -23,14 +23,14 @@ import android.view.ViewGroup;
 
 import java.util.Locale;
 
+import static ca.ualberta.cs.wrkify.ViewTaskActivity.REQUEST_VIEW_BIDS;
+
 /**
  * Bottom sheet to use for a task requester viewing a task
  * of their own that has been bidded on. Has no contents,
  * but will be bound to open a view of the current BidList on click.
  */
 public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragment {
-    private static final int REQUEST_VIEW_BIDS = 13;
-
     @Override
     protected void initializeWithTask(ViewGroup container, final Task task) {
         Bid lowestBid = task.getBidList().get(0);
