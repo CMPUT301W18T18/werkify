@@ -17,8 +17,10 @@
 
 package ca.ualberta.cs.wrkify;
 
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -75,7 +77,7 @@ public class Searcher {
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByKeywords(RemoteClient client, String keywords) throws IOException {
-        // from https://stackoverflow.com/questions/7899525/ (2018-03-18)
+     // from https://stackoverflow.com/questions/7899525/ (2018-03-18)
         String[] splited = keywords.split("\\s+");
 
         // from http://www.appsdeveloperblog.com/java-into-json-json-into-java-all-possible-examples/ (2018-03-18)
