@@ -47,4 +47,9 @@ public class ProviderFragment extends TasksOverviewFragment {
     protected String getAppBarTitle() {
         return "My tasks";
     }
+
+    @Override
+    protected boolean isAddButtonEnabled(int index) {
+        return false;
+    }
 }
