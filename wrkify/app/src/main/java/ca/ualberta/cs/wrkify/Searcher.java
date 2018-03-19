@@ -27,6 +27,7 @@ import java.util.List;
  * Collection of static methods to perform pre-defined searches.
  */
 public class Searcher {
+
     /**
      * Find all tasks where the given User is the task requester.
      * @param client RemoteClient to search in
@@ -86,6 +87,18 @@ public class Searcher {
                         +"{\"terms\":{\"description\":%s}}]}}}",
                 json, json);
         return client.search(query, Task.class);
+    }
+
+    /**
+     * gets a user by its username
+     * @param client RemoteClient to search in
+     * @param username the username of the user
+     * @return the User associated with username
+     * @throws IOException if RemoteClient is disconnected
+     */
+    static User getUser(RemoteClient client, String username) throws IOException {
+        String query = "{\"query\":{\"match\":{\"username\": \"" + username + "\"}}}";
+        return client.search(query, User.class).get(0);
     }
 
     // TODO findTasksByLocation?
