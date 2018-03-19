@@ -67,9 +67,9 @@ public class Session {
         save(context);
     }
 
-    public void logout() {
+    public void logout(Context context) {
         this.user = null;
-        //TODO clear savefile;
+        context.deleteFile(FILENAME);
     }
 
     private void save(Context context) {
