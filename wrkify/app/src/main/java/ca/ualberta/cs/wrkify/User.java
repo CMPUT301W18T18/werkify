@@ -14,13 +14,16 @@
  */
 package ca.ualberta.cs.wrkify;
 
-import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * User keeps the username and related contact
+ * information of a user and provides getters
+ * and setters.
+ *
+ * @see RemoteObject
  */
-
 public class User extends RemoteObject {
     private String username;
     private String email;
@@ -33,6 +36,13 @@ public class User extends RemoteObject {
             + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
 
+    /**
+     * creates a user from username, email, phoneNumber
+     * @param username 1-24 characters
+     * @param email a valid email according to emailRegex
+     * @param phoneNumber strips all non-numbers
+     * @throws IllegalArgumentException
+     */
     public User(String username, String email, String phoneNumber) throws IllegalArgumentException {
 
         InternalSetUsername(username);
@@ -98,14 +108,26 @@ public class User extends RemoteObject {
         this.phoneNumber = phoneNumber.replaceAll("[^\\d]", "");
     }
 
+    /**
+     * gets the users username
+     * @return the username
+     */
     public String getUsername() {
         return this.username;
     }
 
+    /**
+     * gets the users email
+     * @return the email
+     */
     public String getEmail() {
         return this.email;
     }
 
+    /**
+     * gets the users phoneNumber
+     * @return the phoneNumber
+     */
     public String getPhoneNumber() {
         return this.phoneNumber;
     }

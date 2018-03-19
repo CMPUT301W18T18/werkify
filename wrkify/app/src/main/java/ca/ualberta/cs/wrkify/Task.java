@@ -23,6 +23,12 @@ import java.util.Collections;
 
 
 /**
+ * Task is a RemoteObject that stores the information of
+ * a task, and provides operations associated with bidding.
+ *
+ * @see Bid
+ * @see User
+ * @see RemoteObject
  */
 public class Task extends RemoteObject {
     private String title;
