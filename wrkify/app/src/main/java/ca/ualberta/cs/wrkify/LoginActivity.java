@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +27,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 /**
  * Allows a user to log in.
@@ -45,10 +48,18 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         getSupportActionBar().hide();
+
+        User sessionuser = Session.getInstance(this).getUser();
+
+        if (sessionuser != null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
 
         this.loginField = findViewById(R.id.loginField);
         Button loginButton = findViewById(R.id.loginButton);
@@ -92,10 +103,17 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void trySubmitAndFinish(String username) {
         // TODO actually look up user on the server
-        User user = new User(username, "testuser@example.com", "0000000000");
-        getIntent().putExtra(EXTRA_SESSION_USER, user);
-        setResult(RESULT_OK, getIntent());
-        finish();
+        Session session = Session.getInstance(this);
+
+        try {
+            User user = Searcher.getUser(WrkifyClient.getInstance(), username);
+            if (user != null) {
+                session.setUser(user, this);
+                startActivity(new Intent(this, MainActivity.class));
+            }
+        } catch (IOException e) {
+
+        }
     }
 
     /**
@@ -106,9 +124,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REGISTER && resultCode == RESULT_OK) {
-            getIntent().putExtra(EXTRA_SESSION_USER, data.getStringExtra(EXTRA_SESSION_USER));
-            setResult(RESULT_OK, getIntent());
-            finish();
+            User sessionuser = Session.getInstance(this).getUser();
+            if (sessionuser != null) {
+                startActivity(new Intent(this, MainActivity.class));
+            }
         }
     }
 }
