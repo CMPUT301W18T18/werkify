@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
         Button closeTaskButton = view.findViewById(R.id.taskViewBottomSheetButtonMarkDone);
         Button deassignButton = view.findViewById(R.id.taskViewBottomSheetButtonDeassign);
 
+        final FragmentManager fm = getActivity().getFragmentManager();
         closeTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +74,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                                 // TODO not modifying tasks yet
                             }
                         });
-                dialog.show(getFragmentManager(), null);
+                dialog.show(fm, null);
             }
         });
         deassignButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +90,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             }
                         }
                 );
-                dialog.show(getFragmentManager(), null);
+                dialog.show(fm, null);
             }
         });
 
