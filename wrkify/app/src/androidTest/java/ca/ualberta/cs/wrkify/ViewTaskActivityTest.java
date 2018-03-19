@@ -64,7 +64,7 @@ public class ViewTaskActivityTest {
     private void startViewTaskActivityWith(Task task, User sessionUser) {
         Intent intent = new Intent();
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
-        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
+//        intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
         activityTestRule.launchActivity(intent);
     }
 
