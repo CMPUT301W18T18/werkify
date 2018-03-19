@@ -16,6 +16,8 @@ package ca.ualberta.cs.wrkify;
 
 /**
  * Task status enum according to US 02.02.01
+ *
+ * @see Task
  */
 public enum TaskStatus {
     REQUESTED,
