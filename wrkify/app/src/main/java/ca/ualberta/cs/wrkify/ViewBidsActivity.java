@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
@@ -50,6 +51,7 @@ public class ViewBidsActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
@@ -61,7 +63,7 @@ public class ViewBidsActivity extends AppCompatActivity {
 
         boolean isRequester;
         try {
-            isRequester = viewer.getUsername().equals(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+            isRequester = viewer.equals(task.getRemoteRequester(WrkifyClient.getInstance()));
         } catch (IOException e) {
             // TODO handle this correctly
             return;

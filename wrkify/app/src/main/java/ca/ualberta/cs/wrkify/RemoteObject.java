@@ -56,8 +56,11 @@ public abstract class RemoteObject implements Serializable {
 
     @Override
     public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+
         if (other.getClass() != this.getClass()) {
-            Log.e("RemoteClient", "not the same type");
             return false;
         }
         

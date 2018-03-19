@@ -17,7 +17,10 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.StrictMode;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Test;
@@ -38,6 +41,7 @@ public class ViewBidsActivityTest {
         Intent intent = new Intent();
 
         User user1 = new User("UserName1", "UserName@email.com", "780-123-1234");
+        user1.setId("iiiididididiididd");
         User user2 = new User("UserName2", "UserName2@email.com", "780-123-1235");
         User user3 = new User("UserName3", "UserName3@email.com", "780-123-1236");
         User user4 = new User("UserName4", "UserName4@email.com", "780-123-1237");
@@ -73,6 +77,15 @@ public class ViewBidsActivityTest {
 
 //        intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_VIEWER, user1); //We are the requester
         //intent.putExtra("viewer", user2); //We are NOT the requester
+
+        Context ctx = InstrumentationRegistry.getContext();
+
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
+        try {
+            Session.getInstance(ctx).setUser(user1, ctx);
+        } catch (RuntimeException e) {
+            // saveing doesent work in test, but it doesnt matter
+        }
         intent.putExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, task);
 
 
