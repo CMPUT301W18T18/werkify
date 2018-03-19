@@ -44,8 +44,6 @@ import java.util.List;
 public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskViewHolder> {
     private static int taskLayoutID = R.layout.taskcardview;
     protected List<T> taskList;
-    public boolean isRequester;
-    public User sessionUser;
     public AppCompatActivity context;
     private RecyclerView recyclerView;
 
@@ -56,10 +54,8 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     * @param List<T> where T is anything that extends Task
     * @param isRequester, boolean indicating calling perspective (Requester/Provider)
      */
-    public TaskListAdapter(AppCompatActivity context,List<T> taskList,boolean isRequester,User sessionUser){
+    public TaskListAdapter(AppCompatActivity context,List<T> taskList){
         this.taskList = taskList;
-        this.isRequester = isRequester;
-        this.sessionUser = sessionUser;
         this.context = context;
     }
 
@@ -92,7 +88,16 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
         holder.getTaskTitle().setText(task.getTitle());
         holder.getTaskDescription().setText(task.getDescription());
 
-        if(this.isRequester) {
+        User requester;
+        try {
+            requester = task.getRemoteRequester(WrkifyClient.getInstance());
+        } catch (IOException e) {
+            return;
+        }
+
+        final User sessionUser = Session.getInstance(context).getUser();
+
+        if(sessionUser.equals(requester)) {
             try {
                 User provider = task.getRemoteProvider(WrkifyClient.getInstance());
                 if(provider!=null) {
@@ -102,17 +107,9 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
             catch (IOException e) {
                 holder.getTaskUser().setText("");
             }
-        }
-
-        if(!this.isRequester){
-            try {
-                User requester = task.getRemoteRequester(WrkifyClient.getInstance());
-                if (requester != null) {
-                    holder.getTaskUser().setText(requester.getUsername());
-                }
-            }
-            catch (IOException e){
-                holder.getTaskUser().setText("");
+        } else {
+            if (requester != null) {
+                holder.getTaskUser().setText(requester.getUsername());
             }
         }
 
@@ -149,9 +146,6 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     */
     public void viewTask(User sessionUser, T task){
         Intent intent = new Intent(this.context, ViewTaskActivity.class);
-        if(sessionUser!=null) {
-            intent.putExtra(ViewTaskActivity.EXTRA_SESSION_USER, sessionUser);
-        }
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
 
         context.startActivity(intent);

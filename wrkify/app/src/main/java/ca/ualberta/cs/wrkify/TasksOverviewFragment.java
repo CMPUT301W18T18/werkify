@@ -64,7 +64,7 @@ abstract class TasksOverviewFragment extends Fragment {
         toolbar.setTitle(getAppBarTitle());
 
         // Set user view
-        userView.setUserName("SelfPlaceholder");
+        userView.setUserName(Session.getInstance(getContext()).getUser().getUsername());
         userView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,8 +77,7 @@ abstract class TasksOverviewFragment extends Fragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         // View profile menu item
                         Intent viewUserIntent = new Intent(getContext(), ViewProfileActivity.class);
-                        User a = null;
-                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, a);
+                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, Session.getInstance(getContext()).getUser());
                         startActivity(viewUserIntent);
                         
                         return true;
