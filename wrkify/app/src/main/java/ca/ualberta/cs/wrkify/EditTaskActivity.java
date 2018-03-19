@@ -54,7 +54,6 @@ public class EditTaskActivity extends AppCompatActivity {
     /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
 
-//    public static final String FRAGMENT_BOTTOM_SHEET = "ca.ualberta.cs.wrkify.FRAGMENT_BOTTOM_SHEET";
 
     private Task task;
     private boolean taskIsNew = false;
@@ -73,7 +72,6 @@ public class EditTaskActivity extends AppCompatActivity {
         this.descriptionField = findViewById(R.id.editTaskDescriptionField);
 
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
-//        getIntent().getStringExtra(FRAGMENT_BOTTOM_SHEET);
 
         if (this.task == null) {
             // TODO this may or may not need to be changed to allow server connectivity
