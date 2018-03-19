@@ -83,7 +83,6 @@ public class RemoteClient {
         try {
             instance = newInstance(type, conArgs);
         } catch (Exception e) {
-            Log.e("RemoteClient.create", Log.getStackTraceString(e));
             return null;
         }
 

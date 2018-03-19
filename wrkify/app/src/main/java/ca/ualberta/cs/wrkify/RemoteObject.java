@@ -49,11 +49,22 @@ public abstract class RemoteObject implements Serializable {
     public String getId() {
         return this.id;
     }
-    
+
+    /**
+     * returns a reference to theis object
+     * @param <T> enforcing remotereferences to remoteobjects
+     * @return the RemoteReference
+     */
     public <T extends RemoteObject> RemoteReference<T> reference() {
         return new RemoteReference(id);
     }
 
+    /**
+     * returns true when two remote objects are equal.
+     * can check null values.
+     * @param other the object we are comparing to this.
+     * @return a boolean for equality
+     */
     @Override
     public boolean equals(Object other) {
         if (other == null) {
