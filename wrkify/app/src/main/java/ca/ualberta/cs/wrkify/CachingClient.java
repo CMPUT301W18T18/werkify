@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,6 +63,7 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         if (cachedObject != null) { return cachedObject; }
 
         // cache miss; cache the object and return it
+        Log.i("cache miss", id);
         T downloadedObject = client.download(id, type);
         cache.put(id, downloadedObject);
         return downloadedObject;
