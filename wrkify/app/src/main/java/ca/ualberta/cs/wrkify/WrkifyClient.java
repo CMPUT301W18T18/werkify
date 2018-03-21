@@ -43,7 +43,7 @@ public class WrkifyClient {
      */
     public static RemoteClient getInstance() {
         if (instance == null) {
-            instance = new RemoteClient(URL, INDEX);
+            instance = new ElasticClient(URL, INDEX);
         }
         return instance;
     }

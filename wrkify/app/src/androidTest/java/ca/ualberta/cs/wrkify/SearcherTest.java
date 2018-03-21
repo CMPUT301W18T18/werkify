@@ -45,7 +45,7 @@ public class SearcherTest {
 
     @BeforeClass
     public static void createData() {
-        rc = new RemoteClient(WrkifyClient.URL, "cmput301w18t18-test");
+        rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         user1 = rc.create(User.class, "peter", "peter@a.com", "1");
         user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");

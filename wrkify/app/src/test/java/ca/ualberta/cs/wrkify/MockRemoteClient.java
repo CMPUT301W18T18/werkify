@@ -21,6 +21,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,7 +38,7 @@ class MockRemoteClient extends RemoteClient {
         try {
             instance = newInstance(type, conArgs);
         } catch (Exception e) {
-            Log.e("RemoteClient.create", Log.getStackTraceString(e));
+            e.printStackTrace();
             return null;
         }
         
@@ -58,5 +59,10 @@ class MockRemoteClient extends RemoteClient {
     
     public <T extends RemoteObject> T download(String id, Class<T> type) throws IOException {
         return type.cast(this.hmap.get(id));
+    }
+
+    @Override
+    <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+        return null;
     }
 }
