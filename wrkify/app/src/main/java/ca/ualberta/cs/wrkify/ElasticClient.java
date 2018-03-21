@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
@@ -46,8 +48,6 @@ public class ElasticClient extends RemoteClient {
     private JestDroidClient client;
     private String index;
 
-    private Cache cache;
-
     /**
      * creates an ElasticClient based on a url and index
      * @param url the url of the elasticsearch instance
@@ -73,6 +73,8 @@ public class ElasticClient extends RemoteClient {
      */
     @Override
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
+        Log.i("elastic", "CREATE " + type.toString());
+
         T instance;
         try {
             instance = newInstance(type, conArgs);
@@ -100,6 +102,8 @@ public class ElasticClient extends RemoteClient {
      */
     @Override
     public void upload(RemoteObject obj) {
+        Log.i("elastic", "UPLOAD " + obj.getClass().toString() + ":" + obj.getId());
+
         Index index = new Index.Builder(obj)
                 .index(this.index).type(obj.getClass().getName())
                 .id(obj.getId()).build();
@@ -116,6 +120,8 @@ public class ElasticClient extends RemoteClient {
      */
     @Override
     public void delete(RemoteObject obj) {
+        Log.i("elastic", "DELETE :" + obj.getId());
+
         Delete del = new Delete.Builder(obj.getId()).index(this.index)
                 .type(obj.getClass().getName()).build();
 
@@ -136,6 +142,8 @@ public class ElasticClient extends RemoteClient {
      */
     @Override
     public <T extends RemoteObject> T download(String id, Class<T> type) throws IOException {
+        Log.i("elastic", "DOWNLOAD " + type.toString() + ":" + id);
+
         Get get = new Get.Builder(this.index, id).build();
         DocumentResult result = this.client.execute(get);
         T obj = result.getSourceAsObject(type);
@@ -159,6 +167,8 @@ public class ElasticClient extends RemoteClient {
      */
     @Override
     public <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+        Log.i("elastic", "SEARCH " + type);
+
         Search search = new Search.Builder(query).addIndex(this.index)
                 .addType(type.getName()).build();
 

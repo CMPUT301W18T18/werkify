@@ -18,7 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,15 +30,8 @@ import java.util.List;
 public class ProviderFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawBiddedTasks;
-        List<Task> rawProvidedTasks;
-        try {
-            rawProvidedTasks = Searcher.findTasksByProvider(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
-            rawBiddedTasks = Searcher.findTasksByBidder(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
-        } catch (IOException e) {
-            // TODO You are offline.
-            return new ArrayList<>();
-        }
+        List<Task> rawProvidedTasks = Session.getInstance(getContext()).getUserProvidedCache();
+        List<Task> rawBiddedTasks = Session.getInstance(getContext()).getUserBiddedCache();
 
         // Filter tasks into assigned, completed
         ArrayList<Task> assignedTasks = new ArrayList<>();

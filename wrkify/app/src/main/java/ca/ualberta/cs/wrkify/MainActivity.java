@@ -28,6 +28,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * the entry point to the wrkify app, provides the bottom navigation
  * and delegates to fragments
@@ -70,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            Session.getInstance(this).refreshCaches(WrkifyClient.getInstance());
+        } catch (IOException e) {
+            // TODO You are offline.
+        }
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         showFragment(new RequesterFragment());
