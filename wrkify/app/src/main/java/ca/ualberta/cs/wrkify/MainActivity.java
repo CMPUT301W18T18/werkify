@@ -28,6 +28,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * the entry point to the wrkify app, provides the bottom navigation
  * and delegates to fragments
@@ -70,9 +72,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tryRefreshCaches();
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         showFragment(new RequesterFragment());
+    }
+
+    /**
+     * Resumes MainActivity. This causes the user task caches to refresh.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tryRefreshCaches();
+    }
+
+    /**
+     * Instruct the user task caches to refresh, so that the
+     * task lists can display updated content.
+     */
+    private void tryRefreshCaches() {
+        try {
+            Session.getInstance(this).refreshCaches(WrkifyClient.getInstance());
+        } catch (IOException e) {
+            // TODO You are offline.
+        }
     }
 
     /**

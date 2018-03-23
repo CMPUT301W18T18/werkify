@@ -37,13 +37,7 @@ public class RequesterFragment extends TasksOverviewFragment {
 
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawTasks;
-        try {
-            rawTasks = Searcher.findTasksByRequester(WrkifyClient.getInstance(), Session.getInstance(getContext()).getUser());
-        } catch (IOException e) {
-            // TODO You are offline.
-            return new ArrayList<>();
-        }
+        List<Task> rawTasks = Session.getInstance(getContext()).getUserRequestedCache();
 
         // Filter tasks into requested, assigned, completed
         ArrayList<Task> requestedTasks = new ArrayList<>();

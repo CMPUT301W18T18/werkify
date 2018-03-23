@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotEquals;
 public class RemoteUserIntegrationTest {
     @Test
     public void testCreateGetDelete() {
-        RemoteClient rc = new RemoteClient(WrkifyClient.URL, "cmput301w18t18-test");
+        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         User cto = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");
 
@@ -64,7 +64,7 @@ public class RemoteUserIntegrationTest {
 
     @Test
     public void testSearch() {
-        RemoteClient rc = new RemoteClient(WrkifyClient.URL, "cmput301w18t18-test");
+        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         User use1 = rc.create(User.class, "john", "john@example.com", "(780) 666-6666");
         User use2 = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");

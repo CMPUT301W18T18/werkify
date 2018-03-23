@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
 
 /**
@@ -42,6 +43,9 @@ public class Session {
     private static Session instance;
 
     private User user;
+    private List<Task> userRequestedCache;
+    private List<Task> userProvidedCache;
+    private List<Task> userBiddedCache;
 
     private Session() {}
 
@@ -97,6 +101,41 @@ public class Session {
     public void logout(Context context) {
         this.user = null;
         context.deleteFile(FILENAME);
+    }
+
+    /**
+     * Refreshes user task caches.
+     * @param client RemoteClient to find user's tasks in
+     * @throws IOException if network is disconnected
+     */
+    public void refreshCaches(RemoteClient client) throws IOException {
+        this.userProvidedCache = Searcher.findTasksByProvider(client, this.user);
+        this.userRequestedCache = Searcher.findTasksByRequester(client, this.user);
+        this.userBiddedCache = Searcher.findTasksByBidder(client, this.user);
+    }
+
+    /**
+     * Gets the cache of the user's requested tasks.
+     * @return cached list of requested tasks
+     */
+    public List<Task> getUserRequestedCache() {
+        return userRequestedCache;
+    }
+
+    /**
+     * Gets the cache of the user's provided tasks.
+     * @return cached list of provided tasks
+     */
+    public List<Task> getUserProvidedCache() {
+        return userProvidedCache;
+    }
+
+    /**
+     * Gets the cache of the user's bidded tasks.
+     * @return cached list of bidded tasks
+     */
+    public List<Task> getUserBiddedCache() {
+        return userBiddedCache;
     }
 
     /**
