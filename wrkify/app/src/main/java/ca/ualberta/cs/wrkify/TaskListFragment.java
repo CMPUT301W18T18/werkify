@@ -82,10 +82,36 @@ public class TaskListFragment extends Fragment {
             view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
         }
 
+        final ViewGroup notificationContainer = view.findViewById(R.id.taskListNotificationContainer);
+        final RecyclerView recyclerView = view.findViewById(R.id.taskListView);
+
+        // test
+        NotificationView notificationView = new NotificationView(getContext());
+        notificationView.setNotification(new NotificationInfo("Pre", "Target", "Post"));
+        ((ViewGroup) view.findViewById(R.id.taskListNotificationTarget)).addView(notificationView);
+
+        // Task list dodges notifications
+        notificationContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                recyclerView.setPadding(0, bottom - top + 16, 0, 0);
+            }
+        });
+
+        // Hide notifications when scrolling down
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                notificationContainer.setVisibility(dy <= 0? View.VISIBLE : View.GONE);
+            }
+        });
+
         TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
-        RecyclerView recyclerView = view.findViewById(R.id.taskListView);
         recyclerView.setAdapter(taskListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Log.i("-->", "nv height is " + notificationView.getHeight());
 
         return view;
     }

@@ -21,9 +21,14 @@ import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 
 public class NotificationView extends ConstraintLayout {
+    private TextView upperField;
+    private TextView middleField;
+    private TextView lowerField;
+
     public NotificationView(Context context) {
         super(context);
         createViews();
@@ -39,8 +44,17 @@ public class NotificationView extends ConstraintLayout {
         createViews();
     }
 
+    public void setNotification(NotificationInfo notification) {
+        this.upperField.setText(notification.getPreText());
+        this.middleField.setText(notification.getTargetText());
+        this.lowerField.setText(notification.getPostText());
+    }
+
     private void createViews() {
         View view = inflate(getContext(), R.layout.view_notification, this);
-        this.addView(view);
+
+        this.upperField = findViewById(R.id.notificationUpper);
+        this.middleField = findViewById(R.id.notificationMiddle);
+        this.lowerField = findViewById(R.id.notificationLower);
     }
 }
