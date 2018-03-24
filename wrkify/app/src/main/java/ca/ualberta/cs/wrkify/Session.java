@@ -46,6 +46,7 @@ public class Session {
     private List<Task> userRequestedCache;
     private List<Task> userProvidedCache;
     private List<Task> userBiddedCache;
+    private NotificationCollector notificationCollector = new NotificationCollector();
 
     private Session() {}
 
@@ -91,6 +92,7 @@ public class Session {
      */
     public void setUser(User user, Context context) {
         this.user = user;
+
         save(context);
     }
 
@@ -136,6 +138,14 @@ public class Session {
      */
     public List<Task> getUserBiddedCache() {
         return userBiddedCache;
+    }
+
+    /**
+     * Gets the session NotificationCollector.
+     * @return NotificationCollector
+     */
+    public NotificationCollector getNotificationCollector() {
+        return notificationCollector;
     }
 
     /**

@@ -32,7 +32,8 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_margin="4dp"
         android:background="@android:color/background_light"
-        android:elevation="2dp">
+        android:elevation="2dp"
+        android:visibility="gone">
 
         <FrameLayout
             android:id="@+id/taskListNotificationTarget"
@@ -42,7 +43,8 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/taskListNotificationOverflowIndicator"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -54,14 +56,14 @@
                 android:id="@+id/taskListNotificationOverflowLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3 more notifications"
+                tools:text="3 more notifications"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.Button"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>

@@ -32,11 +32,13 @@ public class NotificationInfo {
     private String preText;
     private String targetText;
     private String postText;
+    private Boolean isImportant;
 
     public NotificationInfo(String preText, String targetText, String postText) {
         this.preText = preText;
         this.targetText = targetText;
         this.postText = postText;
+        this.isImportant = false;
     }
 
     public String getPreText() {
@@ -49,5 +51,13 @@ public class NotificationInfo {
 
     public String getPostText() {
         return postText;
+    }
+
+    public Boolean isImportant() {
+        return isImportant;
+    }
+
+    public void setIsImportant(Boolean isImportant) {
+        this.isImportant = isImportant;
     }
 }
