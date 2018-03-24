@@ -18,6 +18,8 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.content.Intent;
+
 /**
  * Entity representing an abstract notification.
  * A notification has three text fields: a target, and text to display
@@ -32,6 +34,7 @@ public class NotificationInfo {
     private String preText;
     private String targetText;
     private String postText;
+    private Intent actionIntent;
     private Boolean isImportant;
 
     public NotificationInfo(String preText, String targetText, String postText) {
@@ -57,7 +60,15 @@ public class NotificationInfo {
         return isImportant;
     }
 
+    public Intent getActionIntent() {
+        return actionIntent;
+    }
+
     public void setIsImportant(Boolean isImportant) {
         this.isImportant = isImportant;
+    }
+
+    public void setActionIntent(Intent actionIntent) {
+        this.actionIntent = actionIntent;
     }
 }

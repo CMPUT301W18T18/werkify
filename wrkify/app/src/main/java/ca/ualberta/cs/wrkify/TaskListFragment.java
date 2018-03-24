@@ -82,39 +82,11 @@ public class TaskListFragment extends Fragment {
             view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
         }
 
-        final ViewGroup notificationContainer = view.findViewById(R.id.taskListNotificationContainer);
-        final RecyclerView recyclerView = view.findViewById(R.id.taskListView);
-
-        // Task list dodges notifications
-        notificationContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (bottom - top > 0) {
-                    recyclerView.setPadding(0, bottom - top + 32, 0, 0);
-                    // TODO getScrollY() is always zero, so this is presumably wrong
-                    if (recyclerView.getScrollY() == 0) {
-                        recyclerView.scrollBy(0, -(bottom - top + 32));
-                    }
-                } else {
-                    recyclerView.setPadding(0, 0, 0, 0);
-                }
-            }
-        });
-
-        // Hide notifications when scrolling down
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                notificationContainer.setVisibility(dy <= 0? View.VISIBLE : View.GONE);
-            }
-        });
+        RecyclerView recyclerView = view.findViewById(R.id.taskListView);
 
         TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<>(getContext(), tasks);
         recyclerView.setAdapter(taskListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        updateNotificationDisplay(view);
 
         return view;
     }
@@ -125,36 +97,6 @@ public class TaskListFragment extends Fragment {
         if (this.getView() != null) {
             this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
             this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
-        }
-    }
-
-    /**
-     * Updates the notification display.
-     * @param view root view of the fragment
-     */
-    private void updateNotificationDisplay(View view) {
-        ViewGroup notificationContainer = view.findViewById(R.id.taskListNotificationContainer);
-        ViewGroup notificationTarget = view.findViewById(R.id.taskListNotificationTarget);
-        ViewGroup notificationOverflow = view.findViewById(R.id.taskListNotificationOverflowIndicator);
-        TextView notificationOverflowLabel = view.findViewById(R.id.taskListNotificationOverflowLabel);
-
-        NotificationCollector collector = Session.getInstance(getContext()).getNotificationCollector();
-        NotificationInfo notification = collector.getFirstNotification();
-
-        if (notification != null) {
-            NotificationView notificationView = new NotificationView(getContext());
-            notificationView.setNotification(notification);
-            notificationTarget.addView(notificationView);
-
-            // Show overflow indicator if more than one notification
-            int extraNotificationCount = collector.getNotificationCount() - 1;
-            if (extraNotificationCount > 0) {
-                notificationOverflow.setVisibility(View.VISIBLE);
-                notificationOverflowLabel.setText(
-                        String.format(Locale.US, "%d more notifications", extraNotificationCount));
-            } else {
-                notificationOverflow.setVisibility(View.GONE);
-            }
         }
     }
 }
