@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -46,7 +47,10 @@ public class Session {
     private List<Task> userRequestedCache;
     private List<Task> userProvidedCache;
     private List<Task> userBiddedCache;
+
     private NotificationCollector notificationCollector = new NotificationCollector();
+    private ProvidedTaskNotifier providedTaskNotifier = new ProvidedTaskNotifier();
+    private RequestedTaskNotifier requestedTaskNotifier = new RequestedTaskNotifier();
 
     private Session() {}
 
@@ -114,6 +118,10 @@ public class Session {
         this.userProvidedCache = Searcher.findTasksByProvider(client, this.user);
         this.userRequestedCache = Searcher.findTasksByRequester(client, this.user);
         this.userBiddedCache = Searcher.findTasksByBidder(client, this.user);
+
+        this.notificationCollector.putNotifications(this.providedTaskNotifier.generateNotifications(this.userProvidedCache));
+        this.notificationCollector.putNotifications(this.providedTaskNotifier.generateNotifications(this.userBiddedCache));
+        this.notificationCollector.putNotifications(this.requestedTaskNotifier.generateNotifications(this.userRequestedCache));
     }
 
     /**
@@ -146,6 +154,23 @@ public class Session {
      */
     public NotificationCollector getNotificationCollector() {
         return notificationCollector;
+    }
+
+    /**
+     * Updates the last-known state for the given task. This essentially
+     * acknowledges all current notifications about the task, and causes
+     * new notifications to be generated based off of this state. This
+     * should also be called on a newly-created task to allow notifications
+     * to be generated for it.
+     *
+     * @param task task to update
+     *
+     * @see Notifier
+     */
+    public void setTaskKnown(Task task) {
+        // TODO don't unnecessarily set on both notifiers
+        this.providedTaskNotifier.updateLastKnown(task);
+        this.requestedTaskNotifier.updateLastKnown(task);
     }
 
     /**

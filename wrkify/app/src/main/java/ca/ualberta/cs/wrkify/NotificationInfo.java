@@ -37,6 +37,8 @@ public class NotificationInfo {
     private Intent actionIntent;
     private Boolean isImportant;
 
+    private OnNotificationDestroyedListener listener;
+
     public NotificationInfo(String preText, String targetText, String postText) {
         this.preText = preText;
         this.targetText = targetText;
@@ -70,5 +72,17 @@ public class NotificationInfo {
 
     public void setActionIntent(Intent actionIntent) {
         this.actionIntent = actionIntent;
+    }
+
+    public void setOnNotificationDestroyedListener(OnNotificationDestroyedListener listener) {
+        this.listener = listener;
+    }
+
+    public void destroy() {
+        if (this.listener != null) { listener.onNotificationDestroyed(); }
+    }
+
+    public interface OnNotificationDestroyedListener {
+        void onNotificationDestroyed();
     }
 }

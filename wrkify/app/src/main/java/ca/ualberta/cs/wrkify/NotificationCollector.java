@@ -21,6 +21,7 @@ package ca.ualberta.cs.wrkify;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -51,10 +52,21 @@ public class NotificationCollector {
     }
 
     /**
+     * Wrapper to add all the notifications in a collection to the NotificationCollector.
+     * @param notifications Collection of NotificationInfo objects to add all of to the NotificationCollector
+     */
+    public void putNotifications(Collection<NotificationInfo> notifications) {
+        for (NotificationInfo notification: notifications) {
+            this.putNotification(notification);
+        }
+    }
+
+    /**
      * Removes a notification from the NotificationCollector.
      * @param notification NotificationInfo to remove
      */
     public void clearNotification(NotificationInfo notification) {
+        notification.destroy();
         this.notifications.remove(notification);
     }
 
