@@ -29,9 +29,9 @@ import java.util.List;
 public class Transaction<T extends RemoteObject> {
     private T object;
     private Method method;
-    private List<Object> args;
+    private Object[] args;
 
-    public Transaction(T object, Method method, List<Object> args) {
+    public Transaction(T object, Method method, Object[] args) {
         this.object = object;
         this.method = method;
         this.args = args;
