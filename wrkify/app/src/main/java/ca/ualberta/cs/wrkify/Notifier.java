@@ -21,6 +21,7 @@ package ca.ualberta.cs.wrkify;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.Set;
  * since a known state. It can generate notifications for any significant changes.
  * @param <T> Type of RemoteObject this Notifier can analyze
  */
-public abstract class Notifier<T extends RemoteObject> {
+public abstract class Notifier<T extends RemoteObject> implements Serializable {
     private Map<String, T> lastKnown;
 
     /**

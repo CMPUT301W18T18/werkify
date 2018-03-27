@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +40,60 @@ import java.util.List;
  * saves and restores a user identity from file when the app
  * is restarted.
  */
-public class Session {
+public class Session implements Serializable {
     private static final String FILENAME = "ca.ualberta.cs.wrkify.Session";
     private static Session instance;
+
+    /**
+     * Preserves Session to file
+     * @param context application context; used to write file
+     */
+    private static void save(Context context, Session session) {
+        // this is adapted from the lab 26-01-2018
+        try {
+            FileOutputStream fos = context.openFileOutput(FILENAME,
+                    Context.MODE_PRIVATE);
+
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos));
+
+            Gson gson = new Gson();
+            gson.toJson(session, out);
+
+            out.flush();
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    /**
+     * Loads Session from file and gets user data from RemoteClient
+     * @param context application context; used to read file
+     * @param client RemoteClient; used to retrieve user data
+     */
+    private static Session load(Context context, RemoteClient client) {
+        Session session = new Session();
+
+        // this is adapted from the lab 26-01-2018
+        try {
+            FileInputStream fis = context.openFileInput(FILENAME);
+            BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+
+            Gson gson = new Gson();
+            session = gson.fromJson(in, Session.class);
+        } catch (FileNotFoundException e) {
+            session.user = null;
+        }
+
+        return session;
+    }
 
     private User user;
     private List<Task> userRequestedCache;
     private List<Task> userProvidedCache;
     private List<Task> userBiddedCache;
 
-    private NotificationCollector notificationCollector = new NotificationCollector();
+    private transient NotificationCollector notificationCollector = new NotificationCollector();
     private ProvidedTaskNotifier providedTaskNotifier = new ProvidedTaskNotifier();
     private RequestedTaskNotifier requestedTaskNotifier = new RequestedTaskNotifier();
 
@@ -62,13 +107,8 @@ public class Session {
      */
     public static Session getInstance(Context context, RemoteClient client) {
         if (instance == null) {
-            instance = new Session();
+            instance = load(context, client);
         }
-
-        if (instance.user == null) {
-            instance.load(context, client);
-        }
-
         return instance;
     }
 
@@ -97,7 +137,7 @@ public class Session {
     public void setUser(User user, Context context) {
         this.user = user;
 
-        save(context);
+        save(context, this);
     }
 
     /**
@@ -173,49 +213,9 @@ public class Session {
         this.requestedTaskNotifier.updateLastKnown(task);
     }
 
-    /**
-     * Preserves Session to file
-     * @param context application context; used to write file
-     */
-    private void save(Context context) {
-        // this is adapted from the lab 26-01-2018
-        try {
-            FileOutputStream fos = context.openFileOutput(FILENAME,
-                    Context.MODE_PRIVATE);
-
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos));
-
-            Gson gson = new Gson();
-            gson.toJson(this.user.getId(), out);
-
-            out.flush();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    /**
-     * Loads Session from file and gets user data from RemoteClient
-     * @param context application context; used to read file
-     * @param client RemoteClient; used to retrieve user data
-     */
-    private void load(Context context, RemoteClient client) {
-        // this is adapted from the lab 26-01-2018
-        try {
-            FileInputStream fis = context.openFileInput(FILENAME);
-            BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-
-            Gson gson = new Gson();
-            String id = gson.fromJson(in, String.class);
-
-            this.user = client.download(id, User.class);
-        } catch (FileNotFoundException e) {
-            this.user = null;
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+    public void initializeKnownState() {
+        for (Task t: userProvidedCache) { providedTaskNotifier.updateLastKnown(t); }
+        for (Task t: userBiddedCache) { providedTaskNotifier.updateLastKnown(t); }
+        for (Task t: userRequestedCache) { requestedTaskNotifier.updateLastKnown(t); }
     }
 }
