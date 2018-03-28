@@ -21,12 +21,16 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 abstract class CheckListView extends LinearLayout {
     private CheckList checkList;
+
+    private OnDataSetChangedListener onDataSetChangedListener;
 
     public CheckListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -45,6 +49,7 @@ abstract class CheckListView extends LinearLayout {
      * @param checkList CheckList to display/edit
      */
     public void setCheckList(CheckList checkList) {
+        Log.i("-->", "checkList: " + checkList);
         this.checkList = checkList;
 
         // Reset the view
@@ -71,12 +76,24 @@ abstract class CheckListView extends LinearLayout {
      * Refreshes the view to reflect the current state of the CheckList.
      */
     public void notifyDataSetChanged() {
-        if (this.checkList != null) {
-            this.setCheckList(this.checkList);
+        if (checkList != null) {
+            setCheckList(checkList);
+        }
+
+        if (onDataSetChangedListener != null) {
+            onDataSetChangedListener.onDataSetChanged(checkList);
         }
     }
 
+    public void setOnDataSetChangedListener(OnDataSetChangedListener onDataSetChangedListener) {
+        this.onDataSetChangedListener = onDataSetChangedListener;
+    }
+
     protected abstract CheckListItemView makeItemView(CheckList.CheckListItem item);
+
+    public interface OnDataSetChangedListener {
+        public void onDataSetChanged(CheckList data);
+    }
 
     public static abstract class CheckListItemView extends LinearLayout {
         /** Default View constructor. */

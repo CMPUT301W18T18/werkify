@@ -14,6 +14,7 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
  *
  * items can be strings
  */
-public class CheckList {
+public class CheckList implements Serializable {
     private List<CheckListItem> items;
 
     /**
@@ -47,6 +48,10 @@ public class CheckList {
 
     public List<CheckListItem> getItems() {
         return items;
+    }
+
+    public int itemCount() {
+        return items.size();
     }
 
     /**
@@ -105,7 +110,7 @@ public class CheckList {
 
     public void removeItem(CheckListItem item) { this.items.remove(item); }
 
-    public class CheckListItem {
+    public static class CheckListItem implements Serializable {
         private String description;
         private boolean status;
 

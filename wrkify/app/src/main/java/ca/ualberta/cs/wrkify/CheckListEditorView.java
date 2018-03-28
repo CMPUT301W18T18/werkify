@@ -21,6 +21,8 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -91,6 +93,8 @@ public class CheckListEditorView extends CheckListView {
 
         @Override
         public void setItem(final CheckList.CheckListItem item) {
+            Log.i("-->", "item: " + item + ", desc: " + item.getDescription());
+
             this.descriptionField.setText(item.getDescription());
             this.toggleBox.setEnabled(item.getStatus());
 
@@ -99,6 +103,17 @@ public class CheckListEditorView extends CheckListView {
                 public void onClick(View v) {
                     getCheckList().removeItem(item);
                     notifyDataSetChanged();
+                }
+            });
+
+            this.descriptionField.setOnFocusChangeListener(new OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        Log.i("-->", "updating item: v = " + v);
+
+                        item.setDescription(descriptionField.getText().toString());
+                    }
                 }
             });
         }

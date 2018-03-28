@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 /**
@@ -56,10 +57,14 @@ public class EditTaskActivity extends AppCompatActivity {
 
 
     private Task task;
+    private CheckList checkList;
     private boolean taskIsNew = false;
 
     private EditText titleField;
     private EditText descriptionField;
+    private CheckListEditorView checkListEditorView;
+    private Button checkListNewButton;
+    private Button checkListAddButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,9 @@ public class EditTaskActivity extends AppCompatActivity {
 
         this.titleField = findViewById(R.id.editTaskTitleField);
         this.descriptionField = findViewById(R.id.editTaskDescriptionField);
+        this.checkListEditorView = findViewById(R.id.editTaskChecklist);
+        this.checkListNewButton = findViewById(R.id.editTaskButtonChecklistNew);
+        this.checkListAddButton = findViewById(R.id.editTaskButtonChecklistAdd);
 
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
 
@@ -78,11 +86,13 @@ public class EditTaskActivity extends AppCompatActivity {
             // TODO change the new user thing later
 
             this.taskIsNew = true;
+            this.checkList = new CheckList();
             if (actionBar != null) {
                 actionBar.setTitle("New task");
             }
         } else {
             this.taskIsNew = false;
+            this.checkList = task.getCheckList();
             if (actionBar != null) {
                 actionBar.setTitle("Editing task");
                 actionBar.setSubtitle(task.getTitle());
@@ -91,7 +101,38 @@ public class EditTaskActivity extends AppCompatActivity {
             // populate fields
             titleField.setText(task.getTitle());
             descriptionField.setText(task.getDescription());
+
+            if (task.getCheckList().itemCount() > 0) {
+                showChecklistEditor();
+            }
         }
+
+        checkListNewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkList.addItem("");
+                checkListEditorView.notifyDataSetChanged();
+                showChecklistEditor();
+            }
+        });
+
+        checkListAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkList.addItem("");
+                checkListEditorView.notifyDataSetChanged();
+            }
+        });
+
+        checkListEditorView.setCheckList(checkList);
+        checkListEditorView.setOnDataSetChangedListener(new CheckListView.OnDataSetChangedListener() {
+            @Override
+            public void onDataSetChanged(CheckList data) {
+                if (data.itemCount() == 0) {
+                    hideChecklistEditor();
+                }
+            }
+        });
     }
 
     @Override
@@ -167,6 +208,9 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
+        View focus = getCurrentFocus();
+        if (focus != null) { focus.clearFocus(); }
+
         if (this.taskIsNew) {
             this.task = WrkifyClient.getInstance()
                     .create(Task.class,
@@ -189,6 +233,18 @@ public class EditTaskActivity extends AppCompatActivity {
         else setResult(RESULT_OK, intent);
 
         finish();
+    }
+
+    private void showChecklistEditor() {
+        checkListEditorView.setVisibility(View.VISIBLE);
+        checkListAddButton.setVisibility(View.VISIBLE);
+        checkListNewButton.setVisibility(View.GONE);
+    }
+
+    private void hideChecklistEditor() {
+        checkListEditorView.setVisibility(View.GONE);
+        checkListAddButton.setVisibility(View.GONE);
+        checkListNewButton.setVisibility(View.VISIBLE);
     }
 
     @Override
