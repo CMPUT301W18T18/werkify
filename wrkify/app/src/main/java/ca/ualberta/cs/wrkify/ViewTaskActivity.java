@@ -104,7 +104,7 @@ public class ViewTaskActivity extends AppCompatActivity {
      * changes will not be reflected in the UI.
      * @param task task to display
      */
-     private void initializeFromTask(Task task) {
+    private void initializeFromTask(Task task) {
         this.task = task;
 
         // Determine if the session user owns this task
@@ -143,6 +143,12 @@ public class ViewTaskActivity extends AppCompatActivity {
         TextView descriptionView = findViewById(R.id.taskViewDescription);
         descriptionView.setText(task.getDescription());
 
+        // Initialize the checklist view
+        CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
+        checkListProviderView.setEditingEnabled(false);
+        checkListProviderView.setCheckList(task.getCheckList());
+        checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
+
         // Add the bottom sheet if it doesn't exist already from a previous initialization
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -171,7 +177,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                     // Edit the task
                     Intent editIntent = new Intent(ViewTaskActivity.this,
                             EditTaskActivity.class);
-                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);                    
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
                     startActivityForResult(editIntent, REQUEST_EDIT_TASK);
                 }
             });

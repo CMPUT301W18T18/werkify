@@ -21,6 +21,7 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -106,8 +107,11 @@ public class CheckListProviderView extends CheckListView {
 
         @Override
         public void setItem(CheckList.CheckListItem item) {
+            Log.i("-->", "" + item.getStatus());
             this.descriptionField.setText(item.getDescription());
-            this.toggleBox.setEnabled(item.getStatus());
+            this.toggleBox.setChecked(item.getStatus());
+            this.toggleBox.setClickable(editingEnabled);
+            this.toggleBox.setAlpha(editingEnabled? 1.0f : 0.3f);
         }
 
         @Override

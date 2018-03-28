@@ -96,7 +96,7 @@ public class CheckListEditorView extends CheckListView {
             Log.i("-->", "item: " + item + ", desc: " + item.getDescription());
 
             this.descriptionField.setText(item.getDescription());
-            this.toggleBox.setEnabled(item.getStatus());
+            this.toggleBox.setChecked(item.getStatus());
 
             this.deleteButton.setOnClickListener(new OnClickListener() {
                 @Override

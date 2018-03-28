@@ -28,7 +28,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:enabled="false" />
+        style="@style/Base.Widget.AppCompat.CompoundButton.CheckBox" />
 
     <TextView
         android:id="@+id/checkitemDescription"
