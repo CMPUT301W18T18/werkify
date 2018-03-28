@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,9 +28,11 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
- * View for a task checklist. Displays the items as a static vertical list.
- * Can be set to allow toggling them on click, in which case the View's bound
- * CheckList object will be updated in sync with the View.
+ * View for a task checklist of ViewTaskActivity.
+ * Displays the items as a static vertical list. This CheckListView
+ * makes no modifications to the CheckList internally, though it
+ * provides a listener interface to its checkboxes to allow an invoking
+ * class to make them actually toggle the task statuses.
  */
 public class CheckListProviderView extends CheckListView {
     private boolean editingEnabled;
@@ -61,6 +64,14 @@ public class CheckListProviderView extends CheckListView {
         this.notifyDataSetChanged();
     }
 
+    /**
+     * Sets a listener that will be triggered when an item's checkbox is
+     * toggled. (This will only ever occur if the checklist is editable.)
+     * Note that toggling the checkboxes by default has no entity-level
+     * effect (ie. actually toggling the status of the underlying CheckListItem
+     * should be implemented by the invoker and attached to this listener).
+     * @param onItemToggledListener Listener to attach
+     */
     public void setOnItemToggledListener(OnItemToggledListener onItemToggledListener) {
         this.onItemToggledListener = onItemToggledListener;
     }
@@ -73,10 +84,21 @@ public class CheckListProviderView extends CheckListView {
         return itemView;
     }
 
+    /**
+     * Listener for item checkbox toggle events.
+     */
     public interface OnItemToggledListener {
-        void onItemToggled(CheckList.CheckListItem item);
+        /**
+         * Called when an item's checkbox is toggled.
+         * @param item item that was toggled
+         */
+        void onItemToggled(@NonNull CheckList.CheckListItem item);
     }
 
+    /**
+     * An item in the provider checklist view. Consists of a possibly-toggleable
+     * checkbox and a description.
+     */
     public class CheckListItemView extends CheckListView.CheckListItemView {
         private boolean editingEnabled;
 
@@ -104,6 +126,10 @@ public class CheckListProviderView extends CheckListView {
             super(context, attrs, defStyleAttr);
         }
 
+        /**
+         * Enables or disables the checkbox for this item.
+         * @param editingEnabled whether to enable the checkbox
+         */
         public void setEditingEnabled(boolean editingEnabled) {
             this.editingEnabled = editingEnabled;
         }

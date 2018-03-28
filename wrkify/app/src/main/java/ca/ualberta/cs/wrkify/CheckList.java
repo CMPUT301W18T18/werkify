@@ -46,10 +46,18 @@ public class CheckList implements Serializable {
         }
     }
 
+    /**
+     * Gets the encapsulated list of CheckListItems.
+     * @return list of CheckListItems
+     */
     public List<CheckListItem> getItems() {
         return items;
     }
 
+    /**
+     * Returns the number of items in the CheckList.
+     * @return number of items in the CheckList
+     */
     public int itemCount() {
         return items.size();
     }
@@ -61,24 +69,6 @@ public class CheckList implements Serializable {
      */
     public CheckListItem getItem(int index) {
         return this.items.get(index);
-    }
-
-    /**
-     * sets the item description
-     * @param index the array index to set
-     * @param item the description
-     */
-    public void setDescriptionAt(int index, String description) {
-        this.items.get(index).setDescription(description);
-    }
-
-    /**
-     * sets the checked status of the item
-     * @param index the array index to set at
-     * @param status the new status
-     */
-    public void setStatusAt(int index, boolean status) {
-        this.items.get(index).setStatus(status);
     }
 
     /**
@@ -99,42 +89,65 @@ public class CheckList implements Serializable {
     }
 
     /**
-     * removes the item at index
-     * WARNING: will invalidate other indexes you have lying
-     * around
-     * @param index the index to delete
+     * Removes a CheckListItem from the checklist.
+     * @param item item to remove
      */
-    public void removeItem(int index) {
-        this.items.remove(index);
-    }
-
     public void removeItem(CheckListItem item) { this.items.remove(item); }
 
+    /**
+     * A single item in the CheckList.
+     * Has a description and a status.
+     */
     public static class CheckListItem implements Serializable {
         private String description;
         private boolean status;
 
+        /**
+         * Creates a CheckListItem with a description and status.
+         * @param description description of the item
+         * @param status true if the item is complete; false if it is not complete
+         */
         public CheckListItem(String description, boolean status) {
             this.description = description;
             this.status = status;
         }
 
+        /**
+         * Creates a CheckListItem with a description, with status set to incomplete.
+         * @param description description of the item
+         */
         public CheckListItem(String description) {
             this(description, false);
         }
 
+        /**
+         * Gets the description of the item.
+         * @return description of the item
+         */
         public String getDescription() {
             return description;
         }
 
+        /**
+         * Gets the status of the item.
+         * @return true if the item is complete; false if it is incomplete
+         */
         public boolean getStatus() {
             return status;
         }
 
+        /**
+         * Sets the description of the item.
+         * @param description new description of the item
+         */
         public void setDescription(String description) {
             this.description = description;
         }
 
+        /**
+         * Sets the status of the item.
+         * @param status true if the item should be complete; false if it should be incomplete
+         */
         public void setStatus(boolean status) {
             this.status = status;
         }

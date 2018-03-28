@@ -22,12 +22,22 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+/**
+ * View for a task checklist of EditTaskActivity.
+ * Displays editable items with a non-interactive checkbox
+ * and a delete button for each. The TaskList bound to this
+ * CheckListView will be dynamically updated if changes are
+ * made using the CheckListView's controls.
+ *
+ * (Note that this View consists only of the list itself and
+ * per-list-item controls, and lacks list-level controls
+ * such as 'add item to list'.)
+ */
 public class CheckListEditorView extends CheckListView {
     /**
      * Default View constructor.
@@ -57,6 +67,10 @@ public class CheckListEditorView extends CheckListView {
         return itemView;
     }
 
+    /**
+     * An item in the editor checklist view. Consists of a static checkbox,
+     * an editable description field, and a delete button.
+     */
     public class CheckListItemView extends CheckListView.CheckListItemView {
         private CheckBox toggleBox;
         private EditText descriptionField;

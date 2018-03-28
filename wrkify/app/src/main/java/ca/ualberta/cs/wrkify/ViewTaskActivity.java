@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
@@ -166,7 +167,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         checkListProviderView.setOnItemToggledListener(new CheckListProviderView.OnItemToggledListener() {
             @Override
-            public void onItemToggled(final CheckList.CheckListItem item) {
+            public void onItemToggled(final @NonNull CheckList.CheckListItem item) {
                 String confirmationActionString = item.getStatus()? "not completed": "completed";
                 ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
                         String.format(Locale.US, "Mark \"%s\" as %s?", item.getDescription(), confirmationActionString),

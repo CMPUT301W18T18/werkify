@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -127,8 +128,8 @@ public class EditTaskActivity extends AppCompatActivity {
         checkListEditorView.setCheckList(checkList);
         checkListEditorView.setOnDataSetChangedListener(new CheckListView.OnDataSetChangedListener() {
             @Override
-            public void onDataSetChanged(CheckList data) {
-                if (data.itemCount() == 0) {
+            public void onDataSetChanged(@Nullable CheckList data) {
+                if (data == null || data.itemCount() == 0) {
                     hideChecklistEditor();
                 }
             }
