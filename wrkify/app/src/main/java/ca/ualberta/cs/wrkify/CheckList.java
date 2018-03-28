@@ -15,6 +15,7 @@
 package ca.ualberta.cs.wrkify;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CheckList models a simple to do list
@@ -22,29 +23,30 @@ import java.util.ArrayList;
  * items can be strings
  */
 public class CheckList {
-    private ArrayList<String> items;
-    private ArrayList<Boolean> checked;
+    private List<CheckListItem> items;
 
     /**
      * the empty construtcor for Checklist
      * creates an empty checklist
      */
     public CheckList() {
-        this.items = new ArrayList<String>();
-        this.checked = new ArrayList<Boolean>();
+        this.items = new ArrayList<>();
     }
 
     /**
      * creates a checklist with everything unchecked
-     * @param items the items of the checklist
+     * @param descriptions the items of the checklist
      */
-    public CheckList(ArrayList<String> items) {
-        this.items = items;
-        this.checked = new ArrayList<Boolean>();
+    public CheckList(List<String> descriptions) {
+        this();
 
-        for (int i = 0; i < this.items.size(); i++) {
-            this.checked.add(false);
+        for (String description: descriptions) {
+            this.addItem(description);
         }
+    }
+
+    public List<CheckListItem> getItems() {
+        return items;
     }
 
     /**
@@ -52,17 +54,8 @@ public class CheckList {
      * @param index an array index
      * @return the item at index
      */
-    public String getItem(int index) {
+    public CheckListItem getItem(int index) {
         return this.items.get(index);
-    }
-
-    /**
-     * gets a boolean indicating checked
-     * @param index index of the item
-     * @return the boolean status
-     */
-    public Boolean getStatus(int index) {
-        return this.checked.get(index);
     }
 
     /**
@@ -70,8 +63,8 @@ public class CheckList {
      * @param index the array index to set
      * @param item the description
      */
-    public void setItem(int index, String item) {
-        this.items.set(index, item);
+    public void setDescriptionAt(int index, String description) {
+        this.items.get(index).setDescription(description);
     }
 
     /**
@@ -79,27 +72,25 @@ public class CheckList {
      * @param index the array index to set at
      * @param status the new status
      */
-    public void setStatus(int index, boolean status) {
-        this.checked.set(index, status);
+    public void setStatusAt(int index, boolean status) {
+        this.items.get(index).setStatus(status);
     }
 
     /**
      * add an item with a given status
-     * @param item the string of the item
+     * @param description the string of the item
      * @param status whtehr or not the new item is checked
      */
-    public void addItem(String item, boolean status) {
-        this.items.add(item);
-        this.checked.add(status);
+    public void addItem(String description, boolean status) {
+        this.items.add(new CheckListItem(description, status));
     }
 
     /**
      * add an item, defaulting to false
-     * @param item the new item description
+     * @param description the new item description
      */
-    public void addItem(String item) {
-        this.items.add(item);
-        this.checked.add(false);
+    public void addItem(String description) {
+        this.items.add(new CheckListItem(description));
     }
 
     /**
@@ -110,6 +101,37 @@ public class CheckList {
      */
     public void removeItem(int index) {
         this.items.remove(index);
-        this.checked.remove(index);
+    }
+
+    public void removeItem(CheckListItem item) { this.items.remove(item); }
+
+    public class CheckListItem {
+        private String description;
+        private boolean status;
+
+        public CheckListItem(String description, boolean status) {
+            this.description = description;
+            this.status = status;
+        }
+
+        public CheckListItem(String description) {
+            this(description, false);
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public boolean getStatus() {
+            return status;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public void setStatus(boolean status) {
+            this.status = status;
+        }
     }
 }
