@@ -28,11 +28,14 @@ public class Signal extends RemoteObject {
         SIGNAL_CLOSED
     }
 
+    private final RemoteReference<User> user;
+
     private final SignalType type;
     private final String targetID;
     private final String targetName;
 
-    public Signal(SignalType type, String targetID, String targetName) {
+    public Signal(User user, SignalType type, String targetID, String targetName) {
+        this.user = user.reference();
         this.type = type;
         this.targetID = targetID;
         this.targetName = targetName;
