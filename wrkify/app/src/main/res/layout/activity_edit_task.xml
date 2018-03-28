@@ -20,12 +20,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context="ca.ualberta.cs.wrkify.EditTaskActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/editTaskTitleSheet"
@@ -74,7 +75,6 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             app:layout_constraintTop_toBottomOf="@id/editTaskTitleSheet"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0"
             android:layout_marginTop="36dp"
             android:layout_width="match_parent"
