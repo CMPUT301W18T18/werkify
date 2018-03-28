@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.app.Activity;
 import android.content.Intent;
 
 /**
@@ -34,8 +35,12 @@ public class NotificationInfo {
     private String preText;
     private String targetText;
     private String postText;
-    private Intent actionIntent;
     private Boolean isImportant;
+
+    private String targetID;
+    private Class<? extends Activity> targetActivity;
+
+    private OnNotificationAcknowledgedListener listener;
 
     public NotificationInfo(String preText, String targetText, String postText) {
         this.preText = preText;
@@ -60,15 +65,34 @@ public class NotificationInfo {
         return isImportant;
     }
 
-    public Intent getActionIntent() {
-        return actionIntent;
-    }
-
     public void setIsImportant(Boolean isImportant) {
         this.isImportant = isImportant;
     }
 
-    public void setActionIntent(Intent actionIntent) {
-        this.actionIntent = actionIntent;
+    public void setViewTarget(String targetID, Class<? extends Activity> targetActivity) {
+        this.targetID = targetID;
+        this.targetActivity = targetActivity;
+    }
+
+    public String getTargetID() {
+        return targetID;
+    }
+
+    public Class<? extends Activity> getTargetActivity() {
+        return targetActivity;
+    }
+
+    public void setOnNotificationAcknowledgedListener(OnNotificationAcknowledgedListener listener) {
+        this.listener = listener;
+    }
+
+    public void acknowledge() {
+        if (this.listener != null) {
+            listener.onNotificationAcknowledged(this);
+        }
+    }
+
+    public interface OnNotificationAcknowledgedListener {
+        void onNotificationAcknowledged(NotificationInfo notification);
     }
 }

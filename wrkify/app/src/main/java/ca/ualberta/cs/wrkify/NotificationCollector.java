@@ -37,6 +37,14 @@ public class NotificationCollector {
     }
 
     /**
+     * Removes all notifications in the NotificationCollector without
+     * acknowledging them.
+     */
+    public void clear() {
+        this.notifications.clear();
+    }
+
+    /**
      * Adds a notification to the NotificationCollector.
      * Important notifications will be placed at the start of the list;
      * unimportant notifications will be placed at the end.
@@ -47,6 +55,12 @@ public class NotificationCollector {
             this.notifications.add(0, notification);
         } else {
             this.notifications.add(notification);
+        }
+    }
+
+    public void putNotifications(List<NotificationInfo> notifications) {
+        for (NotificationInfo notification: notifications) {
+            this.putNotification(notification);
         }
     }
 

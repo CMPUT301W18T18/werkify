@@ -47,8 +47,11 @@ public class Session {
     private List<Task> userProvidedCache;
     private List<Task> userBiddedCache;
     private NotificationCollector notificationCollector = new NotificationCollector();
+    private SignalManager signalManager;
 
-    private Session() {}
+    private Session(RemoteClient client) {
+        this.signalManager = new SignalManager(client);
+    }
 
     /**
      * Gets the global Session.
@@ -58,7 +61,7 @@ public class Session {
      */
     public static Session getInstance(Context context, RemoteClient client) {
         if (instance == null) {
-            instance = new Session();
+            instance = new Session(client);
         }
 
         if (instance.user == null) {
@@ -102,6 +105,8 @@ public class Session {
      */
     public void logout(Context context) {
         this.user = null;
+        this.notificationCollector.clear();
+        this.signalManager.clear();
         context.deleteFile(FILENAME);
     }
 
@@ -114,6 +119,11 @@ public class Session {
         this.userProvidedCache = Searcher.findTasksByProvider(client, this.user);
         this.userRequestedCache = Searcher.findTasksByRequester(client, this.user);
         this.userBiddedCache = Searcher.findTasksByBidder(client, this.user);
+
+        this.signalManager.clear();
+        this.notificationCollector.clear();
+        this.signalManager.addSignals(Searcher.findSignalsByUser(client, this.user));
+        this.notificationCollector.putNotifications(this.signalManager.getNotifications());
     }
 
     /**
