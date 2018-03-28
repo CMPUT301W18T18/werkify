@@ -37,7 +37,7 @@
         android:layout_weight="1"
         android:layout_marginTop="8dp"
         android:layout_marginStart="4dp"
-        android:hint="Item" />
+        android:hint="@string/checklist_editor_item_label" />
 
     <!-- TODO this should be a delete button -->
     <ImageButton
@@ -48,7 +48,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:src="@drawable/ic_search_black_24dp"
-        android:contentDescription="Delete item"
+        android:contentDescription="@string/checklist_editor_delete_description"
         android:backgroundTint="@android:color/background_light"
         android:tint="@android:color/holo_red_light" />
 

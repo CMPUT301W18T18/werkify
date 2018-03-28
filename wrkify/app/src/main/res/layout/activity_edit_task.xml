@@ -85,7 +85,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Checklist"
+            android:text="@string/edit_task_checklist_label"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toTopOf="@id/editTaskDivider"
             app:layout_constraintStart_toStartOf="@id/editTaskDivider"/>
