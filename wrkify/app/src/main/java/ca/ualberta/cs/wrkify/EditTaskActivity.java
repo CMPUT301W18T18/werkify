@@ -219,6 +219,7 @@ public class EditTaskActivity extends AppCompatActivity {
                             Session.getInstance(this).getUser(),
                             this.descriptionField.getText().toString()
                     );
+            task.setCheckList(this.checkList);
         } else {
             task.setTitle(titleField.getText().toString());
             task.setDescription(descriptionField.getText().toString());
