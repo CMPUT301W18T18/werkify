@@ -21,7 +21,6 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.LinearLayout;
 
 /**
@@ -57,7 +56,6 @@ abstract class CheckListView extends LinearLayout {
      * @param checkList CheckList to bind
      */
     public void setCheckList(CheckList checkList) {
-        Log.i("-->", "checkList: " + checkList);
         this.checkList = checkList;
 
         // Reset the view
