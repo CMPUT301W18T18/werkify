@@ -22,6 +22,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -32,6 +33,8 @@ import android.widget.TextView;
  */
 public class CheckListProviderView extends CheckListView {
     private boolean editingEnabled;
+
+    private OnItemToggledListener onItemToggledListener;
 
     /** Default View constructor. */
     public CheckListProviderView(Context context) {
@@ -58,12 +61,8 @@ public class CheckListProviderView extends CheckListView {
         this.notifyDataSetChanged();
     }
 
-    /**
-     * Returns whether editing is enabled for this CheckListView.
-     * @return true if editing is enabled
-     */
-    public boolean isEditingEnabled() {
-        return editingEnabled;
+    public void setOnItemToggledListener(OnItemToggledListener onItemToggledListener) {
+        this.onItemToggledListener = onItemToggledListener;
     }
 
     @Override
@@ -74,7 +73,11 @@ public class CheckListProviderView extends CheckListView {
         return itemView;
     }
 
-    public static class CheckListItemView extends CheckListView.CheckListItemView {
+    public interface OnItemToggledListener {
+        void onItemToggled(CheckList.CheckListItem item);
+    }
+
+    public class CheckListItemView extends CheckListView.CheckListItemView {
         private boolean editingEnabled;
 
         private TextView descriptionField;
@@ -106,12 +109,25 @@ public class CheckListProviderView extends CheckListView {
         }
 
         @Override
-        public void setItem(CheckList.CheckListItem item) {
+        public void setItem(final CheckList.CheckListItem item) {
             Log.i("-->", "" + item.getStatus());
             this.descriptionField.setText(item.getDescription());
             this.toggleBox.setChecked(item.getStatus());
-            this.toggleBox.setClickable(editingEnabled);
+            this.toggleBox.setClickable(false);
             this.toggleBox.setAlpha(editingEnabled? 1.0f : 0.3f);
+
+            if (editingEnabled) {
+                this.toggleBox.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (onItemToggledListener != null) {
+                            onItemToggledListener.onItemToggled(item);
+                        }
+
+                        toggleBox.setChecked(item.getStatus());
+                    }
+                });
+            }
         }
 
         @Override
