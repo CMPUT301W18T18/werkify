@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 
@@ -28,7 +29,7 @@ import java.text.NumberFormat;
  * @author Peter Elliott
  */
 
-public class Price implements Comparable<Price> {
+public class Price implements Comparable<Price>, Serializable {
     /**
      * price is the internal BigDeicmal that is
      * the entire state of the object. BigDecimal

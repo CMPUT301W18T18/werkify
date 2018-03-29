@@ -40,7 +40,7 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
         setDetailString(container,
                 String.format(Locale.US, "%d bids so far", task.getBidList().size()));
         if (lowestBid != null) {
-            setRightStatusString(container, lowestBid.toString());
+            setRightStatusString(container, lowestBid.getValue().toString());
         }
 
         container.setOnClickListener(new View.OnClickListener() {
