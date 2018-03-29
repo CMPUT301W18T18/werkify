@@ -49,6 +49,6 @@
         android:src="@drawable/ic_delete_black_24dp"
         android:contentDescription="@string/checklist_editor_delete_description"
         android:backgroundTint="@android:color/background_light"
-        android:tint="#CC6666" />
+        android:tint="#888888" />
 
 </LinearLayout>
