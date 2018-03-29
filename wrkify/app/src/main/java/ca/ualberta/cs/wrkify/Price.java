@@ -60,8 +60,9 @@ public class Price implements Comparable<Price> {
             return false;
         }
 
-        if (!obj.getClass().isInstance(Price.class)) {
+        if (!(obj instanceof Price)) {
             return false;
+
         }
 
         Price p = (Price) obj;
