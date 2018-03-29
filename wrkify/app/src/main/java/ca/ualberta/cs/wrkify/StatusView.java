@@ -49,12 +49,12 @@ public class StatusView extends AppCompatTextView {
      * @param status the TaskStatus to display
      * @param lowBid the lowest bid (used when bidded)
      */
-    public void setStatus(TaskStatus status, Double lowBid) {
+    public void setStatus(TaskStatus status, Price lowBid) {
         if (status == TaskStatus.REQUESTED) {
             this.setText("Requested");
             this.setBackgroundResource(R.drawable.requested_chip);
         } else if (status == TaskStatus.BIDDED) {
-            this.setText(String.format("$%.2f", lowBid));
+            this.setText(lowBid.toString());
             this.setBackgroundResource(R.drawable.bidded_chip);
         } else if (status == TaskStatus.ASSIGNED) {
             this.setText("Assigned");
