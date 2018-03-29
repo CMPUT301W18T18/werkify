@@ -300,7 +300,7 @@ public class Task extends RemoteObject {
      * accepted bid depending on the status
      * @return the current price of the task
      */
-    public double getPrice() {
+    public Price getPrice() {
         if (this.status == TaskStatus.ASSIGNED) {
             return this.getAcceptedBid().getValue();
         } else {

@@ -79,8 +79,8 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewBiddedTask() {
         Task task = new Task("Example task with bids", exampleUser1, aLongDescription);
-        task.addBid(new Bid(20.00, exampleUser2));
-        task.addBid(new Bid(30.00, exampleUser2));
+        task.addBid(new Bid(new Price(20.00), exampleUser2));
+        task.addBid(new Bid(new Price(30.00), exampleUser2));
         startViewTaskActivityWith(task, exampleUser3);
     }
 
@@ -93,8 +93,8 @@ public class ViewTaskActivityTest {
     public void testViewSelfBiddedTask() {
         // TODO This doesn't currently work any differently from a normal bidded task
         Task task = new Task("Example task of session user", exampleUser1, aLongDescription);
-        task.addBid(new Bid(20.00, exampleUser2));
-        task.addBid(new Bid(30.00, exampleUser3));
+        task.addBid(new Bid(new Price(20.00), exampleUser2));
+        task.addBid(new Bid(new Price(30.00), exampleUser3));
         startViewTaskActivityWith(task, exampleUser3);
     }
 
@@ -115,8 +115,8 @@ public class ViewTaskActivityTest {
     @Test
     public void testViewOwnBiddedTask() {
         Task task = new Task("Example bidded requested task", exampleUser1, aLongDescription);
-        task.addBid(new Bid(15.15, exampleUser2));
-        task.addBid(new Bid(20.25, exampleUser3));
+        task.addBid(new Bid(new Price(15.15), exampleUser2));
+        task.addBid(new Bid(new Price(20.25), exampleUser3));
         startViewTaskActivityWith(task, exampleUser1);
     }
 

@@ -50,8 +50,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
             setDetailString(container,
                     String.format(Locale.US,"to %s", assignee.getUsername()));
         }
-        setRightStatusString(container,
-                String.format(Locale.US, "$%.2f", task.getPrice()));
+        setRightStatusString(container, task.getPrice().toString());
 
         Button closeTaskButton = container.findViewById(R.id.taskViewBottomSheetButtonMarkDone);
         Button deassignButton = container.findViewById(R.id.taskViewBottomSheetButtonDeassign);
