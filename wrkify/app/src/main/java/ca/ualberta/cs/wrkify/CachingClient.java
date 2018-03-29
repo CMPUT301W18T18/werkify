@@ -50,6 +50,24 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         this.cache.discard(id);
     }
 
+    public boolean isCached(String id) {
+        return (this.cache.get(id) != null);
+    }
+
+    /**
+     * Tries to get an object by ID from the cache, without falling through
+     * to the underlying RemoteClient if not available. This will never fail
+     * due to network connectivity etc. but will return null if the target ID
+     * isn't currently available in the cache.
+     * @param id ID to get
+     * @param <T> Type of RemoteObject to get
+     * @return cached RemoteObject, or null if not in cache
+     */
+    @Nullable
+    public <T extends RemoteObject> T getFromCache(String id) {
+        return this.cache.get(id);
+    }
+
     @Override
     @Nullable
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
