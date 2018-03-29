@@ -56,10 +56,10 @@ public class SearcherTest {
         task3 = rc.create(Task.class, "task 3", user2, "blah blah");
         task4 = rc.create(Task.class, "task 4", user2, "do something");
 
-        task2.acceptBid(new Bid(1.0, user3));
+        task2.acceptBid(new Bid(new Price(1.0), user3));
         rc.upload(task2);
 
-        task4.addBid(new Bid(1.0, user3));
+        task4.addBid(new Bid(new Price(1.0), user3));
         rc.upload(task4);
 
         // give elasticsearch time to index
