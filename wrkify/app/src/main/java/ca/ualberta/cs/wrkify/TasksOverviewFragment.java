@@ -57,15 +57,15 @@ abstract class TasksOverviewFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
-        
+
         // Find views
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
         this.addButton = view.findViewById(R.id.overviewAddButton);
-        
+
         UserView userView = view.findViewById(R.id.overviewSelfView);
         Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
-        
+
         // Set title
         toolbar.setTitle(getAppBarTitle());
 
@@ -77,7 +77,7 @@ abstract class TasksOverviewFragment extends Fragment {
                 // Create user view menu
                 PopupMenu popup = new PopupMenu(getActivity(), v);
                 getActivity().getMenuInflater().inflate(R.menu.overview, popup.getMenu());
-                
+
                 popup.getMenu().findItem(R.id.menuItemViewProfile).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -85,11 +85,11 @@ abstract class TasksOverviewFragment extends Fragment {
                         Intent viewUserIntent = new Intent(getContext(), ViewProfileActivity.class);
                         viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, Session.getInstance(getContext()).getUser());
                         startActivity(viewUserIntent);
-                        
+
                         return true;
                     }
                 });
-                
+
                 popup.getMenu().findItem(R.id.menuItemLogout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -97,22 +97,30 @@ abstract class TasksOverviewFragment extends Fragment {
                         Session.getInstance(getContext()).logout(getContext());
                         startActivity(new Intent(getActivity(), LoginActivity.class));
                         getActivity().finish();
-                        
+
                         return false;
                     }
                 });
-                
+
                 popup.show();
             }
         });
-        
+
         // Create tabs
-        for (String tabTitle: getTabTitles()) {
+        for (String tabTitle : getTabTitles()) {
             TabLayout.Tab tab = tabLayout.newTab();
             tab.setText(tabTitle);
             this.tabLayout.addTab(tab);
         }
 
+
+        // Refresh if necessary
+        tryRefreshCaches();
+
+        return view;
+    }
+
+    private void populateTaskLists() {
         // Bind adapter to pager
         // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
         pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
@@ -176,8 +184,6 @@ abstract class TasksOverviewFragment extends Fragment {
                 }
             }
         });
-
-        return view;
     }
 
     /**
@@ -202,6 +208,36 @@ abstract class TasksOverviewFragment extends Fragment {
      */
     protected ViewPager getPager() {
         return this.pager;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        tryRefreshCaches();
+    }
+
+    private void tryRefreshCaches() {
+        RefreshAsync.startAsyncRefresh(Session.getInstance(getContext()), new AsyncWatcher<Boolean>() {
+            @Override
+            public void onStartWaiting() {
+                // ignored
+            }
+
+            @Override
+            public void onFinishWaiting() {
+                // ignored
+            }
+
+            @Override
+            public void onTaskFinished(Boolean result) {
+                populateTaskLists();
+            }
+
+            @Override
+            public void onTaskInterrupted() {
+                populateTaskLists();
+            }
+        });
     }
 
     /**
