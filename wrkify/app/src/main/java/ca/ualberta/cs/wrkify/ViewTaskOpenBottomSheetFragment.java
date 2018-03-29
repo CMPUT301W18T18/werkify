@@ -92,8 +92,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             setDetailString(container,
                     String.format(Locale.US, "%d bids so far", bidCount));
             Bid lowestBid = task.getBidList().get(0);
-            setRightStatusString(container,
-                    String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+            setRightStatusString(container, lowestBid.toString());
         }
     }
 
