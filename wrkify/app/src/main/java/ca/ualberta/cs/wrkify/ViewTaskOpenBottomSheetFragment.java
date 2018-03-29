@@ -70,7 +70,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
                         @Override
                         public void onConfirm() {
                             tsk.addBid(new Bid(
-                                    Double.parseDouble(bidField.getText().toString()),
+                                    new Price(bidField.getText().toString()),
                                     Session.getInstance(ctx).getUser()
                             ));
                             WrkifyClient.getInstance().upload(tsk);
