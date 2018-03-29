@@ -21,12 +21,29 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 
 /**
- * Created by peter on 28/03/18.
+ * Price provides an object for the behaviors of a non
+ * negative price. implements all of the comparison functions
+ * you would expect of a Price.
+ *
+ * @author Peter Elliott
  */
 
 public class Price implements Comparable<Price> {
+    /**
+     * price is the internal BigDeicmal that is
+     * the entire state of the object. BigDecimal
+     * is used to avoid floating point error.
+     */
     private BigDecimal price;
 
+    /**
+     * creates a Price from the string representation
+     * of a price (with no currency symbol).
+     *
+     * price must be greater than or equal to 0.
+     *
+     * @param decimalString the string representation of the price
+     */
     public Price(String decimalString) {
         this.price = new BigDecimal(decimalString);
 
@@ -35,6 +52,13 @@ public class Price implements Comparable<Price> {
         }
     }
 
+    /**
+     * creates a Price from an existing BigDecimal
+     *
+     * price must be greater than or equal to 0.
+     *
+     * @param price the price
+     */
     public Price(BigDecimal price) {
         this.price = price;
 
@@ -43,6 +67,13 @@ public class Price implements Comparable<Price> {
         }
     }
 
+    /**
+     * creates a price from a Double
+     *
+     * price must be greater than or equal to 0.
+     *
+     * @param price a double of the price
+     */
     public Price(Double price) {
         this.price = BigDecimal.valueOf(price);
 
@@ -51,21 +82,39 @@ public class Price implements Comparable<Price> {
         }
     }
 
+    /**
+     * gets the BigDecimal value of the price
+     * @return the price
+     */
     public BigDecimal getValue() {
         return this.price;
     }
 
+    /**
+     * formats the price with a currency symbol to two decimal places
+     * @return a string representation of the price.
+     */
     @Override
     public String toString() {
         // from https://stackoverflow.com/questions/3395825/ (2018-03-28)
         return NumberFormat.getCurrencyInstance().format(this.price);
     }
 
+    /**
+     * compares the price by its internal numerical representation
+     * @param other the other price.
+     * @return (this>other): 1, (this<other): -1, (this=other): 0
+     */
     @Override
     public int compareTo(Price other) {
         return this.price.compareTo(other.price);
     }
 
+    /**
+     * checks if two prices are the same
+     * @param obj the object to compare to
+     * @return true if prices euqal, false otherwise.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -77,6 +126,7 @@ public class Price implements Comparable<Price> {
 
         }
 
+        // we now know obj is a Price
         Price p = (Price) obj;
 
         return this.price.equals(p.getValue());
