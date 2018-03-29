@@ -55,4 +55,10 @@ public class TransactionManager {
         return true;
     }
 
+    public Transaction pop() {
+        Transaction tr = queue.get(0);
+        queue.remove(0);
+        return tr;
+    }
+
 }

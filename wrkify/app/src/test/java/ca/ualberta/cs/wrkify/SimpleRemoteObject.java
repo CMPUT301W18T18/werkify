@@ -41,4 +41,18 @@ class SimpleRemoteObject extends RemoteObject {
         this(field);
         this.setId(id);
     }
+
+    @Transact
+    public void setFieldTo1() {
+        this.field = 1;
+    }
+
+    @Transact
+    public void setFieldTo2() {
+        this.field = 2;
+    }
+
+    public void setFieldTo3() {
+        this.field = 3;
+    }
 }
