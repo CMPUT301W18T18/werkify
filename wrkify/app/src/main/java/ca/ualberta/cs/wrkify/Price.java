@@ -29,14 +29,26 @@ public class Price implements Comparable<Price> {
 
     public Price(String decimalString) {
         this.price = new BigDecimal(decimalString);
+
+        if (this.price.compareTo(new BigDecimal(0)) == -1) {
+            throw new IllegalArgumentException("prices cannot be negative");
+        }
     }
 
     public Price(BigDecimal price) {
         this.price = price;
+
+        if (this.price.compareTo(new BigDecimal(0)) == -1) {
+            throw new IllegalArgumentException("prices cannot be negative");
+        }
     }
 
     public Price(Double price) {
         this.price = BigDecimal.valueOf(price);
+
+        if (this.price.compareTo(new BigDecimal(0)) == -1) {
+            throw new IllegalArgumentException("prices cannot be negative");
+        }
     }
 
     public BigDecimal getValue() {

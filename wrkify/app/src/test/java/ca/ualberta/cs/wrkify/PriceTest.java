@@ -62,11 +62,11 @@ public class PriceTest {
     @Test
     public void testDoubleConstructor() {
         Price price = new Price(1.50);
-        assertEquals(new BigDecimal(1.50), price);
+        assertEquals(new BigDecimal(1.50), price.getValue());
 
         boolean failed = false;
         try {
-            price = new Price(1.50);
+            price = new Price(-1.50);
         } catch (IllegalArgumentException e) {
             failed = true;
         }
