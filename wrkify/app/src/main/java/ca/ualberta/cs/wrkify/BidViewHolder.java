@@ -79,7 +79,7 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
             // TODO handle this correctly
             return;
         }
-        bidAmount.setText("$" + b.getValue().toString());
+        bidAmount.setText(b.getValue().toString());
     }
 
     /**

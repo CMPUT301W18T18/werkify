@@ -70,7 +70,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
                         @Override
                         public void onConfirm() {
                             tsk.addBid(new Bid(
-                                    Double.parseDouble(bidField.getText().toString()),
+                                    new Price(bidField.getText().toString()),
                                     Session.getInstance(ctx).getUser()
                             ));
                             WrkifyClient.getInstance().upload(tsk);
@@ -92,8 +92,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             setDetailString(container,
                     String.format(Locale.US, "%d bids so far", bidCount));
             Bid lowestBid = task.getBidList().get(0);
-            setRightStatusString(container,
-                    String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+            setRightStatusString(container, lowestBid.getValue().toString());
         }
     }
 
