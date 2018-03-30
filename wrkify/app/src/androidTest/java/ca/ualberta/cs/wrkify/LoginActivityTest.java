@@ -42,24 +42,17 @@ import static org.hamcrest.CoreMatchers.*;
  * Tests for LoginActivity.
  */
 @RunWith(AndroidJUnit4.class)
-public class LoginActivityTest {
-    private MockRemoteClient client;
+public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
     private User user;
 
-    @Rule
-    public IntentsTestRule<LoginActivity> intentsTestRule =
-            new IntentsTestRule<>(LoginActivity.class, false, false);
+    @Override
+    protected Class<LoginActivity> getActivityClass() {
+        return LoginActivity.class;
+    }
 
-    @Before
-    public void setupClient() {
-        this.client = new MockRemoteClient();
-
-        WrkifyClient.setInstance(new CachingClient<>(client));
+    @Override
+    protected void createMockData() {
         this.user = WrkifyClient.getInstance().create(User.class, "user4", "user4@example.com", "5018293749");
-
-        Session.setInstance(new MockSession(null));
-
-        intentsTestRule.launchActivity(new Intent());
     }
 
     /**
