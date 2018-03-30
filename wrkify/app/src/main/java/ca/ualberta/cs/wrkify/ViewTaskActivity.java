@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
@@ -32,6 +33,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.Locale;
 
 /**
  * ViewTaskActivity displays an expanded view of a Task.
@@ -104,11 +106,10 @@ public class ViewTaskActivity extends AppCompatActivity {
      * changes will not be reflected in the UI.
      * @param task task to display
      */
-     private void initializeFromTask(Task task) {
+    private void initializeFromTask(Task task) {
         this.task = task;
 
         // Determine if the session user owns this task
-        // TODO? this comparison seems like it should be encapsulable as User.equals
         Boolean sessionUserIsRequester;
 
         try {
@@ -117,6 +118,21 @@ public class ViewTaskActivity extends AppCompatActivity {
                 sessionUserIsRequester = false;
             } else {
                 sessionUserIsRequester = remoteRequester.equals(Session.getInstance(this).getUser());
+            }
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
+
+        // Determine if the task is assigned to the session user
+        Boolean sessionUserIsProvider;
+
+        try {
+            User remoteProvider = task.getRemoteProvider(WrkifyClient.getInstance());
+            if (remoteProvider == null) {
+                sessionUserIsProvider = false;
+            } else {
+                sessionUserIsProvider = remoteProvider.equals(Session.getInstance(this).getUser());
             }
         } catch (IOException e) {
             // TODO handle this correctly
@@ -142,6 +158,33 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Set the task description
         TextView descriptionView = findViewById(R.id.taskViewDescription);
         descriptionView.setText(task.getDescription());
+
+        // Initialize the checklist view
+        final CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
+        checkListProviderView.setEditingEnabled(sessionUserIsProvider);
+        checkListProviderView.setCheckList(task.getCheckList());
+        checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
+
+        checkListProviderView.setOnItemToggledListener(new CheckListProviderView.OnItemToggledListener() {
+            @Override
+            public void onItemToggled(final @NonNull CheckList.CheckListItem item) {
+                String confirmationActionString = item.getStatus()? "not completed": "completed";
+                ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
+                        String.format(Locale.US, "Mark \"%s\" as %s?", item.getDescription(), confirmationActionString),
+                        "Cancel",
+                        String.format(Locale.US, "Mark %s", confirmationActionString),
+                        new ConfirmationDialogFragment.OnConfirmListener() {
+                            @Override
+                            public void onConfirm() {
+                                item.setStatus(!item.getStatus());
+                                WrkifyClient.getInstance().upload(ViewTaskActivity.this.task);
+                                checkListProviderView.notifyDataSetChanged();
+                            }
+                        }
+                );
+                dialog.show(getFragmentManager(), null);
+            }
+        });
 
         // Add the bottom sheet if it doesn't exist already from a previous initialization
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -171,7 +214,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                     // Edit the task
                     Intent editIntent = new Intent(ViewTaskActivity.this,
                             EditTaskActivity.class);
-                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);                    
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
                     startActivityForResult(editIntent, REQUEST_EDIT_TASK);
                 }
             });

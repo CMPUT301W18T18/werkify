@@ -30,4 +30,7 @@
     <string name="overview_view_profile">View profile</string>
     <string name="overview_logout">Logout</string>
     <string name="task_list_empty">Nothing here</string>
+    <string name="edit_task_checklist_label">Checklist</string>
+    <string name="checklist_editor_item_label">Item</string>
+    <string name="checklist_editor_delete_description">Delete item</string>
 </resources>
