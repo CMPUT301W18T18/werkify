@@ -17,12 +17,9 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -30,15 +27,12 @@ import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.CoreMatchers.allOf;
 
 /**
  * Tests for EditProfileActivity.
@@ -62,7 +56,7 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
     }
 
     @Override
-    protected void createMockData() {
+    protected void createMockData(MockRemoteClient client) {
         user = client.create(User.class, "EditingUser", "editing-user@example.com", "5043081024");
     }
 
@@ -70,7 +64,7 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
     public void startActivity() {
         Intent intent = new Intent();
         intent.putExtra(EditProfileActivity.EXTRA_TARGET_USER, user);
-        intentsTestRule.launchActivity(intent);
+        launchActivity(intent);
     }
 
     /**
@@ -89,11 +83,10 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
 
         onView(withId(R.id.menuItemSaveProfile)).perform(click());
 
-        assertTrue(intentsTestRule.getActivity().isFinishing());
-        assertEquals(EditProfileActivity.RESULT_OK, intentsTestRule.getActivityResult().getResultCode());
+        assertActivityFinished();
+        assertEquals(EditProfileActivity.RESULT_OK, getActivityResultCode());
 
-        User returnedUser =
-                (User) intentsTestRule.getActivityResult().getResultData().getSerializableExtra(EditProfileActivity.EXTRA_RETURNED_USER);
+        User returnedUser = (User) getActivityResultExtra(EditProfileActivity.EXTRA_RETURNED_USER);
 
         assertNotNull(returnedUser);
         assertEquals("EditingUser", returnedUser.getUsername());
@@ -110,7 +103,7 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
         onView(withId(R.id.editProfileEmailField)).perform(clearText());
         onView(withId(R.id.menuItemSaveProfile)).perform(click());
 
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertActivityNotFinished();
     }
 
     /**
@@ -122,7 +115,7 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
         onView(withId(R.id.editProfilePhoneField)).perform(clearText());
         onView(withId(R.id.menuItemSaveProfile)).perform(click());
 
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertActivityNotFinished();
     }
 
     /**
@@ -134,6 +127,6 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
         onView(withId(R.id.editProfileEmailField)).perform(clearText(), typeText("not a valid email"));
         onView(withId(R.id.menuItemSaveProfile)).perform(click());
 
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertActivityNotFinished();
     }
 }

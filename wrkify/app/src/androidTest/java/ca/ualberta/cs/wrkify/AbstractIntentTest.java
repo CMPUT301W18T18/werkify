@@ -19,17 +19,22 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 
 import org.junit.Before;
 import org.junit.Rule;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 abstract class AbstractIntentTest<T extends Activity> {
     protected abstract Class<T> getActivityClass();
 
-    protected MockRemoteClient client;
-    protected MockSession session;
+    private MockRemoteClient client;
+    private MockSession session;
 
     @Rule
     public IntentsTestRule<T> intentsTestRule =
@@ -40,7 +45,7 @@ abstract class AbstractIntentTest<T extends Activity> {
         this.client = new MockRemoteClient();
 
         WrkifyClient.setInstance(new CachingClient<>(client));
-        this.createMockData();
+        this.createMockData(client);
 
         this.session = new MockSession(getInitialSessionUser());
         Session.setInstance(session);
@@ -48,6 +53,50 @@ abstract class AbstractIntentTest<T extends Activity> {
         if (shouldStartAutomatically()) {
             intentsTestRule.launchActivity(new Intent());
         }
+    }
+
+    public MockRemoteClient getClient() {
+        return client;
+    }
+
+    public void mockNextSearch(RemoteObject... results) {
+        this.client.mockNextSearch(results);
+    }
+
+    public MockSession getSession() {
+        return session;
+    }
+
+    public void launchActivity(Intent intent) {
+        this.intentsTestRule.launchActivity(intent);
+    }
+
+    public Activity getActivity() {
+        return this.intentsTestRule.getActivity();
+    }
+
+    public Instrumentation.ActivityResult getActivityResult() {
+        return this.intentsTestRule.getActivityResult();
+    }
+
+    public int getActivityResultCode() {
+        return getActivityResult().getResultCode();
+    }
+
+    public Object getActivityResultExtra(String name) {
+        return getActivityResult().getResultData().getSerializableExtra(name);
+    }
+
+    public void assertActivityFinished() {
+        assertTrue("Expected activity to finish", getActivity().isFinishing());
+    }
+
+    public void assertActivityNotFinished() {
+        assertFalse("Expected activity to be running", getActivity().isFinishing());
+    }
+
+    public ComponentName component(Class aClass) {
+        return new ComponentName(getActivity(), aClass);
     }
 
     protected boolean shouldStartAutomatically() {
@@ -58,7 +107,7 @@ abstract class AbstractIntentTest<T extends Activity> {
         return null;
     }
 
-    protected void createMockData() {
+    protected void createMockData(MockRemoteClient client) {
 
     }
 }

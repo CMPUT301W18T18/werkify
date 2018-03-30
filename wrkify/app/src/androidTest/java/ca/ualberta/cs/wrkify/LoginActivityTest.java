@@ -18,15 +18,8 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.content.ComponentName;
-import android.content.Intent;
-import android.support.test.espresso.intent.Intents;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,7 +29,6 @@ import static android.support.test.espresso.intent.Intents.*;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.*;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static junit.framework.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 /**
  * Tests for LoginActivity.
@@ -51,8 +43,8 @@ public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
     }
 
     @Override
-    protected void createMockData() {
-        this.user = WrkifyClient.getInstance().create(User.class, "user4", "user4@example.com", "5018293749");
+    protected void createMockData(MockRemoteClient client) {
+        this.user = client.create(User.class, "user4", "user4@example.com", "5018293749");
     }
 
     /**
@@ -62,13 +54,13 @@ public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
      */
     @Test
     public void testLoginActivity() {
-        client.mockNextSearch(user);
+        mockNextSearch(user);
 
         onView(withId(R.id.loginField)).perform(typeText("user4"));
         onView(withId(R.id.loginButton)).perform(click());
 
-        assertEquals("user4", Session.getInstance(intentsTestRule.getActivity()).getUser().getUsername());
-        intended(hasComponent(new ComponentName(intentsTestRule.getActivity(), MainActivity.class)));
+        assertEquals("user4", getSession().getUser().getUsername());
+        intended(hasComponent(component(MainActivity.class)));
     }
 
     /**
@@ -80,7 +72,7 @@ public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
         onView(withId(R.id.loginField)).perform(typeText("user5"));
         onView(withId(R.id.loginButton)).perform(click());
 
-        assertNull(Session.getInstance(intentsTestRule.getActivity()).getUser());
+        assertNull(getSession().getUser());
         assertNoUnverifiedIntents();
     }
 
@@ -92,6 +84,6 @@ public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
     public void testGoToRegister() {
         onView(withId(R.id.loginButtonRegister)).perform(click());
 
-        intended(hasComponent(new ComponentName(intentsTestRule.getActivity(), RegisterActivity.class)));
+        intended(hasComponent(component(RegisterActivity.class)));
     }
 }

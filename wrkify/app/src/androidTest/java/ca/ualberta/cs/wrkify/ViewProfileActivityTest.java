@@ -17,12 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.rule.ActivityTestRule;
 
-import org.junit.Rule;
 import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -60,7 +56,7 @@ public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActiv
     }
 
     @Override
-    protected void createMockData() {
+    protected void createMockData(MockRemoteClient client) {
         user1 = client.create(User.class, "User1", "user1@example.com", "1740382957");
         user2 = client.create(User.class, "User2", "user2@example.com", "5830275947");
     }
@@ -74,7 +70,7 @@ public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActiv
     public void testViewProfileActivity() {
         Intent intent = new Intent();
         intent.putExtra(ViewProfileActivity.USER_EXTRA, user2);
-        intentsTestRule.launchActivity(intent);
+        launchActivity(intent);
 
         onView(withId(R.id.UserName)).check(matches(withText("User2")));
         onView(withId(R.id.email)).check(matches(withText("user2@example.com")));
@@ -93,7 +89,7 @@ public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActiv
     public void testViewOwnProfile() {
         Intent intent = new Intent();
         intent.putExtra(ViewProfileActivity.USER_EXTRA, user1);
-        intentsTestRule.launchActivity(intent);
+        launchActivity(intent);
 
         onView(withId(R.id.UserName)).check(matches(withText("User1")));
         onView(withId(R.id.email)).check(matches(withText("user1@example.com")));
@@ -103,7 +99,7 @@ public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActiv
         onView(withId(R.id.editButton)).perform(click());
 
         intended(allOf(
-                hasComponent(new ComponentName(intentsTestRule.getActivity(), EditProfileActivity.class)),
+                hasComponent(component(EditProfileActivity.class)),
                 hasExtra(EditProfileActivity.EXTRA_TARGET_USER, user1)));
     }
 }

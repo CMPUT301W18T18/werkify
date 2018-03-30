@@ -17,12 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.app.Activity;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,9 +27,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests for RegisterActivity.
@@ -48,8 +42,8 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     }
 
     @Override
-    protected void createMockData() {
-        this.existingUser = WrkifyClient.getInstance().create(User.class, "existingUser", "a@a", "1840392743");
+    protected void createMockData(MockRemoteClient client) {
+        existingUser = client.create(User.class, "existingUser", "a@a", "1840392743");
     }
 
     /**
@@ -66,31 +60,23 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     }
 
     /**
-     * Utility method to get the session user.
-     * @return Session user
-     */
-    private User getSessionUser() {
-        return Session.getInstance(intentsTestRule.getActivity()).getUser();
-    }
-
-    /**
      * Register a new user.
      * Should: create new user
      *         finish activity with RESULT_OK
      */
     @Test
     public void testRegister() {
-        client.mockNextSearch();
+        mockNextSearch();
 
         registerWith("newUser", "new-user@example.com", "1938059920");
 
-        User sessionUser = getSessionUser();
+        User sessionUser = getSession().getUser();
         assertEquals("newUser", sessionUser.getUsername());
         assertEquals("new-user@example.com", sessionUser.getEmail());
         assertEquals("1938059920", sessionUser.getPhoneNumber());
 
-        assertTrue(intentsTestRule.getActivity().isFinishing());
-        assertEquals(Activity.RESULT_OK, intentsTestRule.getActivityResult().getResultCode());
+        assertActivityFinished();
+        assertEquals(RegisterActivity.RESULT_OK, getActivityResultCode());
     }
 
     /**
@@ -101,8 +87,8 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     public void testEmptyUsername() {
         registerWith("", "new-user@example.com", "1938059920");
 
-        assertNull(getSessionUser());
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertNull(getSession().getUser());
+        assertActivityNotFinished();
     }
 
     /**
@@ -113,8 +99,8 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     public void testEmptyEmail() {
         registerWith("newUser", "", "1938059920");
 
-        assertNull(getSessionUser());
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertNull(getSession().getUser());
+        assertActivityNotFinished();
     }
 
     /**
@@ -125,8 +111,8 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     public void testEmptyPhoneNumber() {
         registerWith("newUser", "new-user@example.com", "");
 
-        assertNull(getSessionUser());
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertNull(getSession().getUser());
+        assertActivityNotFinished();
     }
 
     /**
@@ -137,8 +123,8 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     public void testInvalidEmail() {
         registerWith("newUser", "not a valid email", "1938059920");
 
-        assertNull(getSessionUser());
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertNull(getSession().getUser());
+        assertActivityNotFinished();
     }
 
     /**
@@ -147,11 +133,11 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
      */
     @Test
     public void testUnavailableUsername() {
-        client.mockNextSearch(existingUser);
+        mockNextSearch(existingUser);
 
         registerWith("existingUser", "new-user@example.com", "1938059920");
 
-        assertNull(getSessionUser());
-        assertFalse(intentsTestRule.getActivity().isFinishing());
+        assertNull(getSession().getUser());
+        assertActivityNotFinished();
     }
 }
