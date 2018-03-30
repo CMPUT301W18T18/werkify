@@ -29,6 +29,7 @@ abstract class AbstractIntentTest<T extends Activity> {
     protected abstract Class<T> getActivityClass();
 
     protected MockRemoteClient client;
+    protected MockSession session;
 
     @Rule
     public IntentsTestRule<T> intentsTestRule =
@@ -41,9 +42,20 @@ abstract class AbstractIntentTest<T extends Activity> {
         WrkifyClient.setInstance(new CachingClient<>(client));
         this.createMockData();
 
-        Session.setInstance(new MockSession(null));
+        this.session = new MockSession(getInitialSessionUser());
+        Session.setInstance(session);
 
-        intentsTestRule.launchActivity(new Intent());
+        if (shouldStartAutomatically()) {
+            intentsTestRule.launchActivity(new Intent());
+        }
+    }
+
+    protected boolean shouldStartAutomatically() {
+        return true;
+    }
+
+    protected User getInitialSessionUser() {
+        return null;
     }
 
     protected void createMockData() {
