@@ -49,6 +49,14 @@ public class WrkifyClient {
     }
 
     /**
+     * Overrides the global instance.
+     * @param instance new RemoteClient to use as the global instance
+     */
+    public static void setInstance(RemoteClient instance) {
+        WrkifyClient.instance = instance;
+    }
+
+    /**
      * private to prevent instatiation
      */
     private WrkifyClient() {}

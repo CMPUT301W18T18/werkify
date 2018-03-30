@@ -20,22 +20,22 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.support.test.espresso.Espresso;
+import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.*;
 import static android.support.test.espresso.action.ViewActions.*;
+import static android.support.test.espresso.intent.Intents.*;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.*;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
-import static android.support.test.espresso.intent.Intents.*;
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
 /**
@@ -43,21 +43,34 @@ import static org.hamcrest.CoreMatchers.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class LoginActivityTest {
+    private MockRemoteClient client;
+    private User user;
+
     @Rule
     public IntentsTestRule<LoginActivity> intentsTestRule =
-            new IntentsTestRule<>(LoginActivity.class);
+            new IntentsTestRule<>(LoginActivity.class, false, false);
 
     @Before
     public void setupClient() {
-        WrkifyClient.setRemoteClient(new MockRemoteClient());
-        WrkifyClient.getInstance().create(User.class, "user4", "user4@example.com", "5018293749");
+        this.client = new MockRemoteClient();
+
+        WrkifyClient.setInstance(new CachingClient<>(client));
+        this.user = WrkifyClient.getInstance().create(User.class, "user4", "user4@example.com", "5018293749");
+
+        Session.setInstance(new MockSession(null));
+
+        intentsTestRule.launchActivity(new Intent());
     }
 
     /**
      * Log in as a user that exists.
+     * Should: set the session user
+     *         go to main activity
      */
     @Test
     public void testLoginActivity() {
+        client.mockNextSearch(user);
+
         onView(withId(R.id.loginField)).perform(typeText("user4"));
         onView(withId(R.id.loginButton)).perform(click());
 
@@ -66,13 +79,26 @@ public class LoginActivityTest {
     }
 
     /**
-     * Login as a user that does not exist
+     * Login as a user that does not exist.
+     * Should: do nothing
      */
     @Test
     public void testLoginFail() {
         onView(withId(R.id.loginField)).perform(typeText("user5"));
         onView(withId(R.id.loginButton)).perform(click());
 
-        
+        assertNull(Session.getInstance(intentsTestRule.getActivity()).getUser());
+        assertNoUnverifiedIntents();
+    }
+
+    /**
+     * Go to register by clicking Sign Up.
+     * Should: launch RegisterActivity
+     */
+    @Test
+    public void testGoToRegister() {
+        onView(withId(R.id.loginButtonRegister)).perform(click());
+
+        intended(hasComponent(new ComponentName(intentsTestRule.getActivity(), RegisterActivity.class)));
     }
 }

@@ -47,7 +47,7 @@ public class Session {
     private List<Task> userProvidedCache;
     private List<Task> userBiddedCache;
 
-    private Session() {}
+    protected Session() {}
 
     /**
      * Gets the global Session.
@@ -74,6 +74,14 @@ public class Session {
      */
     public static Session getInstance(Context context) {
         return getInstance(context, WrkifyClient.getInstance());
+    }
+
+    /**
+     * Override the Session instance.
+     * @param instance new Session instance
+     */
+    public static void setInstance(Session instance) {
+        Session.instance = instance;
     }
 
     /**
@@ -109,9 +117,9 @@ public class Session {
      * @throws IOException if network is disconnected
      */
     public void refreshCaches(RemoteClient client) throws IOException {
-        this.userProvidedCache = Searcher.findTasksByProvider(client, this.user);
-        this.userRequestedCache = Searcher.findTasksByRequester(client, this.user);
-        this.userBiddedCache = Searcher.findTasksByBidder(client, this.user);
+        this.userProvidedCache = Searcher.findTasksByProvider(client, getUser());
+        this.userRequestedCache = Searcher.findTasksByRequester(client, getUser());
+        this.userBiddedCache = Searcher.findTasksByBidder(client, getUser());
     }
 
     /**
