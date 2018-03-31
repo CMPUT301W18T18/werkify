@@ -109,6 +109,13 @@ abstract class AbstractIntentTest<T extends Activity> {
     }
 
     /**
+     * Launches the tested activity with an empty Intent.
+     */
+    public final void launchActivity() {
+        launchActivity(new Intent());
+    }
+
+    /**
      * Gets the running activity. (This is a wrapper around
      * IntentsTestRule.getActivity.)
      * @return running activity
