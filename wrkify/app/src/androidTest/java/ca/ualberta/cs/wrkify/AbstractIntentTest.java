@@ -87,7 +87,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * cannot interpret real searches and will always return no results.
      * @param results RemoteObjects to return as the results of the next search
      */
-    public void mockNextSearch(RemoteObject... results) {
+    public final void mockNextSearch(RemoteObject... results) {
         getClient().mockNextSearch(results);
     }
 
@@ -95,7 +95,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * Gets the active MockSession.
      * @return active session
      */
-    public @NonNull MockSession getSession() {
+    public final @NonNull MockSession getSession() {
         return session;
     }
 
@@ -104,7 +104,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * around IntentsTestRule.launchActivity.)
      * @param intent Intent to launch the activity with
      */
-    public void launchActivity(Intent intent) {
+    public final void launchActivity(Intent intent) {
         this.intentsTestRule.launchActivity(intent);
     }
 
@@ -113,7 +113,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * IntentsTestRule.getActivity.)
      * @return running activity
      */
-    public Activity getActivity() {
+    public final Activity getActivity() {
         return this.intentsTestRule.getActivity();
     }
 
@@ -122,7 +122,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * around IntentsTestRule.getActivityResult.)
      * @return ActivityResult of test activity
      */
-    public Instrumentation.ActivityResult getActivityResult() {
+    public final Instrumentation.ActivityResult getActivityResult() {
         return this.intentsTestRule.getActivityResult();
     }
 
@@ -130,7 +130,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * Gets the result code returned by the test activity.
      * @return result code
      */
-    public int getActivityResultCode() {
+    public final int getActivityResultCode() {
         return getActivityResult().getResultCode();
     }
 
@@ -140,14 +140,14 @@ abstract class AbstractIntentTest<T extends Activity> {
      * @param name Extra name to get from data
      * @return Serializable content of requested Extra
      */
-    public Serializable getActivityResultExtra(String name) {
+    public final Serializable getActivityResultExtra(String name) {
         return getActivityResult().getResultData().getSerializableExtra(name);
     }
 
     /**
      * Asserts that the test activity should have exited.
      */
-    public void assertActivityFinished() {
+    public final void assertActivityFinished() {
         assertTrue("Expected activity to finish", getActivity().isFinishing());
     }
 
@@ -155,7 +155,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * Asserts that the test activity should not have exited, and
      * should still be running.
      */
-    public void assertActivityNotFinished() {
+    public final void assertActivityNotFinished() {
         assertFalse("Expected activity to be running", getActivity().isFinishing());
     }
 
@@ -165,7 +165,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * @param aClass Class to make ComponentName for
      * @return ComponentName of class, with running activity as context
      */
-    public ComponentName component(Class aClass) {
+    public final ComponentName component(Class aClass) {
         return new ComponentName(getActivity(), aClass);
     }
 
