@@ -28,7 +28,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.closeSoftKeyboard;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.*;
@@ -239,16 +238,16 @@ public class EditTaskActivityTest extends AbstractIntentTest<EditTaskActivity> {
      * Delete a task.
      * Should: show the delete option
      *         return RESULT_TASK_DELETED
-     *
-     * TODO This doesn't currently work since accessing the app bar menu doesn't seem to work normally.
      */
     @Test
     public void testDeleteTask() {
         launchActivityWithTask();
 
         openActionBarOverflowOrOptionsMenu(getActivity());
-        onData(withId(R.id.menuItemDeleteTask)).check(matches(isDisplayed()));
-        onData(withId(R.id.menuItemDeleteTask)).perform(click());
+        onView(withText("Delete task")).check(matches(isDisplayed()));
+        onView(withText("Delete task")).perform(click());
+
+        onView(withText("Delete")).perform(click());
 
         assertActivityFinished();
         assertEquals(EditTaskActivity.RESULT_TASK_DELETED, getActivityResultCode());
