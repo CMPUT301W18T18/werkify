@@ -17,10 +17,24 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.view.View;
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import static junit.framework.Assert.fail;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static android.support.test.espresso.Espresso.closeSoftKeyboard;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.*;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static android.support.test.espresso.matcher.ViewMatchers.*;
+import static junit.framework.Assert.assertNull;
+import static org.hamcrest.CoreMatchers.*;
 
 /**
  * Tests for MainActivity.
@@ -74,12 +88,23 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
 
     private void launchAsRequester() {
         getSession().setUser(requester);
+        getSession().setMockUserRequestedCache(Arrays.asList(unbiddedTask, biddedTask, acceptedTask, closedTask));
         launchActivity();
     }
 
     private void launchAsProvider() {
         getSession().setUser(provider);
+        getSession().setMockUserBiddedCache(Collections.singletonList(biddedTask));
+        getSession().setMockUserProvidedCache(Arrays.asList(acceptedTask, closedTask));
         launchActivity();
+    }
+
+    private Matcher<View> tabWithText(String text) {
+        return allOf(isDescendantOfA(withId(R.id.overviewTabBar)), withText(text));
+    }
+
+    private Matcher<View> taskView(int index) {
+        return allOf(withParentIndex(index), withParent(allOf(anyOf(withId(R.id.taskListView), withId(R.id.taskSearchRecycler)), isDisplayed())));
     }
 
     /**
@@ -92,7 +117,41 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
     @Test
     public void testProviderView() {
         launchAsProvider();
-        fail();
+        onView(withId(R.id.navigation_tasks)).perform(click());
+        onView(allOf(withId(R.id.overviewSelfView), instanceOf(UserView.class), isDisplayed()))
+                .check(matches(hasDescendant(withText("TaskProvider"))));
+
+        onView(tabWithText("Assigned")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(0)))));
+        onView(tabWithText("Assigned")).perform(click());
+        onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("Assigned")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Accepted task")))));
+
+        onView(tabWithText("Bidded")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(1)))));
+        onView(tabWithText("Bidded")).perform(click());
+        onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("$10.00")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Bidded task")))));
+
+        onView(tabWithText("Completed")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(2)))));
+        onView(tabWithText("Completed")).perform(click());
+        onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("Done")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Closed task")))));
+
+        onView(taskView(0)).perform(click());
+        intended(allOf(
+                hasComponent(component(ViewTaskActivity.class)),
+                hasExtra(ViewTaskActivity.EXTRA_TARGET_TASK, closedTask)));
     }
 
     /**
@@ -105,7 +164,76 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
     @Test
     public void testRequesterView() {
         launchAsRequester();
-        fail();
+        onView(withId(R.id.navigation_posts)).perform(click());
+        onView(allOf(withId(R.id.overviewSelfView), instanceOf(UserView.class), isDisplayed()))
+                .check(matches(hasDescendant(withText("TaskRequester"))));
+
+        onView(tabWithText("Requested")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(0)))));
+        onView(tabWithText("Requested")).perform(click());
+        onView(withId(R.id.overviewAddButton)).check(matches(isDisplayed()));
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("Requested")),
+                hasDescendant(withText("Unbidded task")))));
+
+        onView(taskView(1)).check(matches(allOf(
+                hasDescendant(withText("$10.00")),
+                hasDescendant(withText("Bidded task")))));
+
+        onView(tabWithText("Assigned")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(1)))));
+        onView(tabWithText("Assigned")).perform(click());
+        onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("Assigned")),
+                hasDescendant(withText("TaskProvider")),
+                hasDescendant(withText("Accepted task")))));
+
+        onView(tabWithText("Closed")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(2)))));
+        onView(tabWithText("Closed")).perform(click());
+        onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("Done")),
+                hasDescendant(withText("TaskProvider")),
+                hasDescendant(withText("Closed task")))));
+
+        onView(taskView(0)).perform(click());
+        intended(allOf(
+                hasComponent(component(ViewTaskActivity.class)),
+                hasExtra(ViewTaskActivity.EXTRA_TARGET_TASK, closedTask)));
+    }
+
+    /**
+     * View empty task lists.
+     * Should: show "Nothing here"
+     */
+    @Test
+    public void testEmptyViews() {
+        getSession().setUser(otherUser);
+        launchActivity();
+
+        onView(withId(R.id.navigation_posts)).perform(click());
+
+        onView(tabWithText("Requested")).perform(click());
+        onView(isRoot()).check(matches(hasDescendant(allOf(withText("Nothing here"), isDisplayed()))));
+
+        onView(tabWithText("Assigned")).perform(click());
+        onView(isRoot()).check(matches(hasDescendant(allOf(withText("Nothing here"), isDisplayed()))));
+
+        onView(tabWithText("Closed")).perform(click());
+        onView(isRoot()).check(matches(hasDescendant(allOf(withText("Nothing here"), isDisplayed()))));
+
+        onView(withId(R.id.navigation_tasks)).perform(click());
+
+        onView(tabWithText("Assigned")).perform(click());
+        onView(isRoot()).check(matches(hasDescendant(allOf(withText("Nothing here"), isDisplayed()))));
+
+        onView(tabWithText("Bidded")).perform(click());
+        onView(isRoot()).check(matches(hasDescendant(allOf(withText("Nothing here"), isDisplayed()))));
+
+        onView(tabWithText("Completed")).perform(click());
+        onView(isRoot()).check(matches(hasDescendant(allOf(withText("Nothing here"), isDisplayed()))));
     }
 
     /**
@@ -116,7 +244,12 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
     @Test
     public void testStartNewTask() {
         launchAsRequester();
-        fail();
+        onView(withId(R.id.navigation_posts)).perform(click());
+
+        onView(withId(R.id.overviewAddButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.overviewAddButton)).perform(click());
+
+        intended(hasComponent(component(EditTaskActivity.class)));
     }
 
     /**
@@ -127,6 +260,69 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
     @Test
     public void testSearchView() {
         launchAsProvider();
-        fail();
+        onView(withId(R.id.navigation_search)).perform(click());
+
+        mockNextSearch(unbiddedTask, biddedTask, acceptedTask, closedTask);
+        onView(withId(R.id.searchBar)).perform(typeText("Search"), pressImeActionButton());
+        closeSoftKeyboard();
+
+        onView(taskView(0)).check(matches(allOf(
+                hasDescendant(withText("Requested")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Unbidded task")))));
+        onView(taskView(1)).check(matches(allOf(
+                hasDescendant(withText("$10.00")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Bidded task")))));
+        onView(taskView(2)).check(matches(allOf(
+                hasDescendant(withText("Assigned")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Accepted task")))));
+        onView(taskView(3)).check(matches(allOf(
+                hasDescendant(withText("Done")),
+                hasDescendant(withText("TaskRequester")),
+                hasDescendant(withText("Closed task")))));
+
+        onView(taskView(0)).perform(click());
+        intended(allOf(
+                hasComponent(component(ViewTaskActivity.class)),
+                hasExtra(ViewTaskActivity.EXTRA_TARGET_TASK, unbiddedTask)));
+    }
+
+    /**
+     * Go to own profile.
+     * Should: open ViewProfileActivity
+     */
+    @Test
+    public void testGoToProfile() {
+        getSession().setUser(otherUser);
+        launchActivity();
+
+        onView(allOf(withId(R.id.overviewSelfView), instanceOf(UserView.class), isDisplayed())).perform(click());
+
+        onView(withText("View profile")).check(matches(isDisplayed()));
+        onView(withText("View profile")).perform(click());
+
+        intended(allOf(
+                hasComponent(component(ViewProfileActivity.class)),
+                hasExtra(ViewProfileActivity.USER_EXTRA, otherUser)));
+    }
+
+    /**
+     * Click Logout.
+     * Should: log out
+     */
+    @Test
+    public void testLogout() {
+        getSession().setUser(otherUser);
+        launchActivity();
+
+        onView(allOf(withId(R.id.overviewSelfView), instanceOf(UserView.class), isDisplayed())).perform(click());
+
+        onView(withText("Logout")).check(matches(isDisplayed()));
+        onView(withText("Logout")).perform(click());
+
+        assertActivityFinished();
+        assertNull(getSession().getUser());
     }
 }

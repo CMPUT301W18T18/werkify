@@ -60,7 +60,7 @@ public class Session {
             instance = new Session();
         }
 
-        if (instance.user == null) {
+        if (instance.getUser() == null) {
             instance.load(context, client);
         }
 

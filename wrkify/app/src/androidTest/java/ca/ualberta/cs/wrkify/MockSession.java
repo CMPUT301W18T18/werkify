@@ -22,10 +22,14 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 class MockSession extends Session {
     private User user;
+    private List<Task> mockUserProvidedCache = new ArrayList<>();
+    private List<Task> mockUserRequestedCache = new ArrayList<>();
+    private List<Task> mockUserBiddedCache = new ArrayList<>();
 
     public MockSession(@Nullable User user) {
         this.user = user;
@@ -56,21 +60,33 @@ class MockSession extends Session {
 
     @Override
     public void refreshCaches(RemoteClient client) throws IOException {
-        super.refreshCaches(client);
+        // ignored
     }
 
     @Override
     public List<Task> getUserBiddedCache() {
-        return super.getUserBiddedCache();
+        return mockUserBiddedCache;
     }
 
     @Override
     public List<Task> getUserRequestedCache() {
-        return super.getUserRequestedCache();
+        return mockUserRequestedCache;
     }
 
     @Override
     public List<Task> getUserProvidedCache() {
-        return super.getUserProvidedCache();
+        return mockUserProvidedCache;
+    }
+
+    public void setMockUserBiddedCache(List<Task> mockUserBiddedCache) {
+        this.mockUserBiddedCache = mockUserBiddedCache;
+    }
+
+    public void setMockUserProvidedCache(List<Task> mockUserProvidedCache) {
+        this.mockUserProvidedCache = mockUserProvidedCache;
+    }
+
+    public void setMockUserRequestedCache(List<Task> mockUserRequestedCache) {
+        this.mockUserRequestedCache = mockUserRequestedCache;
     }
 }
