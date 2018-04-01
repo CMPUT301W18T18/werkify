@@ -178,16 +178,52 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
     }
 
     /**
-     * ViewTaskActivity test:
-     * there are bids on the task, but the session user has not bidded.
-     *//*
+     * There are bids on the task, but the session user has not bidded.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status OPEN
+     *         show the number of bids so far
+     *         allow placing a bid
+     */
     @Test
     public void testViewBiddedTask() {
-        Task task = new Task("Example task with bids", exampleUser1, aLongDescription);
-        task.addBid(new Bid(new Price(20.00), exampleUser2));
-        task.addBid(new Bid(new Price(30.00), exampleUser2));
-        startViewTaskActivityWith(task, exampleUser3);
-    } */
+        launchActivityWith(otherUser, biddedTask);
+
+        checkTaskDetails(biddedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Open", "2 bids", "$10.00", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetExpanded();
+
+        onView(withId(R.id.taskViewBottomSheetBidField)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetBidField)).perform(typeText("8.00"));
+
+        onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
+        onView(withText("Bid")).perform(click());
+
+        closeSoftKeyboard();
+
+        pressBack();
+        assertBottomSheetCollapsed();
+
+        pressBackUnconditionally();
+        assertActivityFinished();
+
+        try {
+            Task editedTask = getClient().download(biddedTask.getId(), Task.class);
+
+            assertEquals(TaskStatus.BIDDED, editedTask.getStatus());
+            assertEquals(3, editedTask.getBidList().size());
+            assertEquals(new Price("8.00"), editedTask.getBidList().get(0).getValue());
+
+            assertEquals(otherUser, editedTask.getBidList().get(0).getRemoteBidder(getClient()));
+        } catch (IOException e) {
+            fail();
+        }
+    }
 
     /**
      * ViewTaskActivity test:
