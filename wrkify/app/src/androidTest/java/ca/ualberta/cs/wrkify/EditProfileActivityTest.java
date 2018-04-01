@@ -35,6 +35,7 @@ import static junit.framework.Assert.assertNotNull;
 /**
  * Tests for EditProfileActivity.
  */
+@IntentTest
 public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActivity> {
     private User user;
 

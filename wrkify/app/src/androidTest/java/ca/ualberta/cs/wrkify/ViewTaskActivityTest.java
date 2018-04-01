@@ -17,12 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Context;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -50,6 +46,7 @@ import static org.hamcrest.CoreMatchers.not;
 /**
  * Tests for ViewTaskActivity.
  */
+@IntentTest
 public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
     private User requester;
     private User provider;
@@ -132,6 +129,23 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         onView(withId(R.id.taskViewBottomSheetRightDetail)).check(matches(withText(containsString(rightDetail))));
     }
 
+    private void placeBid(String bid) {
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetExpanded();
+
+        onView(withId(R.id.taskViewBottomSheetBidField)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetBidField)).perform(typeText(bid));
+
+        onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
+        onView(withText("Bid")).perform(click());
+
+        closeSoftKeyboard();
+
+        pressBack();
+        assertBottomSheetCollapsed();
+    }
+
     /**
      * There are no bids on the task, and the session user is not the requester.
      * Should: show basic task details
@@ -150,20 +164,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         assertBottomSheetCollapsed();
         assertHasStatus("Open", "No bids", "", "");
 
-        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
-        assertBottomSheetExpanded();
-
-        onView(withId(R.id.taskViewBottomSheetBidField)).check(matches(isDisplayed()));
-        onView(withId(R.id.taskViewBottomSheetBidField)).perform(typeText("12.00"));
-
-        onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
-        onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
-        onView(withText("Bid")).perform(click());
-
-        closeSoftKeyboard();
-
-        pressBack();
-        assertBottomSheetCollapsed();
+        placeBid("12.00");
 
         pressBackUnconditionally();
         assertActivityFinished();
@@ -200,20 +201,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         assertBottomSheetCollapsed();
         assertHasStatus("Open", "2 bids", "$10.00", "");
 
-        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
-        assertBottomSheetExpanded();
-
-        onView(withId(R.id.taskViewBottomSheetBidField)).check(matches(isDisplayed()));
-        onView(withId(R.id.taskViewBottomSheetBidField)).perform(typeText("8.00"));
-
-        onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
-        onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
-        onView(withText("Bid")).perform(click());
-
-        closeSoftKeyboard();
-
-        pressBack();
-        assertBottomSheetCollapsed();
+        placeBid("8.00");
 
         pressBackUnconditionally();
         assertActivityFinished();

@@ -19,26 +19,19 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.test.espresso.ViewInteraction;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import org.hamcrest.Matcher;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.Espresso.pressBackUnconditionally;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -54,12 +47,12 @@ import static junit.framework.Assert.fail;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 
 /**
  * Tests for ViewBidsActivity.
  */
+@IntentTest
 public class ViewBidsActivityTest extends AbstractIntentTest<ViewBidsActivity> {
     private Task task;
     private User user;

@@ -41,6 +41,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 /**
  * Tests for EditTaskActivity.
  */
+@IntentTest
 public class EditTaskActivityTest extends AbstractIntentTest<EditTaskActivity> {
     /**
      * Matches a widget in a CheckListItemView that is the Nth item

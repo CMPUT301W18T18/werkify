@@ -17,10 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -32,7 +29,7 @@ import static junit.framework.Assert.assertNull;
 /**
  * Tests for RegisterActivity.
  */
-@RunWith(AndroidJUnit4.class)
+@IntentTest
 public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
     private User existingUser;
 

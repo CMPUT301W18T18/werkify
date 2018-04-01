@@ -18,10 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.*;
 import static android.support.test.espresso.action.ViewActions.*;
@@ -33,7 +30,7 @@ import static junit.framework.Assert.*;
 /**
  * Tests for LoginActivity.
  */
-@RunWith(AndroidJUnit4.class)
+@IntentTest
 public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
     private User user;
 

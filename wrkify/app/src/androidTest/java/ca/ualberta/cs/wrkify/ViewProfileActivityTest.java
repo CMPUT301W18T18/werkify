@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.not;
 /**
  * Tests for ViewProfileActivity.
  */
+@IntentTest
 public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActivity> {
     private User user1;
     private User user2;
