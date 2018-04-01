@@ -34,6 +34,9 @@ import static android.support.test.espresso.Espresso.pressBackUnconditionally;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -136,6 +139,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         show status OPEN
      *         show "No bids"
      *         allow placing a bid
+     * Requires deactivating animations.
      */
     @Test
     public void testViewTaskActivity() {
@@ -183,7 +187,9 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         not display an edit button
      *         show status OPEN
      *         show the number of bids so far
+     *         show the current lowest bid
      *         allow placing a bid
+     * Requires deactivating animations.
      */
     @Test
     public void testViewBiddedTask() {
@@ -226,85 +232,204 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
     }
 
     /**
-     * ViewTaskActivity test:
-     * the session user has bidded on the task, and does not have
-     * the current highest bid.
-     *//*
+     * The session user has bidded on the task, and does not have the current highest bid.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status BIDDED
+     *         show the number of bids so far
+     *         show the current lowest bid
+     *         show your bid
+     *         allow replacing your bid
+     */
     @Test
     public void testViewSelfBiddedTask() {
-        // TODO This doesn't currently work any differently from a normal bidded task
-        Task task = new Task("Example task of session user", exampleUser1, aLongDescription);
-        task.addBid(new Bid(new Price(20.00), exampleUser2));
-        task.addBid(new Bid(new Price(30.00), exampleUser3));
-        startViewTaskActivityWith(task, exampleUser3);
-    } */
+        // TODO This isn't implemented, so not testing
+        fail();
+    }
 
     /**
-     * ViewTaskActivity test:
-     * the task being viewed was requested by the session user.
-     *//*
+     * The task being viewed was requested by the session user.
+     * Should: show basic task details
+     *         display a working edit button
+     *         have no bottom controls
+     *         show status REQUESTED
+     *         show "No bids"
+     */
     @Test
     public void testViewOwnUnbiddedTask() {
-        Task task = new Task("Example requested task", exampleUser1, aLongDescription);
-        startViewTaskActivityWith(task, exampleUser1);
-    } */
+        launchActivityWith(requester, unbiddedTask);
+
+        checkTaskDetails(unbiddedTask);
+        assertHasEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Requested", "No bids", "", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetCollapsed();
+
+        onView(withId(R.id.taskViewButtonEdit)).perform(click());
+        intended(allOf(
+                hasComponent(component(EditTaskActivity.class)),
+                hasExtra(EditTaskActivity.EXTRA_EXISTING_TASK, unbiddedTask)));
+    }
 
     /**
-     * ViewTaskActivity test:
-     * the session user is the requester, and the task has bids.
-     *//*
+     * The session user is the requester, and the task has bids.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status BIDDED
+     *         go to show bids on bottom sheet click
+     */
     @Test
     public void testViewOwnBiddedTask() {
-        Task task = new Task("Example bidded requested task", exampleUser1, aLongDescription);
-        task.addBid(new Bid(new Price(15.15), exampleUser2));
-        task.addBid(new Bid(new Price(20.25), exampleUser3));
-        startViewTaskActivityWith(task, exampleUser1);
-    } */
+        launchActivityWith(requester, biddedTask);
+
+        checkTaskDetails(biddedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Bidded", "2 bids", "$10.00", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        intended(allOf(
+                hasComponent(component(ViewBidsActivity.class)),
+                hasExtra(ViewBidsActivity.EXTRA_VIEWBIDS_TASK, biddedTask)));
+    }
 
     /**
-     * ViewTaskActivity test:
-     * the task is assigned, but the session user is neither the
-     * requester nor the assignee.
-     *//*
+     * The task is assigned, but the session user is neither the requester nor the assignee.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status ASSIGNED
+     *         show the assignee
+     *         have no bottom controls
+     */
     @Test
     public void testViewAssignedTask() {
-        Task task = new Task("Example assigned task", exampleUser1, aLongDescription);
-        task.setProvider(exampleUser2);
-        startViewTaskActivityWith(task, exampleUser3);
-    } */
+        launchActivityWith(otherUser, acceptedTask);
+
+        checkTaskDetails(acceptedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Assigned", "TaskProvider", "", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetCollapsed();
+    }
 
     /**
-     * ViewTaskActivity test:
-     * the task is assigned to the session user
-     *//*
+     * The task is assigned to the session user.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status ASSIGNED
+     *         show the assignee
+     *         have no bottom controls
+     * TODO should this do anything different from an unassociated user viewing an assigned task?
+     */
     @Test
     public void testViewAssignedToSelfTask() {
-        // TODO This doesn't currently work any differently from a task assigned to another user
-        Task task = new Task("Example task assigned to self", exampleUser1, aLongDescription);
-        task.setProvider(exampleUser2);
-        startViewTaskActivityWith(task, exampleUser2);
-    } */
+        launchActivityWith(provider, acceptedTask);
+
+        checkTaskDetails(acceptedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Assigned", "TaskProvider", "", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetCollapsed();
+    }
 
     /**
-     * ViewTaskActivity test:
-     * the task is requested by the session user,
-     * and is assigned
-     *//*
+     * The task is requested by the session user, and is assigned.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status ASSIGNED
+     *         show the assignee
+     */
     @Test
     public void testViewOwnAssignedTask() {
-        Task task = new Task("Example task assigned to other", exampleUser1, aLongDescription);
-        task.setProvider(exampleUser2);
-        startViewTaskActivityWith(task, exampleUser1);
-    } */
+        launchActivityWith(requester, acceptedTask);
+
+        checkTaskDetails(acceptedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Assigned", "TaskProvider", "$10.00", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetExpanded();
+
+        onView(withId(R.id.taskViewBottomSheetButtonDeassign)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetButtonMarkDone)).check(matches(isDisplayed()));
+    }
 
     /**
-     * ViewTaskActivity test:
-     * the task is closed
-     *//*
+     * Deassign a task.
+     * Should: make the task REQUESTED
+     *         remove current bids
+     * Requires deactivating animations.
+     */
+    @Test
+    public void testDeassignTask() {
+        testViewOwnAssignedTask();
+
+        onView(withId(R.id.taskViewBottomSheetButtonDeassign)).perform(click());
+        onView(withText("Deassign")).perform(click());
+
+        pressBack();
+        assertBottomSheetCollapsed();
+
+        pressBackUnconditionally();
+
+        try {
+            Task editedTask = getClient().download(acceptedTask.getId(), Task.class);
+            assertEquals(TaskStatus.REQUESTED, editedTask.getStatus());
+            assertEquals(0, editedTask.getBidList().size());
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Close a task.
+     * Should: make the task CLOSED
+     * Requires deactivating animations.
+     */
+    @Test
+    public void testCloseTask() {
+        testViewOwnAssignedTask();
+
+        onView(withId(R.id.taskViewBottomSheetButtonMarkDone)).perform(click());
+        onView(withText("Mark done")).perform(click());
+
+        pressBack();
+        assertBottomSheetCollapsed();
+
+        pressBackUnconditionally();
+
+        try {
+            Task editedTask = getClient().download(acceptedTask.getId(), Task.class);
+            assertEquals(TaskStatus.DONE, editedTask.getStatus());
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    /**
+     * The task is closed.
+     * Should: show basic task details
+     *         not display an edit button
+     *         show status CLOSED
+     *         show the assignee
+     */
     @Test
     public void testViewCompletedTask() {
-        Task task = new Task("Closed task", exampleUser1, aLongDescription);
-        task.setProvider(exampleUser2);
-        startViewTaskActivityWith(task, exampleUser3);
-    } */
+        launchActivityWith(provider, closedTask);
+
+        checkTaskDetails(closedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Done", "TaskProvider", "", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetCollapsed();
+    }
 }
