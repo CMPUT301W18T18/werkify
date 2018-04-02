@@ -18,25 +18,22 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.view.View;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static android.support.test.espresso.Espresso.closeSoftKeyboard;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
-import static android.support.test.espresso.Espresso.pressBackUnconditionally;
+import static android.support.test.espresso.Espresso.*;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -80,6 +77,15 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         acceptedTask = client.create(Task.class, "Accepted task", requester, "An accepted task");
         closedTask = client.create(Task.class, "Closed task", requester, "A closed task");
 
+        unbiddedTask.getCheckList().addItem("Unchecked", false);
+        unbiddedTask.getCheckList().addItem("Checked", true);
+        biddedTask.getCheckList().addItem("Unchecked", false);
+        biddedTask.getCheckList().addItem("Checked", true);
+        acceptedTask.getCheckList().addItem("Unchecked", false);
+        acceptedTask.getCheckList().addItem("Checked", true);
+        closedTask.getCheckList().addItem("Unchecked", false);
+        closedTask.getCheckList().addItem("Checked", true);
+
         biddedTask.addBid(new Bid(new Price(10.00), provider));
         biddedTask.addBid(new Bid(new Price(12.00), otherBidder));
         acceptedTask.addBid(new Bid(new Price(10.00), provider));
@@ -122,6 +128,25 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         onView(withId(R.id.taskViewBottomSheetContent)).check(matches(hasDescendant(isDisplayed())));
     }
 
+    private Matcher<View> isChecklistToggle(int index) {
+        return allOf(
+                withId(R.id.checkitemToggle),
+                isDescendantOfA(allOf(
+                        CoreMatchers.<View>instanceOf(CheckListView.CheckListItemView.class),
+                        withParentIndex(index)
+                )));
+    }
+
+    private void assertChecklistStatic() {
+        onView(isChecklistToggle(0)).check(matches(allOf(not(isClickable()), isNotChecked())));
+        onView(isChecklistToggle(1)).check(matches(allOf(not(isClickable()), isChecked())));
+    }
+
+    private void assertChecklistInteractive() {
+        onView(isChecklistToggle(0)).check(matches(allOf(isClickable(), isNotChecked())));
+        onView(isChecklistToggle(1)).check(matches(allOf(isClickable(), isChecked())));
+    }
+
     private void assertHasStatus(String status, String detail, String rightStatus, String rightDetail) {
         onView(withId(R.id.taskViewBottomSheetStatus)).check(matches(withText(containsString(status))));
         onView(withId(R.id.taskViewBottomSheetDetail)).check(matches(withText(containsString(detail))));
@@ -150,6 +175,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * There are no bids on the task, and the session user is not the requester.
      * Should: show basic task details
      *         not display an edit button
+     *         not allow editing the checklist
      *         show status OPEN
      *         show "No bids"
      *         allow placing a bid
@@ -161,6 +187,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(unbiddedTask);
         assertNoEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Open", "No bids", "", "");
 
@@ -227,6 +254,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * There are bids on the task, but the session user has not bidded.
      * Should: show basic task details
      *         not display an edit button
+     *         not allow editing the checklist
      *         show status OPEN
      *         show the number of bids so far
      *         show the current lowest bid
@@ -239,6 +267,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(biddedTask);
         assertNoEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Open", "2 bids", "$10.00", "");
 
@@ -264,6 +293,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * The session user has bidded on the task, and does not have the current highest bid.
      * Should: show basic task details
      *         not display an edit button
+     *         now allow editing the checklist
      *         show status BIDDED
      *         show the number of bids so far
      *         show the current lowest bid
@@ -280,6 +310,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * The task being viewed was requested by the session user.
      * Should: show basic task details
      *         display a working edit button
+     *         not allow editing the checklist
      *         have no bottom controls
      *         show status REQUESTED
      *         show "No bids"
@@ -290,6 +321,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(unbiddedTask);
         assertHasEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Requested", "No bids", "", "");
 
@@ -306,6 +338,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * The session user is the requester, and the task has bids.
      * Should: show basic task details
      *         not display an edit button
+     *         not allow editing the checklist
      *         show status BIDDED
      *         go to show bids on bottom sheet click
      */
@@ -315,6 +348,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(biddedTask);
         assertNoEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Bidded", "2 bids", "$10.00", "");
 
@@ -328,6 +362,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * The task is assigned, but the session user is neither the requester nor the assignee.
      * Should: show basic task details
      *         not display an edit button
+     *         not allow editing the checklist
      *         show status ASSIGNED
      *         show the assignee
      *         have no bottom controls
@@ -338,6 +373,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(acceptedTask);
         assertNoEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Assigned", "TaskProvider", "", "");
 
@@ -349,10 +385,11 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * The task is assigned to the session user.
      * Should: show basic task details
      *         not display an edit button
+     *         allow editing the checklist
      *         show status ASSIGNED
      *         show the assignee
      *         have no bottom controls
-     * TODO should this do anything different from an unassociated user viewing an assigned task?
+     * TODO should this show something in the bottom sheet differently from an unassociated user?
      */
     @Test
     public void testViewAssignedToSelfTask() {
@@ -360,17 +397,38 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(acceptedTask);
         assertNoEditButton();
+        assertChecklistInteractive();
         assertBottomSheetCollapsed();
         assertHasStatus("Assigned", "TaskProvider", "", "");
 
         onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
         assertBottomSheetCollapsed();
+
+        onView(isChecklistToggle(0)).perform(click());
+        onView(withText("Mark completed")).perform(click());
+        onView(isChecklistToggle(0)).check(matches(isChecked()));
+
+        onView(isChecklistToggle(1)).perform(click());
+        onView(withText("Mark not completed")).perform(click());
+        onView(isChecklistToggle(1)).check(matches(isNotChecked()));
+
+        pressBackUnconditionally();
+
+        try {
+            Task editedTask = getClient().download(acceptedTask.getId(), Task.class);
+            assertEquals(2, editedTask.getCheckList().itemCount());
+            assertEquals(true, editedTask.getCheckList().getItem(0).getStatus());
+            assertEquals(false, editedTask.getCheckList().getItem(1).getStatus());
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     /**
      * The task is requested by the session user, and is assigned.
      * Should: show basic task details
      *         not display an edit button
+     *         not allow editing the checklist
      *         show status ASSIGNED
      *         show the assignee
      */
@@ -380,6 +438,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(acceptedTask);
         assertNoEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Assigned", "TaskProvider", "$10.00", "");
 
@@ -446,6 +505,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * The task is closed.
      * Should: show basic task details
      *         not display an edit button
+     *         not allow editing the checklist
      *         show status CLOSED
      *         show the assignee
      */
@@ -455,6 +515,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         checkTaskDetails(closedTask);
         assertNoEditButton();
+        assertChecklistStatic();
         assertBottomSheetCollapsed();
         assertHasStatus("Done", "TaskProvider", "", "");
 
