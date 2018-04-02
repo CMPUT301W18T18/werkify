@@ -25,12 +25,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simplified session object for running UI tests.
+ * The MockSession object implements most of the functionality of the
+ * original Session object, but with no persistence - it will not
+ * load or save a session file, and will only be logged in if
+ * explicitly given a User object.
+ */
 class MockSession extends Session {
     private User user;
     private List<Task> mockUserProvidedCache = new ArrayList<>();
     private List<Task> mockUserRequestedCache = new ArrayList<>();
     private List<Task> mockUserBiddedCache = new ArrayList<>();
 
+    /**
+     * Creates a MockSession with the given User logged in.
+     * @param user initial session user (null for logged out)
+     */
     public MockSession(@Nullable User user) {
         this.user = user;
     }
@@ -40,6 +51,12 @@ class MockSession extends Session {
         return user;
     }
 
+    /**
+     * Sets the session user. MockSession ignores the Context
+     * parameter to {@link #setUser(User, Context)}, so this
+     * method simply avoids needing to specify a value.
+     * @param user User to log in as
+     */
     public void setUser(User user) {
         this.user = user;
     }
@@ -49,6 +66,11 @@ class MockSession extends Session {
         this.setUser(user);
     }
 
+    /**
+     * Unsets the session user. MockSession ignores the Context
+     * parameter to {@link #logout(Context)}, so this method
+     * simply avoids needing to specify a value.
+     */
     public void logout() {
         this.user = null;
     }
@@ -78,14 +100,26 @@ class MockSession extends Session {
         return mockUserProvidedCache;
     }
 
+    /**
+     * Sets the list of tasks to be returned by {@link #getUserBiddedCache()}.
+     * @param mockUserBiddedCache new user bidded cache
+     */
     public void setMockUserBiddedCache(List<Task> mockUserBiddedCache) {
         this.mockUserBiddedCache = mockUserBiddedCache;
     }
 
+    /**
+     * Sets the list of tasks to be returned by {@link #getUserProvidedCache()}.
+     * @param mockUserProvidedCache new user provided cache
+     */
     public void setMockUserProvidedCache(List<Task> mockUserProvidedCache) {
         this.mockUserProvidedCache = mockUserProvidedCache;
     }
 
+    /**
+     * Sets the list of tasks to be returned by {@link #getUserRequestedCache()}.
+     * @param mockUserRequestedCache new user requested cache
+     */
     public void setMockUserRequestedCache(List<Task> mockUserRequestedCache) {
         this.mockUserRequestedCache = mockUserRequestedCache;
     }

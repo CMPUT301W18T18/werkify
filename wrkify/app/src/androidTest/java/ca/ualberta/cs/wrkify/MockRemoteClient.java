@@ -25,15 +25,17 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * Local remote client for running UI tests.
+ * Most RemoteClient methods called on the MockRemoteClient
+ * will work by operating locally on a HashMap. Searches will
+ * return no results unless explicitly mocked by calling
+ * {@link #mockNextSearch(RemoteObject...)}.
  */
 class MockRemoteClient extends RemoteClient {
-    private HashMap<String, Object> hmap;
+    private HashMap<String, Object> hmap = new HashMap<>();
     private RemoteObject[] nextSearchResult;
 
-    public MockRemoteClient() {
-        this.hmap = new HashMap<String, Object>();
-    }
-    
+    @Override
     public <T extends RemoteObject> T create(Class<T> type, Object ...conArgs) {
         T instance;
         try {
@@ -49,15 +51,18 @@ class MockRemoteClient extends RemoteClient {
         
         return instance;
     }
-    
+
+    @Override
     public void upload(RemoteObject obj) {
         this.hmap.put(obj.getId(), obj);
     }
-    
+
+    @Override
     public void delete(RemoteObject obj) {
         this.hmap.remove(obj.getId());
     }
-    
+
+    @Override
     public <T extends RemoteObject> T download(String id, Class<T> type) throws IOException {
         return type.cast(this.hmap.get(id));
     }
@@ -73,6 +78,11 @@ class MockRemoteClient extends RemoteClient {
         }
     }
 
+    /**
+     * Sets the results for the next call to {@link #search(String, Class)} on the
+     * MockRemoteClient.
+     * @param objects search results of the next search
+     */
     public void mockNextSearch(RemoteObject... objects) {
         this.nextSearchResult = objects;
     }
