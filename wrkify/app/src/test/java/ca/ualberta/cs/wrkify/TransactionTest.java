@@ -60,9 +60,9 @@ public class TransactionTest {
         SimpleRemoteObject inner = new SimpleRemoteObject(8);
         TransactionManager tm = new TransactionManager();
 
-        SimpleRemoteObject obj = (SimpleRemoteObject) Proxy.newProxyInstance(
+        SimpleObject obj = (SimpleObject) Proxy.newProxyInstance(
                 SimpleRemoteObject.class.getClassLoader(),
-                new Class[] {SimpleRemoteObject.class},
+                new Class[] {SimpleObject.class},
                 new TransactionProxyHandler<SimpleRemoteObject>(tm, inner)
         );
 

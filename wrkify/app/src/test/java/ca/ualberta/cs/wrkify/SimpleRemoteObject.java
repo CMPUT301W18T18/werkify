@@ -20,7 +20,7 @@ package ca.ualberta.cs.wrkify;
 /**
  * Mock remote object for testing.
  */
-class SimpleRemoteObject extends RemoteObject {
+class SimpleRemoteObject extends RemoteObject implements SimpleObject{
     public int field;
 
     /**
