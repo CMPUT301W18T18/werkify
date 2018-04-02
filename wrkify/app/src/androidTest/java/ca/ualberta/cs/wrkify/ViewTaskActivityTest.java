@@ -183,6 +183,47 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
     }
 
     /**
+     * Place an invalid bid on an unbidded task.
+     * Should: fail
+     */
+    @Test
+    public void testInvalidBid() {
+        launchActivityWith(otherUser, unbiddedTask);
+
+        checkTaskDetails(unbiddedTask);
+        assertNoEditButton();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Open", "No bids", "", "");
+
+        onView(withId(R.id.taskViewBottomSheetHeader)).perform(click());
+        assertBottomSheetExpanded();
+
+        onView(withId(R.id.taskViewBottomSheetBidField)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetBidField)).perform(typeText(""));
+
+        onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
+        onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
+        onView(withText("Bid")).check(matches(not(isDisplayed())));
+
+        closeSoftKeyboard();
+
+        pressBack();
+        assertBottomSheetCollapsed();
+
+        pressBackUnconditionally();
+        assertActivityFinished();
+
+        try {
+            Task editedTask = getClient().download(unbiddedTask.getId(), Task.class);
+
+            assertEquals(TaskStatus.REQUESTED, editedTask.getStatus());
+            assertEquals(0, editedTask.getBidList().size());
+        } catch (IOException e) {
+            fail();
+        }
+    }
+
+    /**
      * There are bids on the task, but the session user has not bidded.
      * Should: show basic task details
      *         not display an edit button
