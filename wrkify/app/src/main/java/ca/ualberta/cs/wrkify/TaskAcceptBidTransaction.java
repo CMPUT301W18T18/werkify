@@ -44,7 +44,7 @@ public class TaskAcceptBidTransaction extends Transaction<Task> {
      * @return true if bid accepted, false if not.
      */
     @Override
-    protected Boolean application(Task task) {
+    protected Boolean apply(Task task) {
         try {
             task.acceptBid(this.bid);
             return true;

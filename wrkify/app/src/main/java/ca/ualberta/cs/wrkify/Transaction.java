@@ -43,8 +43,8 @@ public abstract class Transaction<T extends RemoteObject> {
             return false;
         }
 
-        return application(object);
+        return apply(object);
     }
 
-    protected abstract Boolean application(T object);
+    protected abstract Boolean apply(T object);
 }

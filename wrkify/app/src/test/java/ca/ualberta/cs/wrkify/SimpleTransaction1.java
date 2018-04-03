@@ -28,7 +28,7 @@ public class SimpleTransaction1 extends Transaction<SimpleRemoteObject> {
     }
 
     @Override
-    public Boolean application(SimpleRemoteObject object) {
+    public Boolean apply(SimpleRemoteObject object) {
         object.setFieldTo1();
         return true;
     }

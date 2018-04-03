@@ -44,7 +44,7 @@ public class TaskCancelBidTransaction extends Transaction<Task> {
      * @return always true
      */
     @Override
-    protected Boolean application(Task task) {
+    protected Boolean apply(Task task) {
         task.cancelBid(this.bid);
         return true;
     }

@@ -43,7 +43,7 @@ public class TaskAddBidTransaction extends Transaction<Task> {
      * @param task the task you are adding the bid to
      * @return true if bid could be added, false otherwise
      */
-    protected Boolean application(Task task) {
+    protected Boolean apply(Task task) {
         try {
             task.addBid(this.bid);
             return true;

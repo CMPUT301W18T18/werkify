@@ -100,13 +100,13 @@ public class TaskTransactionsTest {
 
         Boolean status;
 
-        status = t.application(this.t1);
+        status = t.apply(this.t1);
         assertTrue(status);
         assertEquals(1, this.t1.getBidList().size());
 
         this.t1.acceptBid(b1);
 
-        status = t.application(this.t1);
+        status = t.apply(this.t1);
         assertFalse(status);
         assertEquals(1, this.t1.getBidList().size());
     }
@@ -117,11 +117,11 @@ public class TaskTransactionsTest {
         TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
         TaskCancelBidTransaction t2 = new TaskCancelBidTransaction(this.t1, b1);
 
-        t2.application(this.t1);
-        t.application(this.t1);
+        t2.apply(this.t1);
+        t.apply(this.t1);
         assertEquals(1, this.t1.getBidList().size());
 
-        t2.application(this.t1);
+        t2.apply(this.t1);
         assertEquals(0, this.t1.getBidList().size());
     }
 
@@ -132,11 +132,11 @@ public class TaskTransactionsTest {
 
         Boolean status;
 
-        status = t.application(this.t1);
+        status = t.apply(this.t1);
         assertTrue(status);
         assertEquals(TaskStatus.ASSIGNED, this.t1.getStatus());
 
-        status = t.application(this.t1);
+        status = t.apply(this.t1);
         assertFalse(status);
     }
 }
