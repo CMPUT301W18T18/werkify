@@ -229,7 +229,7 @@ public class EditTaskActivity extends AppCompatActivity {
         if (task == null) return;
 
         Intent intent = getIntent();
-        intent.putExtra(EXTRA_RETURNED_TASK, this.task);
+        intent.putExtra(EXTRA_RETURNED_TASK, this.task.reference());
 
         if (taskIsNew) setResult(RESULT_TASK_CREATED, intent);
         else setResult(RESULT_OK, intent);

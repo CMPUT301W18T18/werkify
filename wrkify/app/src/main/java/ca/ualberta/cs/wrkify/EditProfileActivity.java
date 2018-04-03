@@ -26,6 +26,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * Activity for a user to edit their profile. Must receive a User
  * as EXTRA_TARGET_USER, which will be the user to edit. If the
@@ -50,7 +52,14 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        this.user = (User) getIntent().getSerializableExtra(EXTRA_TARGET_USER);
+        RemoteReference<User> userRef = (RemoteReference<User>)
+                getIntent().getSerializableExtra(EXTRA_TARGET_USER);
+        try {
+            this.user = userRef.getRemote(WrkifyClient.getInstance(), User.class);
+        } catch (IOException e) {
+            //TODO handle no connection
+            throw new RuntimeException();
+        }
 
         // Populate fields
         this.emailField = findViewById(R.id.editProfileEmailField);
@@ -119,7 +128,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        intent.putExtra(EXTRA_RETURNED_USER, user);
+        intent.putExtra(EXTRA_RETURNED_USER, user.reference());
 
         setResult(RESULT_OK, intent);
         finish();

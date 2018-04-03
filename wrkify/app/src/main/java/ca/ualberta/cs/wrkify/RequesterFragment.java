@@ -91,7 +91,7 @@ public class RequesterFragment extends TasksOverviewFragment {
         if (requestCode == REQUEST_NEW_TASK && resultCode == EditTaskActivity.RESULT_TASK_CREATED) {
             // Append the new task to task list
             TaskListFragmentPagerAdapter adapter = (TaskListFragmentPagerAdapter) getPager().getAdapter();
-            Task task = (Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK);
+            RemoteReference<Task> task = (RemoteReference<Task>) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK);
             adapter.appendTaskToList(0, task);
         }
     }

@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,14 @@ public class TaskListFragment extends Fragment {
     public static TaskListFragment makeTaskList(ArrayList<Task> tasks) {
         TaskListFragment fragment = new TaskListFragment();
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_TASK_LIST, tasks);
+
+        ArrayList<RemoteReference<Task>> refTasks = new ArrayList<RemoteReference<Task>>();
+
+        for (Task t: tasks) {
+            refTasks.add(t.<Task>reference());
+        }
+
+        arguments.putSerializable(ARGUMENT_TASK_LIST, refTasks);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -69,7 +77,17 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.tasks = (ArrayList<Task>) this.getArguments().getSerializable(ARGUMENT_TASK_LIST);
+        this.tasks = new ArrayList<Task>();
+        ArrayList<RemoteReference<Task>> taskRefs = (ArrayList<RemoteReference<Task>>)
+                this.getArguments().getSerializable(ARGUMENT_TASK_LIST);
+        for (RemoteReference<Task> ref : taskRefs) {
+            try {
+                this.tasks.add(ref.getRemote(WrkifyClient.getInstance(), Task.class));
+            } catch (IOException e) {
+                // the task will not be added if we cannot get it
+                // TODO maybe some smarter behavior
+            }
+        }
     }
 
     @Nullable

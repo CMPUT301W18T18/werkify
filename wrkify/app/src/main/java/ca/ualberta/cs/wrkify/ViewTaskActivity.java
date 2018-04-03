@@ -88,7 +88,15 @@ public class ViewTaskActivity extends AppCompatActivity {
             // TODO sync these changes to the database
             if (resultCode == RESULT_OK) {
                 // Reinitialize the view when the task is edited
-                this.initializeFromTask((Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK));
+                RemoteReference<Task> taskRef = (RemoteReference<Task>)
+                        data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK);
+                try {
+                    this.initializeFromTask(taskRef.getRemote(WrkifyClient.getInstance(),
+                            Task.class));
+                } catch (IOException e) {
+                    //TODO handle no connection
+                    throw new RuntimeException();
+                }
             } else if (resultCode == EditTaskActivity.RESULT_TASK_DELETED) {
                 // Exit if the task was deleted
                 finish();
@@ -194,7 +202,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
             ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
             Bundle arguments = new Bundle();
-            arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
+            arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task.reference());
             bottomSheet.setArguments(arguments);
 
             transaction.replace(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);

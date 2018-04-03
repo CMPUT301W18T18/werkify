@@ -46,7 +46,13 @@ public class ViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
-        this.initializeFromUser((User) getIntent().getSerializableExtra(USER_EXTRA));
+        RemoteReference<User> userRef = (RemoteReference<User>) getIntent().getSerializableExtra(USER_EXTRA);
+        try {
+            this.initializeFromUser(userRef.getRemote(WrkifyClient.getInstance(), User.class));
+        } catch (IOException e) {
+            //TODO handle user not found.
+            throw new RuntimeException();
+        }
 
         // Show the Edit button if the user being viewed is the session user
         FloatingActionButton editButton = findViewById(R.id.editButton);

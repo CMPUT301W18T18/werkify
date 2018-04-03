@@ -33,6 +33,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * Base class for bottom sheets of the ViewTaskActivity.
  * A ViewTaskBottomSheetFragment creates a View which is effectively a simplified
@@ -181,7 +183,14 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
         });
 
         // Fill in detail fields
-        this.initializeWithTask((ViewGroup) view, (Task) getArguments().getSerializable(ARGUMENT_TARGET_TASK));
+        RemoteReference<Task> taskRef = (RemoteReference<Task>)
+                getArguments().getSerializable(ARGUMENT_TARGET_TASK);
+        try {
+            this.initializeWithTask((ViewGroup) view, taskRef.getRemote(WrkifyClient.getInstance(), Task.class));
+        } catch (IOException e) {
+            //TODO handle no connection
+            throw new RuntimeException();
+        }
 
         return view;
     }

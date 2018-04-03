@@ -58,7 +58,13 @@ public class ViewBidsActivity extends AppCompatActivity {
 
         //Get the data
         User viewer = Session.getInstance(this).getUser();
-        this.task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+        RemoteReference<Task> ref = (RemoteReference<Task>) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+        try {
+            this.task = ref.getRemote(WrkifyClient.getInstance(), Task.class);
+        } catch (IOException e) {
+            throw new RuntimeException();
+            // handle no connection (wont happen with cached client)
+        }
 
         TextView titleView = findViewById(R.id.bidListActivity_taskTitle);
         titleView.setText(task.getTitle());
@@ -120,7 +126,7 @@ public class ViewBidsActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        intent.putExtra(EXTRA_RETURNED_TASK, this.task);
+        intent.putExtra(EXTRA_RETURNED_TASK, this.task.reference());
         setResult(RESULT_OK, intent);
         finish();
     }
