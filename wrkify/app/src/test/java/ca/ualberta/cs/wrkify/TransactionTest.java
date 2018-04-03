@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -64,5 +65,23 @@ public class TransactionTest {
         status = t.applyTo(sro2);
         assertFalse(status);
         assertEquals(2, sro2.field);
+    }
+
+    @Test
+    public void testTransactionManager() {
+        SimpleRemoteObject sro = rc.create(SimpleRemoteObject.class, 5);
+        TransactionManager tm = new TransactionManager();
+        tm.enqueue(new SimpleTransaction1(sro));
+        tm.enqueue(new SimpleTransaction2(sro));
+
+        tm.flush(rc);
+
+        try {
+            sro = rc.download(sro.getId(), SimpleRemoteObject.class);
+        } catch (IOException e) {
+            fail();
+        }
+
+        assertEquals(2, sro.field);
     }
 }
