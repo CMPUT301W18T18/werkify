@@ -42,7 +42,7 @@ public class TransactionManager {
 
                 RemoteObject obj = client.download(tr.getId(), tr.getType());
 
-                tr.apply(obj);
+                tr.applyTo(obj);
 
                 client.upload(obj);
                 queue.remove(0);

@@ -21,8 +21,30 @@ package ca.ualberta.cs.wrkify;
  * Created by peter on 03/04/18.
  */
 
-public interface Transaction<T> {
-    Boolean apply(T object);
-    String getId();
-    Class<T> getType();
+public abstract class Transaction<T extends RemoteObject> {
+    private String id;
+    private Class<T> type;
+
+    public Transaction(T remObj, Class<T> type) {
+        this.id = remObj.getId();
+        this.type = type;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public Class<T> getType() {
+        return this.type;
+    }
+
+    public Boolean applyTo(T object) {
+        if (object.getId() != this.getId() && !object.getId().equals(this.getId())) {
+            return false;
+        }
+
+        return application(object);
+    }
+
+    protected abstract Boolean application(T object);
 }

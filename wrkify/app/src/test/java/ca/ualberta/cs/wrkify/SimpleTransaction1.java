@@ -17,15 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-
 /**
- * the Transact annotation denotes if a method should be
- * considered a transaction
+ * Created by peter on 03/04/18.
  */
 
-@Target({ElementType.METHOD})
-public @interface Transact {
+public class SimpleTransaction1 extends Transaction<SimpleRemoteObject> {
 
+    public SimpleTransaction1(SimpleRemoteObject sro) {
+        super(sro, SimpleRemoteObject.class);
+    }
+
+    @Override
+    public Boolean application(SimpleRemoteObject object) {
+        object.setFieldTo1();
+        return true;
+    }
 }

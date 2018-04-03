@@ -17,8 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
-public interface SimpleObject {
-    @Transact void setFieldTo1();
-    @Transact void setFieldTo2();
-    void setFieldTo3();
+/**
+ * Created by peter on 03/04/18.
+ */
+
+public class SimpleTransaction2 extends Transaction<SimpleRemoteObject> {
+
+    public SimpleTransaction2(SimpleRemoteObject sro) {
+        super(sro, SimpleRemoteObject.class);
+    }
+
+    @Override
+    public Boolean application(SimpleRemoteObject object) {
+        object.setFieldTo2();
+        return true;
+    }
 }

@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 /**
@@ -40,41 +42,27 @@ public class TransactionTest {
 
     @Test
     public void testTransaction() {
-        Method meth;
-        try {
-            meth = SimpleRemoteObject.class.getMethod("setFieldTo1");
-        } catch (NoSuchMethodException e) {
-            fail();
-            return;
-        }
         SimpleRemoteObject sro = new SimpleRemoteObject(5);
-        TransactionBak<SimpleRemoteObject> t = new TransactionBak<SimpleRemoteObject>(sro, meth, new Object[0]);
+        SimpleRemoteObject sro2 = new SimpleRemoteObject(6);
+        Transaction<SimpleRemoteObject> t = new SimpleTransaction1(sro);
+        Transaction<SimpleRemoteObject> t2 = new SimpleTransaction2(sro2);
 
-        assertEquals(5, t.getObject().field);
-        t.apply(sro);
+        Boolean status;
+
+        status = t.applyTo(sro);
+        assertTrue(status);
         assertEquals(1, sro.field);
-    }
 
-    @Test
-    public void testProxy() {
-        SimpleRemoteObject inner = new SimpleRemoteObject(8);
-        TransactionManager tm = new TransactionManager();
+        status = t2.applyTo(sro);
+        assertFalse(status);
+        assertEquals(1, sro.field);
 
-        SimpleObject obj = (SimpleObject) Proxy.newProxyInstance(
-                SimpleRemoteObject.class.getClassLoader(),
-                new Class[] {SimpleObject.class},
-                new TransactionProxyHandler<SimpleRemoteObject>(tm, inner)
-        );
+        status = t2.applyTo(sro2);
+        assertTrue(status);
+        assertEquals(2, sro2.field);
 
-        obj.setFieldTo1();
-        obj.setFieldTo2();
-        obj.setFieldTo3();
-
-        assertEquals(3, obj.field);
-
-        tm.pop().apply(obj);
-        assertEquals(1, obj.field);
-        tm.pop().apply(obj);
-        assertEquals(2, obj.field);
+        status = t.applyTo(sro2);
+        assertFalse(status);
+        assertEquals(2, sro2.field);
     }
 }
