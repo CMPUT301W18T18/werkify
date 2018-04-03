@@ -18,37 +18,23 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * TaskAddBidTransaction models adding a bid to
- * a task.
+ * TaskCancelBidTransaction is the transaction
+ * that models canceling a bid.
  *
- * @see Task
  * @see Transaction
+ * @see Task
  */
 
-public class TaskAddBidTransaction extends Transaction<Task> {
+public class TaskCancelBidTransaction extends Transaction<Task> {
     private Bid bid;
 
-    /**
-     * create a TaskAddBidTransaction with a bid to add
-     * @param task the task your are adding a bid to
-     * @param bid the bid you are adding to task
-     */
-    public TaskAddBidTransaction(Task task, Bid bid) {
+    public TaskCancelBidTransaction(Task task, Bid bid) {
         super(task, Task.class);
-        this.bid = bid;
     }
 
-    /**
-     * adds the bid the provided task
-     * @param task the task you are adding the bid to
-     * @return true if bid could be added, false otherwise
-     */
+    @Override
     protected Boolean application(Task task) {
-        try {
-            task.addBid(this.bid);
-            return true;
-        } catch (UnsupportedOperationException e) {
-            return false;
-        }
+        task.cancelBid(this.bid);
+        return true;
     }
 }

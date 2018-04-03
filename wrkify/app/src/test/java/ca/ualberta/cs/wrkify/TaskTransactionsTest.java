@@ -25,6 +25,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 /**
@@ -89,5 +91,23 @@ public class TaskTransactionsTest {
         } catch (IOException e) {
             fail();
         }
+    }
+
+    @Test
+    public void testAddBidDescription() {
+        Bid b1 = new Bid(new Price(5.0), this.u2);
+        TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
+
+        Boolean status;
+
+        status = t.application(this.t1);
+        assertTrue(status);
+        assertEquals(1, this.t1.getBidList().size());
+
+        this.t1.acceptBid(b1);
+
+        status = t.application(this.t1);
+        assertFalse(status);
+        assertEquals(1, this.t1.getBidList().size());
     }
 }
