@@ -139,4 +139,20 @@ public class TaskTransactionsTest {
         status = t.apply(this.t1);
         assertFalse(status);
     }
+
+    @Test
+    public void TestUnnassign() {
+        Bid b1 = new Bid(new Price(5.0), this.u2);
+        this.t1.acceptBid(b1);
+
+        TaskUnassignTransaction t = new TaskUnassignTransaction(this.t1);
+
+        Boolean status;
+        status = t.applyTo(this.t1);
+        assertTrue(status);
+        assertEquals(TaskStatus.BIDDED, this.t1.getStatus());
+
+        status = t.applyTo(this.t1);
+        assertFalse(status);
+    }
 }
