@@ -76,6 +76,18 @@ public class TaskTransactionsTest {
         } catch (IOException e) {
             fail();
         }
+    }
 
+    @Test
+    public void testTaskDescription() {
+        TaskDescriptionTransaction tdt = new TaskDescriptionTransaction(this.t1, "description Updated");
+        this.tm.enqueue(tdt);
+        this.tm.flush(rc);
+        try {
+            this.t1 = rc.download(this.t1.getId(), Task.class);
+            assertEquals("description Updated", this.t1.getDescription());
+        } catch (IOException e) {
+            fail();
+        }
     }
 }
