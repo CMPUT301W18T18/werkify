@@ -19,7 +19,6 @@ package ca.ualberta.cs.wrkify;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by peter on 25/03/18.
@@ -41,7 +40,7 @@ public class TransactionManager {
             try {
                 Transaction tr = queue.get(0);
 
-                RemoteObject obj = client.download(tr.getObject().getId(), tr.getObject().getClass());
+                RemoteObject obj = client.download(tr.getId(), tr.getType());
 
                 tr.apply(obj);
 
@@ -60,5 +59,4 @@ public class TransactionManager {
         queue.remove(0);
         return tr;
     }
-
 }

@@ -48,7 +48,7 @@ public class TransactionTest {
             return;
         }
         SimpleRemoteObject sro = new SimpleRemoteObject(5);
-        Transaction<SimpleRemoteObject> t = new Transaction<SimpleRemoteObject>(sro, meth, new Object[0]);
+        TransactionBak<SimpleRemoteObject> t = new TransactionBak<SimpleRemoteObject>(sro, meth, new Object[0]);
 
         assertEquals(5, t.getObject().field);
         t.apply(sro);

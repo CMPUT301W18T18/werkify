@@ -17,36 +17,12 @@
 
 package ca.ualberta.cs.wrkify;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-
 /**
- *  a Transaction models a method call to a remoteobject that changes
- *  the object.
+ * Created by peter on 03/04/18.
  */
 
-public class Transaction<T extends RemoteObject> {
-    private T object;
-    private Method method;
-    private Object[] args;
-
-    public Transaction(T object, Method method, Object[] args) {
-        this.object = object;
-        this.method = method;
-        this.args = args;
-    }
-
-    public Boolean apply(T updatingObject) {
-        try {
-            this.method.invoke(updatingObject, this.args);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public T getObject() {
-        return this.object;
-    }
+public interface Transaction<T> {
+    Boolean apply(T object);
+    String getId();
+    Class<T> getType();
 }
