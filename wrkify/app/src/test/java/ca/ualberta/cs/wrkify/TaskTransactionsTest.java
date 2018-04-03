@@ -124,4 +124,19 @@ public class TaskTransactionsTest {
         t2.application(this.t1);
         assertEquals(0, this.t1.getBidList().size());
     }
+
+    @Test
+    public void TestAcceptBid() {
+        Bid b1 = new Bid(new Price(5.0), this.u2);
+        TaskAcceptBidTransaction t = new TaskAcceptBidTransaction(this.t1, b1);
+
+        Boolean status;
+
+        status = t.application(this.t1);
+        assertTrue(status);
+        assertEquals(TaskStatus.ASSIGNED, this.t1.getStatus());
+
+        status = t.application(this.t1);
+        assertFalse(status);
+    }
 }
