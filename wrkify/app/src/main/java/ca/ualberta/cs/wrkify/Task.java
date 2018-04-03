@@ -95,7 +95,7 @@ public class Task extends RemoteObject {
         this(title, requester.<User>reference(), description);
     }
 
-    // begin the setters
+    // begin the getters
 
     /**
      * gets the title
