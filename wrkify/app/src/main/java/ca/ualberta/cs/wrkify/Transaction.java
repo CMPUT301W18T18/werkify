@@ -18,26 +18,52 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * Created by peter on 03/04/18.
+ * Transaction models an atomic change to a RemoteObject
+ * transactions subclasses define the apply() function
+ * in order to implement the specific behavior.
+ *
+ * @see RemoteObject
  */
 
 public abstract class Transaction<T extends RemoteObject> {
     private String id;
     private Class<T> type;
 
+    /**
+     * sets up the id and the type
+     * @param remObj the object to extract the id from
+     * @param type the type of remote object.
+     */
     public Transaction(T remObj, Class<T> type) {
         this.id = remObj.getId();
         this.type = type;
     }
 
+    /**
+     * gets the id of the object referenced by
+     * the Transaction
+     * @return the id
+     */
     public String getId() {
         return this.id;
     }
 
+    /**
+     * gets the type of the object referenced by
+     * the Transaction
+     * @return the type of the object
+     */
     public Class<T> getType() {
         return this.type;
     }
 
+    /**
+     * verifys that the object provided is correct,
+     * then deffers to the apply function.
+     *
+     * @param object the object to applyTo
+     * @return true if successful, false if failed.
+     */
     public Boolean applyTo(T object) {
         if (object.getId() != this.getId() && !object.getId().equals(this.getId())) {
             return false;
@@ -46,5 +72,12 @@ public abstract class Transaction<T extends RemoteObject> {
         return apply(object);
     }
 
+    /**
+     * apply defines the internal behavior of the
+     * Transaction. THIS FUNCTION SHOULD NOT BE
+     * USED. USE applyTo INSTEAD.
+     * @param object
+     * @return
+     */
     protected abstract Boolean apply(T object);
 }
