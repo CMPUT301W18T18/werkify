@@ -28,10 +28,21 @@ package ca.ualberta.cs.wrkify;
 public class TaskCancelBidTransaction extends Transaction<Task> {
     private Bid bid;
 
+    /**
+     * creates a new Transaction that stores a bid to cancel
+     * @param task the task the bid is to be removed from
+     * @param bid the bid to remove
+     */
     public TaskCancelBidTransaction(Task task, Bid bid) {
         super(task, Task.class);
+        this.bid = bid;
     }
 
+    /**
+     * applys the cancelation of a bid
+     * @param task the task you are canceling a bid from
+     * @return always true
+     */
     @Override
     protected Boolean application(Task task) {
         task.cancelBid(this.bid);

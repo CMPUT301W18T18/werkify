@@ -94,7 +94,7 @@ public class TaskTransactionsTest {
     }
 
     @Test
-    public void testAddBidDescription() {
+    public void testAddBid() {
         Bid b1 = new Bid(new Price(5.0), this.u2);
         TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
 
@@ -109,5 +109,19 @@ public class TaskTransactionsTest {
         status = t.application(this.t1);
         assertFalse(status);
         assertEquals(1, this.t1.getBidList().size());
+    }
+
+    @Test
+    public void TestCancelBid() {
+        Bid b1 = new Bid(new Price(5.0), this.u2);
+        TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
+        TaskCancelBidTransaction t2 = new TaskCancelBidTransaction(this.t1, b1);
+
+        t2.application(this.t1);
+        t.application(this.t1);
+        assertEquals(1, this.t1.getBidList().size());
+
+        t2.application(this.t1);
+        assertEquals(0, this.t1.getBidList().size());
     }
 }
