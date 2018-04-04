@@ -20,10 +20,12 @@ package ca.ualberta.cs.wrkify;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
+import android.support.v4.graphics.BitmapCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,8 +37,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Base64;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -113,6 +122,50 @@ public class TestActivity extends AppCompatActivity {
         fullImageView.setImageBitmap(fullImage);
         Log.i("Size thumbnail:", "(" + thumbnail.getWidth() + ", " + thumbnail.getHeight() + ")");
         Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
+        Bitmap compressed = resizeBitmap(fullImage);
+        fullImageView.setImageBitmap(compressed);
+
+    }
+
+    protected void compressMany(Bitmap in) {
+        for (int i = 0; i <= 100; i++) {
+            ByteArrayOutputStream str = new ByteArrayOutputStream();
+            in.compress(Bitmap.CompressFormat.JPEG, i, str);
+            ByteArrayInputStream stro = new ByteArrayInputStream(str.toByteArray());
+            Bitmap out = BitmapFactory.decodeStream(stro);
+            MediaStore.Images.Media.insertImage(getContentResolver(), out, "C_" + i, "description here");
+        }
+    }
+
+
+    protected String getBase64Bitmap(Bitmap in) {
+        // PNG 100 -- 13795654
+
+        int maxBytes = 65536; //this is the max size of the base 64 string being stored
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        in.compress(Bitmap.CompressFormat.PNG, 100, os);
+        String str = android.util.Base64.encodeToString(os.toByteArray(), android.util.Base64.DEFAULT);
+
+        Log.i("B64 String", str);
+        Log.i("Size of B64 string", Integer.toString(str.getBytes().length));
+        Log.i("Size of byte stream", Integer.toString(os.toByteArray().length));
+        Log.i("Size of bitmap", Integer.toString(in.getByteCount()));
+
+
+        ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+        Bitmap out = BitmapFactory.decodeStream(is);
+
+        Log.i("Original dims", "(" + in.getWidth() + ", " + out.getHeight() + ")");
+        Log.i("New dims", "(" + out.getWidth() + ", " + out.getHeight() + ")");
+
+        return str;
+    }
+
+
+    protected Bitmap resizeBitmap(Bitmap in) {
+        getBase64Bitmap(in);
+        return in;
     }
 
 
