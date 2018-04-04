@@ -13,3 +13,6 @@ android:
         - addon-google_apis-google-27
 
         - sys-img-armeabi-v7a-android-26
+
+script:
+    - wrkify/gradlew test
