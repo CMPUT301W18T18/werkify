@@ -20,7 +20,10 @@ package ca.ualberta.cs.wrkify;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,7 +32,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 public class TestActivity extends AppCompatActivity {
+    //pieces of this adapted from https://developer.android.com/training/camera/photobasics.html
     protected static final int REQUEST_IMAGE_CAMERA = 1;
     protected static final int REQUEST_IMAGE_GALLERY = 2;
 
@@ -57,6 +66,8 @@ public class TestActivity extends AppCompatActivity {
     protected void setImages(Bitmap thumbnail, Bitmap fullImage) {
         thumbnailView.setImageBitmap(thumbnail);
         fullImageView.setImageBitmap(fullImage);
+        Log.i("Size thumbnail:", "(" + thumbnail.getWidth() + ", " + thumbnail.getHeight() + ")");
+        Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
     }
 
     @Override
@@ -64,16 +75,59 @@ public class TestActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_IMAGE_CAMERA && resultCode == RESULT_OK) {
-            Bundle b = data.getExtras();
-            Bitmap thumbnail = (Bitmap) b.get("data");
-            setImages(thumbnail, thumbnail);
+            //Bundle b = data.getExtras();
+            //Bitmap thumbnail = (Bitmap) b.get("data");
+
+            Log.i("intnet", data.toString());
+            Bitmap thumbnail = null;
+            Bitmap fullImage = null;
+            try {
+                Uri uri = Uri.fromFile(new File(currentPhotoPath));
+                fullImage = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                if (fullImage != null) {
+                    thumbnail = fullImage;
+                    // https://stackoverflow.com/questions/8560501/android-save-image-into-gallery https://stackoverflow.com/a/8722494 (line below)
+                    MediaStore.Images.Media.insertImage(getContentResolver(), fullImage, "filenameHere", "description here");
+                } else {
+                    Log.e("asdasd", "shit is null");
+                }
+            } catch (IOException e) {
+                Log.e("Failed to get full", e.toString());
+            }
+
+            setImages(thumbnail, fullImage);
         }
+    }
+
+
+    protected String currentPhotoPath;
+    protected File makeNewImageFile() throws IOException {
+        String time = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String filename = "wrkify_" + time;
+        String extension = ".jpg";
+
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(filename, extension, storageDir);
+        currentPhotoPath = imageFile.getAbsolutePath();
+        return imageFile;
     }
 
     protected void openCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (i.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(i, REQUEST_IMAGE_CAMERA);
+            File imageFile = null;
+
+            try {
+                imageFile = makeNewImageFile();
+            } catch (IOException e) {
+                Log.e("Failed to create image", e.toString());
+            }
+
+            if (imageFile != null) {
+                Uri uri = FileProvider.getUriForFile(this, "ca.ualberta.cs.wrkify.fileprovider", imageFile);
+                i.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                startActivityForResult(i, REQUEST_IMAGE_CAMERA);
+            }
         }
     }
 
