@@ -101,7 +101,7 @@ public class RegisterActivity extends Activity {
             finish();
         } else {
             Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
-                    "invalid name, email, or phone number", Snackbar.LENGTH_LONG);
+                    R.string.bad_user_info, Snackbar.LENGTH_LONG);
             snack.setAction("Action", null);
             snack.show();
         }
