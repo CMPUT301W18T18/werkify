@@ -14,5 +14,7 @@ android:
 
         - sys-img-armeabi-v7a-android-26
 
+before_script:
+    - cd wrkify
 script:
-    - wrkify/gradlew test
+    - ./gradlew test
