@@ -42,11 +42,15 @@ public class TaskDescriptionTransaction extends Transaction<Task> {
     /**
      * apply is called by applyTo to set the description.
      * @param task the task you are applying to
-     * @return true if successful (always)
+     * @return true if successful, false otherwise
      */
     @Override
     protected Boolean apply(Task task) {
-        task.setDescription(this.description);
-        return true;
+        try {
+            task.setDescription(this.description);
+            return true;
+        } catch (UnsupportedOperationException e) {
+            return false;
+        }
     }
 }

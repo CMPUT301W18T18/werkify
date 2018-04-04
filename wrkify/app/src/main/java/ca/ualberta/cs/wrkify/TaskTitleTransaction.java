@@ -42,11 +42,15 @@ public class TaskTitleTransaction extends Transaction<Task> {
     /**
      * apply is called by applyTo to set the title.
      * @param task the task you are applying to
-     * @return true if successful (always)
+     * @return true if successful, false otherwise
      */
     @Override
     protected Boolean apply(Task task) {
-        task.setTitle(this.title);
-        return true;
+        try {
+            task.setTitle(this.title);
+            return true;
+        } catch (UnsupportedOperationException e) {
+            return false;
+        }
     }
 }

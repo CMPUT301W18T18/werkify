@@ -70,27 +70,31 @@ public class TaskTransactionsTest {
     @Test
     public void testTaskTitle() {
         TaskTitleTransaction ttt = new TaskTitleTransaction(this.t1, "Task 1 Updated");
-        this.tm.enqueue(ttt);
-        this.tm.flush(rc);
-        try {
-            this.t1 = rc.download(this.t1.getId(), Task.class);
-            assertEquals("Task 1 Updated", this.t1.getTitle());
-        } catch (IOException e) {
-            fail();
-        }
+
+        Boolean status;
+        status = ttt.applyTo(this.t1);
+        assertTrue(status);
+        assertEquals("Task 1 Updated", this.t1.getTitle());
+
+        this.t1.addBid(new Bid(new Price(5.0), this.u1));
+
+        status = ttt.applyTo(this.t1);
+        assertFalse(status);
     }
 
     @Test
     public void testTaskDescription() {
         TaskDescriptionTransaction tdt = new TaskDescriptionTransaction(this.t1, "description Updated");
-        this.tm.enqueue(tdt);
-        this.tm.flush(rc);
-        try {
-            this.t1 = rc.download(this.t1.getId(), Task.class);
-            assertEquals("description Updated", this.t1.getDescription());
-        } catch (IOException e) {
-            fail();
-        }
+
+        Boolean status;
+        status = tdt.applyTo(this.t1);
+        assertTrue(status);
+        assertEquals("description Updated", this.t1.getDescription());
+
+        this.t1.addBid(new Bid(new Price(5.0), this.u1));
+
+        status = tdt.applyTo(this.t1);
+        assertFalse(status);
     }
 
     @Test
