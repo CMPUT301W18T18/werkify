@@ -39,6 +39,7 @@
         android:layout_height="100dp"
         android:layout_marginEnd="48dp"
         android:layout_marginTop="32dp"
+        android:tint="#96003cff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@color/cardview_dark_background" />
@@ -52,4 +53,23 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@color/colorPrimaryDark" />
+
+    <Button
+        android:id="@+id/testShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="20dp"
+        android:text="Show"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/testImageThumbnail" />
+
+    <Button
+        android:id="@+id/testHide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:text="Hide"
+        app:layout_constraintBaseline_toBaselineOf="@+id/testShow"
+        app:layout_constraintStart_toEndOf="@+id/testShow" />
 </android.support.constraint.ConstraintLayout>

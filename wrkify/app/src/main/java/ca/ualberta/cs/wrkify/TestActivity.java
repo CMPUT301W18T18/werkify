@@ -28,6 +28,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -45,6 +47,7 @@ public class TestActivity extends AppCompatActivity {
 
     protected ImageView thumbnailView;
     protected ImageView fullImageView;
+    protected Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,25 @@ public class TestActivity extends AppCompatActivity {
                 buttonClicked();
             }
         });
+
+
+        Button showButton = findViewById(R.id.testShow);
+        Button hideButton = findViewById(R.id.testHide);
+
+        showButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeleteVisibility(true);
+            }
+        });
+
+        hideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDeleteVisibility(false);
+            }
+        });
+
     }
 
     protected void setImages(Bitmap thumbnail, Bitmap fullImage) {
@@ -68,6 +90,29 @@ public class TestActivity extends AppCompatActivity {
         fullImageView.setImageBitmap(fullImage);
         Log.i("Size thumbnail:", "(" + thumbnail.getWidth() + ", " + thumbnail.getHeight() + ")");
         Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
+    }
+
+    protected void setDeleteVisibility(boolean isVisible) {
+        //MenuItem delete = menu.findItem(R.id.testDeleteButton);
+        MenuItem delete = menu.findItem(R.id.testDeleteButton);
+        delete.setVisible(isVisible);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.test_menu, menu);
+        this.menu = menu;
+
+        menu.findItem(R.id.testDeleteButton).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.i("--------", "PRESSED THE DELETE BUTTON");
+                return true;
+            }
+        });
+
+        return true;
+        //return super.onCreateOptionsMenu(menu);
     }
 
     @Override
