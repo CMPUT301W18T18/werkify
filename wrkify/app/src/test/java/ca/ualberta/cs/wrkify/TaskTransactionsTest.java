@@ -98,6 +98,22 @@ public class TaskTransactionsTest {
     }
 
     @Test
+    public void testLocation() {
+        // we can't use real locations in unit tests, so we use null.
+        TaskLocationTransaction tlt = new TaskLocationTransaction(this.t1, null);
+
+        Boolean status;
+
+        status = tlt.applyTo(this.t1);
+        assertTrue(status);
+
+        this.t1.addBid(new Bid(new Price(5.0), this.u1));
+
+        status = tlt.applyTo(this.t1);
+        assertFalse(status);
+    }
+
+    @Test
     public void testAddBid() {
         Bid b1 = new Bid(new Price(5.0), this.u2);
         TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
