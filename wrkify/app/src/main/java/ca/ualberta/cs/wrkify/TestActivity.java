@@ -96,6 +96,20 @@ public class TestActivity extends AppCompatActivity {
             }
 
             setImages(thumbnail, fullImage);
+        } else if (requestCode == REQUEST_IMAGE_GALLERY) {
+            Log.i("return intent", data.toString());
+            Uri uri = data.getData();
+            Bitmap bm = null;
+
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            } catch (IOException e) {
+                Log.e("Doesn't work", e.toString());
+            }
+            if (bm != null) {
+                setImages(bm, bm);
+            }
+
         }
     }
 
@@ -132,6 +146,9 @@ public class TestActivity extends AppCompatActivity {
     }
 
     protected void openGallery() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.setType("image/*");
+        startActivityForResult(i, REQUEST_IMAGE_GALLERY);
 
     }
 
