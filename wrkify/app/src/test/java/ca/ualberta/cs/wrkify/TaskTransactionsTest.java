@@ -114,6 +114,16 @@ public class TaskTransactionsTest {
     }
 
     @Test
+    public void testCheckList() {
+        CheckList cl = new CheckList();
+        Transaction t = new TaskCheckListTransaction(this.t1, cl);
+
+        Boolean status = t.apply(this.t1);
+        assertTrue(status);
+        assertEquals(cl, this.t1.getCheckList());
+    }
+
+    @Test
     public void testAddBid() {
         Bid b1 = new Bid(new Price(5.0), this.u2);
         TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
