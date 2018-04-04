@@ -28,6 +28,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +49,28 @@ public class TestActivity extends AppCompatActivity {
     protected ImageView thumbnailView;
     protected ImageView fullImageView;
     protected Menu menu;
+    protected ActionMode.Callback callback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.test_menu_select, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +115,15 @@ public class TestActivity extends AppCompatActivity {
         Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
     }
 
+
+
     protected void setDeleteVisibility(boolean isVisible) {
         //MenuItem delete = menu.findItem(R.id.testDeleteButton);
         MenuItem delete = menu.findItem(R.id.testDeleteButton);
-        delete.setVisible(isVisible);
+        //delete.setVisible(isVisible);
+        if (isVisible == false) {
+            startActionMode(callback);
+        }
     }
 
     @Override
