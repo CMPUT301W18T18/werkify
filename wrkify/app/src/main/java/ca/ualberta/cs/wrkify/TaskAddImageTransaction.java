@@ -20,34 +20,34 @@ package ca.ualberta.cs.wrkify;
 import android.graphics.Bitmap;
 
 /**
- * TaskDelImageTransaction models Task.delImage() as
+ * TaskAddImageTransaction models Task.addImage() as
  * a Transaction
  *
  * @see Transaction
  * @see Task
  */
-public class TaskDelImageTransaction extends Transaction<Task> {
+public class TaskAddImageTransaction extends Transaction<Task> {
     private Bitmap image;
 
     /**
-     * create a Transaction from a task and the image you want to delete
-     * @param task the task you are delete an image from.
-     * @param image the image you are deleting
+     * create a Transaction from a task and the image you want to add
+     * @param task the task you are adding an image too.
+     * @param image the image you are adding.
      */
-    public TaskDelImageTransaction(Task task, Bitmap image) {
+    public TaskAddImageTransaction(Task task, Bitmap image) {
         super(task, Task.class);
         this.image = image;
     }
 
     /**
-     * deletes the image from the provided task
-     * @param task the task you want to delete the image from
+     * adds the image to the provided task
+     * @param task the task you want to add an image too.
      * @return true if successful, false otherwise.
      */
     @Override
     protected Boolean apply(Task task) {
         try {
-            task.delImage(this.image);
+            task.addImage(this.image);
             return true;
         } catch (UnsupportedOperationException e) {
             return false;

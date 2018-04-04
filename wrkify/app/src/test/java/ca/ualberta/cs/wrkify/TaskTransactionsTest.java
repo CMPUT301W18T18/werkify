@@ -156,6 +156,21 @@ public class TaskTransactionsTest {
     }
 
     @Test
+    public void testAddImage() {
+        Transaction t = new TaskAddImageTransaction(this.t1, null);
+
+        Boolean status = t.applyTo(this.t1);
+        assertTrue(status);
+        assertEquals(1, this.t1.getImageList().size());
+
+        this.t1.addBid(new Bid(new Price(5.0), this.u1));
+
+        status = t.applyTo(this.t1);
+        assertFalse(status);
+        assertEquals(1, this.t1.getImageList().size());
+    }
+
+    @Test
     public void testDelImage() {
         this.t1.addImage(null);
         Transaction t = new TaskDelImageTransaction(this.t1, null);
