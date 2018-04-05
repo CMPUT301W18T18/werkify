@@ -131,5 +131,12 @@
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:visibility="gone" />
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/editTaskImageRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
     </android.support.constraint.ConstraintLayout>
+
+
 </ScrollView>

@@ -23,15 +23,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdapter.ImageViewHolder> {
     public static class ImageViewHolder extends RecyclerView.ViewHolder{ //do this later
+
+        private ImageButton button;
         public ImageViewHolder(View itemView, Bitmap image) {
             super(itemView);
+            button = itemView.findViewById(R.id.taskImageListButton);
+            setImage(image);
+        }
 
+        public void setImage(Bitmap image) {
+            this.button.setImageBitmap(image);
         }
     }
 
@@ -70,6 +79,8 @@ public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdap
 
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
+        holder.setImage(thumbnails.get(position).getBitmap());
+        
         //Nothing for now?
     }
 

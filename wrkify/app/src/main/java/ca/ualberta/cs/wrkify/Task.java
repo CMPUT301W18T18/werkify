@@ -47,6 +47,18 @@ public class Task extends RemoteObject {
     private ArrayList<RemoteReference<CompressedBitmap>> remoteThumbnails;
     private ArrayList<RemoteReference<CompressedBitmap>> remoteImages;
 
+
+    //TODO remove these later???
+    public void setRemoteThumbnails(ArrayList<RemoteReference<CompressedBitmap>> list){
+        this.remoteThumbnails = list;
+    }
+
+    public void setRemoteImages(ArrayList<RemoteReference<CompressedBitmap>> list){
+        this.remoteImages = list;
+    }
+
+    //End of functions to (maybe?) remove
+
     /**
      * the internalSetTitle function provides a private/final
      * way of setting title, for the use of constructors/setters

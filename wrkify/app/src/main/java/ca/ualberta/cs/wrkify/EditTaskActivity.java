@@ -23,12 +23,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+
+import java.util.ArrayList;
 
 /**
  * Activity for a task requester to edit a task that they own
@@ -66,6 +70,9 @@ public class EditTaskActivity extends AppCompatActivity {
     private CheckListEditorView checkListEditorView;
     private Button checkListNewButton;
     private Button checkListAddButton;
+
+    private RecyclerView recyclerView;
+    private TaskImageListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +141,43 @@ public class EditTaskActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (task != null) {
+            //AWKUHg6kGjLoXk81quSg -- Bliss
+            //AWKUiDeMGjLoXk81quVB -- Vista
+            //AWKUicxNGjLoXk81quVC -- Car
+            //AWKUio2-GjLoXk81quVE -- City
+            //AWKUiwDhGjLoXk81quVF -- Ship
+            //AWKUi2Q8GjLoXk81quVG -- Tower
+            RemoteReference<CompressedBitmap> rr_bliss = new RemoteReference<>("AWKUHg6kGjLoXk81quSg");
+            RemoteReference<CompressedBitmap> rr_vista = new RemoteReference<>("AWKUiDeMGjLoXk81quVB");
+            RemoteReference<CompressedBitmap> rr_car = new RemoteReference<>("AWKUicxNGjLoXk81quVC");
+            RemoteReference<CompressedBitmap> rr_city = new RemoteReference<>("AWKUio2-GjLoXk81quVE");
+            RemoteReference<CompressedBitmap> rr_ship = new RemoteReference<>("AWKUiwDhGjLoXk81quVF");
+            RemoteReference<CompressedBitmap> rr_tower = new RemoteReference<>("AWKUi2Q8GjLoXk81quVG");
+            ArrayList<RemoteReference<CompressedBitmap>> al = new ArrayList<>();
+            al.add(rr_bliss);
+            al.add(rr_vista);
+            al.add(rr_car);
+            al.add(rr_city);
+            al.add(rr_ship);
+            al.add(rr_tower);
+
+            task.setRemoteThumbnails(al);
+
+            recyclerView = findViewById(R.id.editTaskImageRecyclerView);
+            LinearLayoutManager manager = new LinearLayoutManager(this);
+            manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+            recyclerView.setLayoutManager(manager);
+            adapter = new TaskImageListAdapter(task);
+
+            recyclerView.setAdapter(adapter);
+
+
+
+            adapter.notifyDataSetChanged();
+        }
+
     }
 
     @Override
