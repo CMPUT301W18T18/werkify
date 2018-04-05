@@ -229,6 +229,8 @@ public class EditTaskActivity extends AppCompatActivity {
                             this.descriptionField.getText().toString()
                     );
             task.setCheckList(this.checkList);
+            WrkifyClient.getInstance().upload(task);
+
             resultCode = RESULT_TASK_CREATED;
         } else {
             TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
