@@ -196,6 +196,8 @@ public class EditTaskActivity extends AppCompatActivity {
      */
     private void deleteAndFinish() {
         WrkifyClient.getInstance().delete(this.task);
+        Session.getInstance(this).deleteUserRequestedTask(task);
+
         setResult(RESULT_TASK_DELETED);
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -230,6 +232,8 @@ public class EditTaskActivity extends AppCompatActivity {
                     );
             task.setCheckList(this.checkList);
             WrkifyClient.getInstance().upload(task);
+
+            Session.getInstance(this).addUserRequestedTask(task);
 
             resultCode = RESULT_TASK_CREATED;
         } else {

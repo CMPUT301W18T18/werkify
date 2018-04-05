@@ -81,6 +81,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
                             transactionManager.flush(WrkifyClient.getInstance());
 
                             WrkifyClient.getInstance().updateCached(tsk);
+                            Session.getInstance(getActivity()).addUserBiddedTask(tsk);
                         }
                     }
         );

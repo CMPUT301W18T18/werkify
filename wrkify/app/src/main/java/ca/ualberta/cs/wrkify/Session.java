@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -151,6 +152,27 @@ public class Session {
      */
     public List<Task> getUserBiddedCache(RemoteClient client) {
         return resolveCacheList(client, userBiddedCache);
+    }
+
+    public void addUserRequestedTask(Task task) {
+        RemoteReference<Task> reference = task.reference();
+        if (!userRequestedCache.contains(reference)) {
+            userRequestedCache.add(reference);
+        }
+    }
+
+    public void addUserBiddedTask(Task task) {
+        RemoteReference<Task> reference = task.reference();
+        if (!userBiddedCache.contains(reference)) {
+            userBiddedCache.add(reference);
+        }
+    }
+
+    public void deleteUserRequestedTask(Task task) {
+        RemoteReference<Task> reference = task.reference();
+        Log.d("-->", "? " + userRequestedCache.contains(reference));
+        userRequestedCache.remove(reference);
+        Log.d("-->", "? " + userRequestedCache.contains(reference));
     }
 
     private List<Task> resolveCacheList(RemoteClient client, List<RemoteReference<Task>> cacheList) {
