@@ -107,9 +107,14 @@ public class Bid implements Comparable<Bid>, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Bid) {
+        if (obj != null && obj instanceof Bid) {
             Bid other = (Bid) obj;
-            return (other.bidder.equals(bidder) && other.value.equals(value));
+
+            boolean biddersEqual = (bidder == null && other.bidder == null)
+                    || (bidder != null && other.bidder != null && bidder.equals(other.bidder));
+            boolean valuesEqual = (value == null && other.value == null)
+                    || (value != null && other.value != null && value.equals(other.value));
+            return biddersEqual && valuesEqual;
         }
         return super.equals(obj);
     }
