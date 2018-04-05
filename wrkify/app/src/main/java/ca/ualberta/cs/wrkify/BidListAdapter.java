@@ -48,6 +48,8 @@ import static ca.ualberta.cs.wrkify.ViewBidsActivity.EXTRA_RETURNED_TASK;
  * @see ScrollDisableable
  */
 public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
+
     private static int itemLayoutId = R.layout.bidlistitem;
     private static int item_defaultBackgroundId = R.color.bidListItem_defaultBackground;
     private static int item_selectedBackgroundId = R.color.bidListItem_selectedBackground;
@@ -374,8 +376,16 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 if (isScrollDisableable) {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
+                Bid bid = data.get(position);
                 adapter.deleteItem(holder, position);
-                WrkifyClient.getInstance().upload(task);
+
+                TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
+                transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
+
+                // TODO notify of offline status
+                transactionManager.flush(WrkifyClient.getInstance());
+
+                WrkifyClient.getInstance().updateCached(task);
             }
 
             @Override
@@ -384,8 +394,16 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 if (isScrollDisableable) {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
+                Bid bid = data.get(position);
                 adapter.deleteItem(holder, position);
-                WrkifyClient.getInstance().upload(task);
+                
+                TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
+                transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
+
+                // TODO notify of offline status
+                transactionManager.flush(WrkifyClient.getInstance());
+
+                WrkifyClient.getInstance().updateCached(task);
             }
 
             @Override
@@ -424,11 +442,22 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      */
     protected void acceptClicked(int position) {
         task.acceptBid(data.get(position));
-        WrkifyClient.getInstance().upload(task);
+
+        int resultCode;
+        TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
+        transactionManager.enqueue(new TaskAcceptBidTransaction(task, data.get(position)));
+
+        if (transactionManager.flush(WrkifyClient.getInstance())) {
+            resultCode = RESULT_OK;
+        } else {
+            resultCode = RESULT_UNSYNCED_CHANGES;
+        }
+
+        WrkifyClient.getInstance().updateCached(task);
 
         Intent resultIntent = context.getIntent();
         resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
-        context.setResult(RESULT_OK, resultIntent);
+        context.setResult(resultCode, resultIntent);
         context.finish();
     }
 }
