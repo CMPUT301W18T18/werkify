@@ -377,7 +377,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
                 Bid bid = data.get(position);
-                adapter.deleteItem(holder, position);
 
                 TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
                 transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
@@ -385,6 +384,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 // TODO notify of offline status
                 transactionManager.flush(WrkifyClient.getInstance());
 
+                adapter.deleteItem(holder, position);
                 WrkifyClient.getInstance().updateCached(task);
             }
 
@@ -395,14 +395,14 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
                 Bid bid = data.get(position);
-                adapter.deleteItem(holder, position);
-                
+
                 TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
                 transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
 
                 // TODO notify of offline status
                 transactionManager.flush(WrkifyClient.getInstance());
 
+                adapter.deleteItem(holder, position);
                 WrkifyClient.getInstance().updateCached(task);
             }
 
