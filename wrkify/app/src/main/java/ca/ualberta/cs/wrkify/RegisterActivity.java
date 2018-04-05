@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -98,6 +99,11 @@ public class RegisterActivity extends Activity {
             session.setUser(newUser, this);
             setResult(RESULT_OK);
             finish();
+        } else {
+            Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                    R.string.bad_user_info, Snackbar.LENGTH_LONG);
+            snack.setAction("Action", null);
+            snack.show();
         }
     }
 }
