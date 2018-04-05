@@ -40,7 +40,8 @@ public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdap
         }
 
         public void setImage(Bitmap image) {
-            this.button.setImageBitmap(image);
+            //this.button.setImageBitmap(image);
+            this.button.setImageBitmap(Bitmap.createScaledBitmap(image, image.getWidth() * 3, image.getHeight() * 3, false));
         }
     }
 
@@ -80,12 +81,13 @@ public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdap
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
         holder.setImage(thumbnails.get(position).getBitmap());
-        
+
         //Nothing for now?
     }
 
     @Override
     public void onViewRecycled(ImageViewHolder holder) {
+        Log.i("Recycling", holder.toString());
         //Nothing for now?
     }
 

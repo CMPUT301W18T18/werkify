@@ -143,18 +143,27 @@ public class EditTaskActivity extends AppCompatActivity {
         });
 
         if (task != null) {
+            //Full images
             //AWKUHg6kGjLoXk81quSg -- Bliss
             //AWKUiDeMGjLoXk81quVB -- Vista
             //AWKUicxNGjLoXk81quVC -- Car
             //AWKUio2-GjLoXk81quVE -- City
             //AWKUiwDhGjLoXk81quVF -- Ship
             //AWKUi2Q8GjLoXk81quVG -- Tower
-            RemoteReference<CompressedBitmap> rr_bliss = new RemoteReference<>("AWKUHg6kGjLoXk81quSg");
-            RemoteReference<CompressedBitmap> rr_vista = new RemoteReference<>("AWKUiDeMGjLoXk81quVB");
-            RemoteReference<CompressedBitmap> rr_car = new RemoteReference<>("AWKUicxNGjLoXk81quVC");
-            RemoteReference<CompressedBitmap> rr_city = new RemoteReference<>("AWKUio2-GjLoXk81quVE");
-            RemoteReference<CompressedBitmap> rr_ship = new RemoteReference<>("AWKUiwDhGjLoXk81quVF");
-            RemoteReference<CompressedBitmap> rr_tower = new RemoteReference<>("AWKUi2Q8GjLoXk81quVG");
+
+            //Thumbnails
+            //AWKWxniEGjLoXk81quWd -- Bliss
+            //AWKWyB4sGjLoXk81quWh -- Vista
+            //AWKWyMG1GjLoXk81quWi -- Car
+            //AWKWxt7OGjLoXk81quWe -- City
+            //AWKWx1XoGjLoXk81quWf -- Ship
+            //AWKWx5ngGjLoXk81quWg -- Tower
+            RemoteReference<CompressedBitmap> rr_bliss = new RemoteReference<>("AWKWxniEGjLoXk81quWd");
+            RemoteReference<CompressedBitmap> rr_vista = new RemoteReference<>("AWKWyB4sGjLoXk81quWh");
+            RemoteReference<CompressedBitmap> rr_car = new RemoteReference<>("AWKWyMG1GjLoXk81quWi");
+            RemoteReference<CompressedBitmap> rr_city = new RemoteReference<>("AWKWxt7OGjLoXk81quWe");
+            RemoteReference<CompressedBitmap> rr_ship = new RemoteReference<>("AWKWx1XoGjLoXk81quWf");
+            RemoteReference<CompressedBitmap> rr_tower = new RemoteReference<>("AWKWx5ngGjLoXk81quWg");
             ArrayList<RemoteReference<CompressedBitmap>> al = new ArrayList<>();
             al.add(rr_bliss);
             al.add(rr_vista);

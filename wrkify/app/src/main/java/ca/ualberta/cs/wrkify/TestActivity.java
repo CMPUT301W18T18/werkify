@@ -95,6 +95,13 @@ public class TestActivity extends AppCompatActivity {
     //AWKUiwDhGjLoXk81quVF -- Ship
     //AWKUi2Q8GjLoXk81quVG -- Tower
 
+    //Thumbnails
+    //AWKWxniEGjLoXk81quWd -- Bliss
+    //AWKWyB4sGjLoXk81quWh -- Vista
+    //AWKWyMG1GjLoXk81quWi -- Car
+    //AWKWxt7OGjLoXk81quWe -- City
+    //AWKWx1XoGjLoXk81quWf -- Ship
+    //AWKWx5ngGjLoXk81quWg -- Tower
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,12 +219,16 @@ public class TestActivity extends AppCompatActivity {
         fullImageView.setImageBitmap(compressed);
         curImage = compressed;
 
-        //upload(fullImage);
+        //Make a thumbnail to use
+        thumbnail = Bitmap.createScaledBitmap(thumbnail, 200, 200, false);
+        fullImageView.setImageBitmap(thumbnail);
+
+        //upload(thumbnail);
     }
 
     //Don't pass a compressed image to this
     protected void upload(Bitmap bm) {
-        CompressedBitmap cb = WrkifyClient.getInstance().create(CompressedBitmap.class, ImageUtilities.compressBitmapToBytes(bm, 65536, 10));
+        CompressedBitmap cb = WrkifyClient.getInstance().create(CompressedBitmap.class, ImageUtilities.compressBitmapToBytes(bm, 65536, 0));
         Log.i("REMOTE ID", cb.getId());
     }
 
