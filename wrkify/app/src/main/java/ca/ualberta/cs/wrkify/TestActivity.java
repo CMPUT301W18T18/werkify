@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v4.graphics.BitmapCompat;
@@ -85,6 +86,7 @@ public class TestActivity extends AppCompatActivity {
         }
     };
 
+    //AWKUHg6kGjLoXk81quSg
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +94,8 @@ public class TestActivity extends AppCompatActivity {
 
         thumbnailView = findViewById(R.id.testImageThumbnail);
         fullImageView = findViewById(R.id.testImageFull);
+
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
 
         Button testButton = findViewById(R.id.testButton);
         testButton.setOnClickListener(new View.OnClickListener() {
@@ -166,12 +170,21 @@ public class TestActivity extends AppCompatActivity {
                     Log.e("File failed", e.getStackTrace().toString());
                     e.printStackTrace();
                 }
-
-
-
-
             }
         });
+
+
+        try {
+            CompressedBitmap dow = WrkifyClient.getInstance().download("AWKUHg6kGjLoXk81quSg", CompressedBitmap.class);
+            RemoteReference<CompressedBitmap> meme =  dow.reference();
+
+            CompressedBitmap last = meme.getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
+            fullImageView.setImageBitmap(last.getBitmap());
+            curImage = last.getBitmap();
+        } catch (IOException e) {
+            Log.e("Couldn't download", "---------------");
+
+        }
 
     }
 
@@ -184,12 +197,16 @@ public class TestActivity extends AppCompatActivity {
         Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
 
 
+
         CompressedBitmap cb = new CompressedBitmap(ImageUtilities.compressBitmapToBytes(fullImage, 65536, 10));
         Bitmap compressed = cb.getBitmap();
         fullImageView.setImageBitmap(compressed);
         curImage = compressed;
 
+
+
     }
+
 
     protected void compressMany(Bitmap in) {
         for (int i = 0; i <= 100; i++) {
