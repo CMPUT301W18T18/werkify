@@ -95,7 +95,7 @@ public class Task extends RemoteObject {
         this(title, requester.<User>reference(), description);
     }
 
-    // begin the setters
+    // begin the getters
 
     /**
      * gets the title
@@ -190,7 +190,11 @@ public class Task extends RemoteObject {
      * @param title the title
      */
     public void setTitle(String title) {
-        internalSetTitle(title);
+        if (this.status == TaskStatus.REQUESTED) {
+            internalSetTitle(title);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -198,7 +202,11 @@ public class Task extends RemoteObject {
      * @param description the description
      */
     public void setDescription(String description) {
-        internalSetDescription(description);
+        if (this.status == TaskStatus.REQUESTED) {
+            internalSetDescription(description);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -206,7 +214,11 @@ public class Task extends RemoteObject {
      * @param location the location
      */
     public void setLocation(Location location) {
-        this.location = location;
+        if (this.status == TaskStatus.REQUESTED) {
+            this.location = location;
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -220,7 +232,9 @@ public class Task extends RemoteObject {
     /**
      * sets the provider
      * @param provider the provider
+     * @deprecated use acceptBid instead.
      */
+    @Deprecated
     public void setProvider(User provider) {
         this.provider = provider.reference();
     }
@@ -233,10 +247,14 @@ public class Task extends RemoteObject {
      * @param bid the new bid
      */
     public void addBid(Bid bid) {
-        bidList.add(bid);
-        Collections.sort(this.bidList);
-        if (this.status == TaskStatus.REQUESTED) {
-            this.status = TaskStatus.BIDDED;
+        if (this.status == TaskStatus.REQUESTED || this.status == TaskStatus.BIDDED) {
+            bidList.add(bid);
+            Collections.sort(this.bidList);
+            if (this.status == TaskStatus.REQUESTED) {
+                this.status = TaskStatus.BIDDED;
+            }
+        } else {
+            throw new UnsupportedOperationException("cannot bid on assigned or done task");
         }
     }
 
@@ -258,15 +276,23 @@ public class Task extends RemoteObject {
      * @param image the image you want to add
      */
     public void addImage(Bitmap image) {
-        this.imageList.add(image);
+        if (this.status == TaskStatus.REQUESTED) {
+            this.imageList.add(image);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
-     * deletes an image fromthe image list
+     * deletes an image from the image list
      * @param image the image that is being removed
      */
     public void delImage(Bitmap image) {
-        this.imageList.remove(image);
+        if (this.status == TaskStatus.REQUESTED) {
+            this.imageList.remove(image);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -274,25 +300,37 @@ public class Task extends RemoteObject {
      * @param bid the bid that is being accepted
      */
     public void acceptBid(Bid bid) {
-        this.acceptedBid = bid;
-        this.status = TaskStatus.ASSIGNED;
-        this.provider = bid.getBidderReference();
+        if (this.status == TaskStatus.REQUESTED || this.status == TaskStatus.BIDDED) {
+            this.acceptedBid = bid;
+            this.status = TaskStatus.ASSIGNED;
+            this.provider = bid.getBidderReference();
+        } else {
+            throw new UnsupportedOperationException("cannot accept bid when already accepted");
+        }
     }
 
     /**
      * unassign the bid and revert the status
      */
     public void unassign() {
-        this.provider = null;
-        this.status = TaskStatus.BIDDED;
-        this.acceptedBid = null;
+        if (this.status == TaskStatus.ASSIGNED) {
+            this.provider = null;
+            this.status = TaskStatus.BIDDED;
+            this.acceptedBid = null;
+        } else {
+            throw new UnsupportedOperationException("cannot unassign when already unassigned");
+        }
     }
 
     /**
      * marks the task as complete
      */
     public void complete() {
-        this.status = TaskStatus.DONE;
+        if (this.status == TaskStatus.ASSIGNED) {
+            this.status = TaskStatus.DONE;
+        } else {
+            throw new UnsupportedOperationException("cannot complete un assigned task");
+        }
     }
 
     /**
