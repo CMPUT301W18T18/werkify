@@ -73,5 +73,20 @@ public abstract class ImageUtilities {
         return compressBitmapToBytes(retry, bytes, minQuality);
     }
 
+    public static Bitmap makeThumbnail (Bitmap image){
+        return Bitmap.createScaledBitmap(image, 200, 200, false);
+    }
+
+
+    public static CompressedBitmap makeCompressedThumbnail(Bitmap image) {
+        Bitmap thumb = makeThumbnail(image);
+        CompressedBitmap bm = new CompressedBitmap(compressBitmapToBytes(thumb, 65536, 0));
+        return bm;
+    }
+
+    public static CompressedBitmap makeCompressedImage(Bitmap image) {
+        CompressedBitmap bm = new CompressedBitmap(compressBitmapToBytes(image, 65536, 10));
+        return bm;
+    }
 
 }

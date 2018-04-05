@@ -46,18 +46,12 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
     }
 
     protected ArrayList<CompressedBitmap> thumbnails;
-    protected Task task;
     protected RecyclerView recyclerView;
 
     private static final int itemLayoutId = R.layout.task_image_list_item;
 
-    public TaskImageListAdapter(Task task) {
-        this.task = task;
-        try {
-            thumbnails = task.getCompressedThumbnails();
-        } catch (IOException e) {
-            Log.e("TaskImageListAdapter", "Failed to download compressed thumbnails");
-        }
+    public TaskImageListAdapter(ArrayList<CompressedBitmap> thumbnails) {
+        this.thumbnails = thumbnails;
 
     }
 

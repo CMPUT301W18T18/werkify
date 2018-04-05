@@ -19,8 +19,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menuItemSaveTask"
-        android:title="Save" app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemAddPhoto"
+        android:icon="@android:drawable/ic_menu_camera"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menuItemSaveTask"
+        android:title="Save"
+        app:showAsAction="always" />
     <item android:id="@+id/menuItemDeleteTask"
         android:title="Delete task" app:showAsAction="never" />
 </menu>
