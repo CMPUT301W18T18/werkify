@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -42,6 +44,8 @@ public class TransactionManager {
                 tr.applyInClient(client);
                 queue.remove(0);
             } catch (IOException e) {
+                Log.w("transaction", "Halting flush due to IOException:");
+                e.printStackTrace();
                 return false;
             }
         }

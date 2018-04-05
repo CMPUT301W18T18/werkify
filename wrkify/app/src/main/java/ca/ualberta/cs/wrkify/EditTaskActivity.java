@@ -232,16 +232,19 @@ public class EditTaskActivity extends AppCompatActivity {
 
         if (this.taskIsNew) {
             // TODO This will probably fail if offline
-            this.task = (Task) WrkifyClient.getInstance()
-                    .create(Task.class,
+            this.task = (Task) WrkifyClient.getInstance().createLocal(Task.class,
                             this.titleField.getText().toString(),
                             Session.getInstance(this).getUser(),
                             this.descriptionField.getText().toString()
                     );
             task.setCheckList(this.checkList);
-            WrkifyClient.getInstance().upload(task);
 
+            TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
+            transactionManager.enqueue(new TaskCreateTransaction(task));
+            WrkifyClient.getInstance().updateCached(task);
             Session.getInstance(this).addUserRequestedTask(task);
+
+            transactionManager.flush(WrkifyClient.getInstance());
 
             resultCode = RESULT_TASK_CREATED;
         } else {

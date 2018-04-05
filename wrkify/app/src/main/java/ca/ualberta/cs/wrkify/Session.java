@@ -175,6 +175,11 @@ public class Session {
         Log.d("-->", "? " + userRequestedCache.contains(reference));
     }
 
+    public void deleteUserRequestedTask(String id) {
+        RemoteReference<Task> reference = new RemoteReference<>(id);
+        userRequestedCache.remove(reference);
+    }
+
     private List<Task> resolveCacheList(RemoteClient client, List<RemoteReference<Task>> cacheList) {
         List<Task> tasks = new ArrayList<>();
         for (RemoteReference<Task> reference: cacheList) {
