@@ -21,7 +21,7 @@ package ca.ualberta.cs.wrkify;
  * Created by peter on 03/04/18.
  */
 
-public class TaskUnassignTransaction extends Transaction<Task> {
+public class TaskUnassignTransaction extends StateChangeTransaction<Task> {
 
     /**
      * creates a transaction to unassign the assigned

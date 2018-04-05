@@ -39,17 +39,11 @@ public class TransactionManager {
         while (queue.size() > 0) {
             try {
                 Transaction tr = queue.get(0);
-
-                RemoteObject obj = client.downloadFromRemote(tr.getId(), tr.getType());
-
-                tr.applyTo(obj);
-
-                client.upload(obj);
+                tr.applyInClient(client);
                 queue.remove(0);
             } catch (IOException e) {
                 return false;
             }
-
         }
         return true;
     }

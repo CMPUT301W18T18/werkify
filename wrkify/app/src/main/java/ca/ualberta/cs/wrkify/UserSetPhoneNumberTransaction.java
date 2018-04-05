@@ -20,7 +20,7 @@ package ca.ualberta.cs.wrkify;
 /**
  * Transaction to set a user's phone number.
  */
-public class UserSetPhoneNumberTransaction extends Transaction<User> {
+public class UserSetPhoneNumberTransaction extends StateChangeTransaction<User> {
     private String phoneNumber;
 
     /**

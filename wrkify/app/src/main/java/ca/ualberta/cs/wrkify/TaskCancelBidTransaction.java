@@ -21,11 +21,11 @@ package ca.ualberta.cs.wrkify;
  * TaskCancelBidTransaction is the transaction
  * that models canceling a bid.
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
 
-public class TaskCancelBidTransaction extends Transaction<Task> {
+public class TaskCancelBidTransaction extends StateChangeTransaction<Task> {
     private Bid bid;
 
     /**

@@ -20,7 +20,7 @@ package ca.ualberta.cs.wrkify;
 /**
  * Transaction to set a user's email address.
  */
-public class UserSetEmailTransaction extends Transaction<User> {
+public class UserSetEmailTransaction extends StateChangeTransaction<User> {
     private String email;
 
     /**

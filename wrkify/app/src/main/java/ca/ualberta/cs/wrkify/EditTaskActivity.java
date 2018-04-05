@@ -30,6 +30,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
+
 /**
  * Activity for a task requester to edit a task that they own
  * or to create a new task. An existing task should be passed
@@ -195,8 +197,14 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
-        WrkifyClient.getInstance().delete(this.task);
+        TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
+        transactionManager.enqueue(new TaskDeleteTransaction(task));
+
         Session.getInstance(this).deleteUserRequestedTask(task);
+        WrkifyClient.getInstance().discardCached(task.getId());
+
+        // TODO notify of offline status
+        transactionManager.flush(WrkifyClient.getInstance());
 
         setResult(RESULT_TASK_DELETED);
         View view = this.getCurrentFocus();
