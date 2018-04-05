@@ -29,7 +29,7 @@ import android.widget.ImageButton;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdapter.ImageViewHolder> {
+public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdapter.ImageViewHolder> {
     public static class ImageViewHolder extends RecyclerView.ViewHolder{ //do this later
 
         private ImageButton button;
@@ -40,8 +40,8 @@ public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdap
         }
 
         public void setImage(Bitmap image) {
-            //this.button.setImageBitmap(image);
-            this.button.setImageBitmap(Bitmap.createScaledBitmap(image, image.getWidth() * 3, image.getHeight() * 3, false));
+            //this.button.setImageBitmap(image);s
+            this.button.setImageBitmap(Bitmap.createScaledBitmap(image, (int) (image.getWidth() * 1.3), (int) (image.getHeight() * 1.3), false));
         }
     }
 
@@ -81,6 +81,12 @@ public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdap
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
         holder.setImage(thumbnails.get(position).getBitmap());
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buttonClicked(position);
+            }
+        });
 
         //Nothing for now?
     }
@@ -97,6 +103,6 @@ public class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdap
     }
 
 
-
+    public abstract void buttonClicked(int position);
 
 }

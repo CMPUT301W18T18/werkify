@@ -19,12 +19,16 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +36,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -164,21 +173,36 @@ public class EditTaskActivity extends AppCompatActivity {
             RemoteReference<CompressedBitmap> rr_city = new RemoteReference<>("AWKWxt7OGjLoXk81quWe");
             RemoteReference<CompressedBitmap> rr_ship = new RemoteReference<>("AWKWx1XoGjLoXk81quWf");
             RemoteReference<CompressedBitmap> rr_tower = new RemoteReference<>("AWKWx5ngGjLoXk81quWg");
-            ArrayList<RemoteReference<CompressedBitmap>> al = new ArrayList<>();
-            al.add(rr_bliss);
-            al.add(rr_vista);
-            al.add(rr_car);
-            al.add(rr_city);
-            al.add(rr_ship);
-            al.add(rr_tower);
+            ArrayList<RemoteReference<CompressedBitmap>> thumbList = new ArrayList<>();
+            thumbList.add(rr_bliss);
+            thumbList.add(rr_vista);
+            thumbList.add(rr_car);
+            thumbList.add(rr_city);
+            thumbList.add(rr_ship);
+            thumbList.add(rr_tower);
 
-            task.setRemoteThumbnails(al);
+            ArrayList<RemoteReference<CompressedBitmap>> realList = new ArrayList<>();
+            realList.add(new RemoteReference<CompressedBitmap>("AWKUHg6kGjLoXk81quSg"));
+            realList.add(new RemoteReference<CompressedBitmap>("AWKUiDeMGjLoXk81quVB"));
+            realList.add(new RemoteReference<CompressedBitmap>("AWKUicxNGjLoXk81quVC"));
+            realList.add(new RemoteReference<CompressedBitmap>("AWKUio2-GjLoXk81quVE"));
+            realList.add(new RemoteReference<CompressedBitmap>("AWKUiwDhGjLoXk81quVF"));
+            realList.add(new RemoteReference<CompressedBitmap>("AWKUi2Q8GjLoXk81quVG"));
+
+
+            //task.setRemoteThumbnails(thumbList);
+            //task.setRemoteImages(realList);
 
             recyclerView = findViewById(R.id.editTaskImageRecyclerView);
             LinearLayoutManager manager = new LinearLayoutManager(this);
             manager.setOrientation(LinearLayoutManager.HORIZONTAL);
             recyclerView.setLayoutManager(manager);
-            adapter = new TaskImageListAdapter(task);
+            adapter = new TaskImageListAdapter(task){
+                @Override
+                public void buttonClicked(int position) {
+                    showImage(position);
+                }
+            };
 
             recyclerView.setAdapter(adapter);
 
@@ -238,6 +262,37 @@ public class EditTaskActivity extends AppCompatActivity {
             });
 
         return true;
+    }
+
+    public void showImage(int position) {
+        Bitmap bm = task.getImage(position).getBitmap();
+        if (bm == null) {
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setType("image/*");
+
+        try {
+            File dir = new File(getCacheDir(), "dataHere");
+            dir.mkdir();
+            File f = new File(dir, "sending.png");
+
+            FileOutputStream fos = new FileOutputStream(f);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.PNG, 100, os);
+            fos.write(os.toByteArray());
+            fos.close();
+
+            Uri uri = FileProvider.getUriForFile(this, "ca.ualberta.cs.wrkify.fileprovider", f);
+            i.setData(uri);
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(i);
+
+        } catch (IOException e) {
+            Log.e("EditTaskActivity", e.toString());
+        }
+
+
     }
 
     /**

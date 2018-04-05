@@ -377,4 +377,13 @@ public class Task extends RemoteObject {
         remoteImages.add(remoteFullImage);
     }
 
+    public CompressedBitmap getImage(int position) {
+        try {
+            return remoteImages.get(position).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
+        } catch (IOException e) {
+            Log.e("Task", "getImage() failed");
+        }
+        return null;
+    }
+
 }
