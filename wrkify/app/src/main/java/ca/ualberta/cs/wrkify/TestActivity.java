@@ -86,7 +86,16 @@ public class TestActivity extends AppCompatActivity {
         }
     };
 
-    //AWKUHg6kGjLoXk81quSg
+
+    //As of Apr 5, ~~1:00 AM
+    //AWKUHg6kGjLoXk81quSg -- Bliss
+    //AWKUiDeMGjLoXk81quVB -- Vista
+    //AWKUicxNGjLoXk81quVC -- Car
+    //AWKUio2-GjLoXk81quVE -- City
+    //AWKUiwDhGjLoXk81quVF -- Ship
+    //AWKUi2Q8GjLoXk81quVG -- Tower
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,7 +184,7 @@ public class TestActivity extends AppCompatActivity {
 
 
         try {
-            CompressedBitmap dow = WrkifyClient.getInstance().download("AWKUHg6kGjLoXk81quSg", CompressedBitmap.class);
+            CompressedBitmap dow = WrkifyClient.getInstance().download("AWKUiDeMGjLoXk81quVB", CompressedBitmap.class);
             RemoteReference<CompressedBitmap> meme =  dow.reference();
 
             CompressedBitmap last = meme.getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
@@ -203,8 +212,13 @@ public class TestActivity extends AppCompatActivity {
         fullImageView.setImageBitmap(compressed);
         curImage = compressed;
 
+        //upload(fullImage);
+    }
 
-
+    //Don't pass a compressed image to this
+    protected void upload(Bitmap bm) {
+        CompressedBitmap cb = WrkifyClient.getInstance().create(CompressedBitmap.class, ImageUtilities.compressBitmapToBytes(bm, 65536, 10));
+        Log.i("REMOTE ID", cb.getId());
     }
 
 
