@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.ContentProvider;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -43,6 +45,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
@@ -115,15 +119,75 @@ public class TestActivity extends AppCompatActivity {
             }
         });
 
+        final Context curContext = this; //don't mind this for now lol...
+        Button viewButton = findViewById(R.id.testView);
+        viewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setType("image/*");
+
+                try {
+                    File dir = new File(getCacheDir(), "dataHere");
+                    dir.mkdir();
+                    File f = new File(dir, "sending.png");
+
+                    FileOutputStream fos = new FileOutputStream(f);
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    curImage.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    fos.write(os.toByteArray());
+                    fos.close();
+
+                    Uri uri = FileProvider.getUriForFile(curContext, "ca.ualberta.cs.wrkify.fileprovider", f);
+                    Log.i("URI IS", uri.toString());
+
+                    i.setData(uri);
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(i);
+                    /*
+                    //File f = File.createTempFile("TEMPFILE",".png");
+                    File dir = new File(curContext.getFilesDir(), "images");
+                    File f = new File(dir, "file.png");
+                    FileOutputStream fos = new FileOutputStream(f);
+
+                    curImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    Uri uri = FileProvider.getUriForFile(curContext, "ca.ualberta.cs.wrkify.fileprovider", f);
+
+                    Log.i("Filesize", Long.toString(f.length()));
+                    Log.i("Uri is:", uri.toString());
+                    i.setData(uri);
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    i.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+                    i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                    startActivity(i);
+                    */
+                } catch (IOException e) {
+                    Log.e("File failed", e.getStackTrace().toString());
+                    e.printStackTrace();
+                }
+
+
+
+
+            }
+        });
+
     }
+
+    Bitmap curImage;
 
     protected void setImages(Bitmap thumbnail, Bitmap fullImage) {
         thumbnailView.setImageBitmap(thumbnail);
         fullImageView.setImageBitmap(fullImage);
         Log.i("Size thumbnail:", "(" + thumbnail.getWidth() + ", " + thumbnail.getHeight() + ")");
         Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
-        Bitmap compressed = resizeBitmap(fullImage);
+
+
+        CompressedBitmap cb = new CompressedBitmap(ImageUtilities.compressBitmapToBytes(fullImage, 65536));
+        Bitmap compressed = cb.getBitmap();
         fullImageView.setImageBitmap(compressed);
+        curImage = compressed;
 
     }
 
@@ -136,38 +200,6 @@ public class TestActivity extends AppCompatActivity {
             MediaStore.Images.Media.insertImage(getContentResolver(), out, "C_" + i, "description here");
         }
     }
-
-
-    protected String getBase64Bitmap(Bitmap in) {
-        // PNG 100 -- 13795654
-
-        int maxBytes = 65536; //this is the max size of the base 64 string being stored
-
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        in.compress(Bitmap.CompressFormat.PNG, 100, os);
-        String str = android.util.Base64.encodeToString(os.toByteArray(), android.util.Base64.DEFAULT);
-
-        Log.i("B64 String", str);
-        Log.i("Size of B64 string", Integer.toString(str.getBytes().length));
-        Log.i("Size of byte stream", Integer.toString(os.toByteArray().length));
-        Log.i("Size of bitmap", Integer.toString(in.getByteCount()));
-
-
-        ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
-        Bitmap out = BitmapFactory.decodeStream(is);
-
-        Log.i("Original dims", "(" + in.getWidth() + ", " + out.getHeight() + ")");
-        Log.i("New dims", "(" + out.getWidth() + ", " + out.getHeight() + ")");
-
-        return str;
-    }
-
-
-    protected Bitmap resizeBitmap(Bitmap in) {
-        getBase64Bitmap(in);
-        return in;
-    }
-
 
 
     protected void setDeleteVisibility(boolean isVisible) {

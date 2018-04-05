@@ -58,7 +58,7 @@
         android:id="@+id/testShow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
         android:text="Show"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,4 +72,13 @@
         android:text="Hide"
         app:layout_constraintBaseline_toBaselineOf="@+id/testShow"
         app:layout_constraintStart_toEndOf="@+id/testShow" />
+
+    <Button
+        android:id="@+id/testView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="ViewImage"
+        app:layout_constraintBaseline_toBaselineOf="@+id/testHide"
+        app:layout_constraintStart_toEndOf="@+id/testHide" />
 </android.support.constraint.ConstraintLayout>
