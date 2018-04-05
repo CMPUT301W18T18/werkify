@@ -54,6 +54,20 @@ public class TransactionManager {
         return true;
     }
 
+    public boolean hasPendingTransactions() {
+        return !queue.isEmpty();
+    }
+
+    public boolean hasPendingTransactionsFor(RemoteObject object) {
+        // TODO this seems inefficient
+        for (Transaction transaction: queue) {
+            if (transaction.getId().equals(object.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Transaction pop() {
         Transaction tr = queue.get(0);
         queue.remove(0);
