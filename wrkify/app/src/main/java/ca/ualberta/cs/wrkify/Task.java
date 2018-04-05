@@ -16,8 +16,10 @@ package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.util.Log;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -41,6 +43,9 @@ public class Task extends RemoteObject {
     private RemoteReference<User> provider;
     private TaskStatus status;
     private Bid acceptedBid;
+
+    private ArrayList<RemoteReference<CompressedBitmap>> remoteThumbnails;
+    private ArrayList<RemoteReference<CompressedBitmap>> remoteImages;
 
     /**
      * the internalSetTitle function provides a private/final
@@ -77,8 +82,8 @@ public class Task extends RemoteObject {
     /**
      * instantiates a Task by title, requester, and description
      *
-     * @param title a string for the title of the Task
-     * @param requester The User that requested the Task
+     * @param title       a string for the title of the Task
+     * @param requester   The User that requested the Task
      * @param description a string for the description of the Task
      */
     public Task(String title, RemoteReference<User> requester, String description) {
@@ -90,7 +95,7 @@ public class Task extends RemoteObject {
         this.imageList = new ArrayList<Bitmap>();
         this.bidList = new ArrayList<Bid>();
     }
-    
+
     public Task(String title, User requester, String description) {
         this(title, requester.<User>reference(), description);
     }
@@ -99,6 +104,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the title
+     *
      * @return the title
      */
     public String getTitle() {
@@ -107,6 +113,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the description
+     *
      * @return the description
      */
     public String getDescription() {
@@ -115,6 +122,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the array of images of the Task
+     *
      * @return the array of images
      */
     public ArrayList<Bitmap> getImageList() {
@@ -123,6 +131,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the location of the task
+     *
      * @return the location or null
      */
     public Location getLocation() {
@@ -131,6 +140,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the checklist of the task
+     *
      * @return checklist or null
      */
     public CheckList getCheckList() {
@@ -139,6 +149,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the list of bids associated with the task
+     *
      * @return the title
      */
     public ArrayList<Bid> getBidList() {
@@ -147,6 +158,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the User that requested the Task
+     *
      * @return the requester
      */
     public User getRemoteRequester(RemoteClient rc) throws IOException {
@@ -158,6 +170,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the provider of the task
+     *
      * @return the provider (or null)
      */
     public User getRemoteProvider(RemoteClient rc) throws IOException {
@@ -169,6 +182,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the status of teh task
+     *
      * @return a TaskStatus
      */
     public TaskStatus getStatus() {
@@ -177,6 +191,7 @@ public class Task extends RemoteObject {
 
     /**
      * gets the accepted bid
+     *
      * @return the bid (or null)
      */
     public Bid getAcceptedBid() {
@@ -187,6 +202,7 @@ public class Task extends RemoteObject {
 
     /**
      * sets the title according to internalSetTitle
+     *
      * @param title the title
      */
     public void setTitle(String title) {
@@ -195,6 +211,7 @@ public class Task extends RemoteObject {
 
     /**
      * sets the description according to internalSetDescription
+     *
      * @param description the description
      */
     public void setDescription(String description) {
@@ -203,6 +220,7 @@ public class Task extends RemoteObject {
 
     /**
      * sets the location
+     *
      * @param location the location
      */
     public void setLocation(Location location) {
@@ -211,6 +229,7 @@ public class Task extends RemoteObject {
 
     /**
      * sets the checklist
+     *
      * @param checkList the checklist
      */
     public void setCheckList(CheckList checkList) {
@@ -219,6 +238,7 @@ public class Task extends RemoteObject {
 
     /**
      * sets the provider
+     *
      * @param provider the provider
      */
     public void setProvider(User provider) {
@@ -230,6 +250,7 @@ public class Task extends RemoteObject {
     /**
      * adds a bid to the list of bids and changes the status
      * to bidded if applicable
+     *
      * @param bid the new bid
      */
     public void addBid(Bid bid) {
@@ -243,6 +264,7 @@ public class Task extends RemoteObject {
     /**
      * removes a bid and changes the status to requested
      * if the status is bidded
+     *
      * @param bid the bid to remove
      */
     public void cancelBid(Bid bid) {
@@ -255,6 +277,7 @@ public class Task extends RemoteObject {
 
     /**
      * adds an image to the image list
+     *
      * @param image the image you want to add
      */
     public void addImage(Bitmap image) {
@@ -263,6 +286,7 @@ public class Task extends RemoteObject {
 
     /**
      * deletes an image fromthe image list
+     *
      * @param image the image that is being removed
      */
     public void delImage(Bitmap image) {
@@ -271,6 +295,7 @@ public class Task extends RemoteObject {
 
     /**
      * sets the status to accepted and gets the provider
+     *
      * @param bid the bid that is being accepted
      */
     public void acceptBid(Bid bid) {
@@ -298,6 +323,7 @@ public class Task extends RemoteObject {
     /**
      * gets the price of either the lowest bid or the
      * accepted bid depending on the status
+     *
      * @return the current price of the task
      */
     public Price getPrice() {
@@ -307,4 +333,36 @@ public class Task extends RemoteObject {
             return this.getBidList().get(0).getValue();
         }
     }
+
+    public ArrayList<CompressedBitmap> getCompressedThumbnails() throws IOException {
+        ArrayList<CompressedBitmap> list = new ArrayList<>();
+        for (int i = 0; i < remoteThumbnails.size(); i++) {
+            list.add(remoteThumbnails.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
+        }
+        return list;
+    }
+
+    public ArrayList<RemoteReference<CompressedBitmap>> getRemoteImages() throws IOException {
+        return remoteImages;
+    }
+
+    public ArrayList<CompressedBitmap> getConcreteImages() throws IOException {
+        ArrayList<CompressedBitmap> list = new ArrayList<>();
+        for (int i = 0; i < remoteImages.size(); i++) {
+            list.add(remoteImages.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
+        }
+        return list;
+    }
+
+    public void addImagePair(Bitmap thumbnail, Bitmap fullImage) {
+        byte[] c_thumbnail = ImageUtilities.compressBitmapToBytes(thumbnail, 65536,10);
+        byte[] c_fullImage = ImageUtilities.compressBitmapToBytes(fullImage, 65536,10);
+        CompressedBitmap cb_thumbnail = WrkifyClient.getInstance().create(CompressedBitmap.class, c_thumbnail);
+        CompressedBitmap cb_fullImage = WrkifyClient.getInstance().create(CompressedBitmap.class, c_fullImage);
+        RemoteReference<CompressedBitmap> remoteThumbnail = cb_thumbnail.reference();
+        RemoteReference<CompressedBitmap> remoteFullImage = cb_fullImage.reference();
+        remoteThumbnails.add(remoteThumbnail);
+        remoteImages.add(remoteFullImage);
+    }
+
 }
