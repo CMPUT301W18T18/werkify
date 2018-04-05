@@ -56,6 +56,9 @@ public class EditTaskActivity extends AppCompatActivity {
     /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
 
+    /** The task was edited, but the changes were not synced successfully. */
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
+
 
     private Task task;
     private CheckList checkList;
@@ -212,27 +215,45 @@ public class EditTaskActivity extends AppCompatActivity {
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
 
+        String newTitle = titleField.getText().toString();
+        String newDescription = descriptionField.getText().toString();
+
+        int resultCode;
+
         if (this.taskIsNew) {
-            this.task = WrkifyClient.getInstance()
+            // TODO This will probably fail if offline
+            this.task = (Task) WrkifyClient.getInstance()
                     .create(Task.class,
                             this.titleField.getText().toString(),
                             Session.getInstance(this).getUser(),
                             this.descriptionField.getText().toString()
                     );
             task.setCheckList(this.checkList);
+            resultCode = RESULT_TASK_CREATED;
         } else {
-            task.setTitle(titleField.getText().toString());
-            task.setDescription(descriptionField.getText().toString());
-            WrkifyClient.getInstance().upload(this.task);
+            TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
+
+            transactionManager.enqueue(new TaskTitleTransaction(this.task, newTitle));
+            transactionManager.enqueue(new TaskDescriptionTransaction(this.task, newDescription));
+            transactionManager.enqueue(new TaskCheckListTransaction(this.task, this.checkList));
+
+            this.task.setTitle(newTitle);
+            this.task.setDescription(newDescription);
+            this.task.setCheckList(this.checkList);
+            WrkifyClient.getInstance().updateCached(this.task);
+
+            if (transactionManager.flush(WrkifyClient.getInstance())) {
+                resultCode = RESULT_OK;
+            } else {
+                resultCode = RESULT_UNSYNCED_CHANGES;
+            }
         }
 
         if (task == null) return;
 
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_TASK, this.task);
-
-        if (taskIsNew) setResult(RESULT_TASK_CREATED, intent);
-        else setResult(RESULT_OK, intent);
+        setResult(resultCode, intent);
 
         finish();
     }

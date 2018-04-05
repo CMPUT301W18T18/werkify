@@ -37,7 +37,7 @@ public class RequesterFragment extends TasksOverviewFragment {
 
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawTasks = Session.getInstance(getContext()).getUserRequestedCache();
+        List<Task> rawTasks = Session.getInstance(getContext()).getUserRequestedCache(WrkifyClient.getInstance());
 
         // Filter tasks into requested, assigned, completed
         ArrayList<Task> requestedTasks = new ArrayList<>();

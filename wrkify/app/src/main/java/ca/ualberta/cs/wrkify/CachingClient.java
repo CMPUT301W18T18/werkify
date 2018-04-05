@@ -19,7 +19,6 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,6 +47,14 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
 
     public void discardCached(String id) {
         this.cache.discard(id);
+    }
+
+    public void updateCached(RemoteObject obj) {
+        cache.put(obj.getId(), obj);
+    }
+
+    public <T extends RemoteObject> T downloadFromRemote(String id, Class<T> type) throws IOException {
+        return client.download(id, type);
     }
 
     @Override

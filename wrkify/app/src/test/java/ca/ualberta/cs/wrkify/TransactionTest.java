@@ -34,11 +34,11 @@ import static junit.framework.Assert.fail;
  */
 
 public class TransactionTest {
-    private static RemoteClient rc;
+    private static CachingClient<MockRemoteClient> rc;
 
     @BeforeClass
     public static void setup() {
-        rc= new MockRemoteClient();
+        rc= new CachingClient<>(new MockRemoteClient());
     }
 
     @Test

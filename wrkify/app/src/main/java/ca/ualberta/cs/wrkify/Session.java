@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,9 +44,11 @@ public class Session {
     private static Session instance;
 
     private User user;
-    private List<Task> userRequestedCache;
-    private List<Task> userProvidedCache;
-    private List<Task> userBiddedCache;
+    private List<RemoteReference<Task>> userRequestedCache;
+    private List<RemoteReference<Task>> userProvidedCache;
+    private List<RemoteReference<Task>> userBiddedCache;
+
+    private TransactionManager transactionManager = new TransactionManager();
 
     protected Session() {}
 
@@ -102,6 +105,10 @@ public class Session {
         save(context);
     }
 
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
     /**
      * Unsets the logged-in user.
      * @param context application context; used to clear saved Session
@@ -117,33 +124,53 @@ public class Session {
      * @throws IOException if network is disconnected
      */
     public void refreshCaches(RemoteClient client) throws IOException {
-        this.userProvidedCache = Searcher.findTasksByProvider(client, getUser());
-        this.userRequestedCache = Searcher.findTasksByRequester(client, getUser());
-        this.userBiddedCache = Searcher.findTasksByBidder(client, getUser());
+        this.userProvidedCache = referenceTaskList(Searcher.findTasksByProvider(client, getUser()));
+        this.userRequestedCache = referenceTaskList(Searcher.findTasksByRequester(client, getUser()));
+        this.userBiddedCache = referenceTaskList(Searcher.findTasksByBidder(client, getUser()));
     }
 
     /**
      * Gets the cache of the user's requested tasks.
      * @return cached list of requested tasks
      */
-    public List<Task> getUserRequestedCache() {
-        return userRequestedCache;
+    public List<Task> getUserRequestedCache(RemoteClient client) {
+        return resolveCacheList(client, userRequestedCache);
     }
 
     /**
      * Gets the cache of the user's provided tasks.
      * @return cached list of provided tasks
      */
-    public List<Task> getUserProvidedCache() {
-        return userProvidedCache;
+    public List<Task> getUserProvidedCache(RemoteClient client) {
+        return resolveCacheList(client, userProvidedCache);
     }
 
     /**
      * Gets the cache of the user's bidded tasks.
      * @return cached list of bidded tasks
      */
-    public List<Task> getUserBiddedCache() {
-        return userBiddedCache;
+    public List<Task> getUserBiddedCache(RemoteClient client) {
+        return resolveCacheList(client, userBiddedCache);
+    }
+
+    private List<Task> resolveCacheList(RemoteClient client, List<RemoteReference<Task>> cacheList) {
+        List<Task> tasks = new ArrayList<>();
+        for (RemoteReference<Task> reference: cacheList) {
+            try {
+                tasks.add(reference.getRemote(client, Task.class));
+            } catch (IOException e) {
+                // continue
+            }
+        }
+        return tasks;
+    }
+
+    private List<RemoteReference<Task>> referenceTaskList(List<Task> objectList) {
+        List<RemoteReference<Task>> references = new ArrayList<>();
+        for (Task task: objectList) {
+            references.add(task.<Task>reference());
+        }
+        return references;
     }
 
     /**

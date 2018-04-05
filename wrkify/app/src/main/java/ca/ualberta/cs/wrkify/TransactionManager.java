@@ -35,12 +35,12 @@ public class TransactionManager {
         queue.add(tr);
     }
 
-    public Boolean flush(RemoteClient client) {
+    public Boolean flush(CachingClient client) {
         while (queue.size() > 0) {
             try {
                 Transaction tr = queue.get(0);
 
-                RemoteObject obj = client.download(tr.getId(), tr.getType());
+                RemoteObject obj = client.downloadFromRemote(tr.getId(), tr.getType());
 
                 tr.applyTo(obj);
 
