@@ -184,7 +184,7 @@ public class TestActivity extends AppCompatActivity {
         Log.i("Size full:", "(" + fullImage.getWidth() + ", " + fullImage.getHeight() + ")");
 
 
-        CompressedBitmap cb = new CompressedBitmap(ImageUtilities.compressBitmapToBytes(fullImage, 65536));
+        CompressedBitmap cb = new CompressedBitmap(ImageUtilities.compressBitmapToBytes(fullImage, 65536, 10));
         Bitmap compressed = cb.getBitmap();
         fullImageView.setImageBitmap(compressed);
         curImage = compressed;

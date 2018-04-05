@@ -24,7 +24,7 @@ import java.io.ByteArrayOutputStream;
 
 public abstract class ImageUtilities {
 
-    public static byte[] compressBitmapToBytes(Bitmap bitmap, int bytes) {
+    public static byte[] compressBitmapToBytes(Bitmap bitmap, int bytes, int minQuality) {
         Log.i("Compress image to size", "START");
         //try to get it as a jpeg
         int low = 0;
@@ -56,13 +56,21 @@ public abstract class ImageUtilities {
         }
         Log.i("Compress image to size", "Iterations: " + iterations);
 
-        if (bestQuality != -1) {
+        if (bestQuality >= minQuality) {
             Log.i("Compress image to size", "JPEG quality: " + bestQuality);
             return best;
         }
 
-        Log.i("Compress image to size", "Failed, returning null");
-        return best;
+        Log.i("Compress image to size", "Failed, decreasing size and retrying");
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        int newWidth = (int) (width * (1 - 0.15));
+        int newHeight = (int) (height/( (double) width) * newWidth);
+
+
+        Bitmap retry = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+        return compressBitmapToBytes(retry, bytes, minQuality);
     }
 
 
