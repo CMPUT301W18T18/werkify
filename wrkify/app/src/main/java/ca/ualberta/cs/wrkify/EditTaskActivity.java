@@ -129,11 +129,12 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         private void uploadLocalImages(Task task) {
+            int thumbnailIndexOffset = remoteImages.size();
             for (int i = 0; i < localImages.size(); i++) {
                 CompressedBitmap uploadedImage = WrkifyClient.getInstance().create(CompressedBitmap.class, localImages.get(i).getData());
                 remoteImages.add(uploadedImage.<CompressedBitmap>reference());
 
-                int thumbnailIndex = i + remoteImages.size() - 1;
+                int thumbnailIndex = i + thumbnailIndexOffset;
                 CompressedBitmap uploadedThumbnail = WrkifyClient.getInstance().create(CompressedBitmap.class, thumbnails.get(thumbnailIndex).getData());
                 thumbnails.set(thumbnailIndex, uploadedThumbnail);
             }

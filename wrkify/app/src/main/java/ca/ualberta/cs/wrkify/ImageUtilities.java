@@ -74,13 +74,13 @@ public abstract class ImageUtilities {
     }
 
     public static Bitmap makeThumbnail (Bitmap image){
-        return Bitmap.createScaledBitmap(image, 200, 200, false);
+        return Bitmap.createScaledBitmap(image, 100, 100, false);
     }
 
 
     public static CompressedBitmap makeCompressedThumbnail(Bitmap image) {
         Bitmap thumb = makeThumbnail(image);
-        CompressedBitmap bm = new CompressedBitmap(compressBitmapToBytes(thumb, 65536, 0));
+        CompressedBitmap bm = new CompressedBitmap(compressBitmapToBytes(thumb, 10000, 0));
         return bm;
     }
 

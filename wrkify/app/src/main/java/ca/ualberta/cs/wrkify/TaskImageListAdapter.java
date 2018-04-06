@@ -41,7 +41,7 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
 
         public void setImage(Bitmap image) {
             //this.button.setImageBitmap(image);s
-            this.button.setImageBitmap(Bitmap.createScaledBitmap(image, (int) (image.getWidth() * 1.3), (int) (image.getHeight() * 1.3), false));
+            this.button.setImageBitmap(Bitmap.createScaledBitmap(image, (int) (image.getWidth() * 3.0), (int) (image.getHeight() * 3.0), false));
         }
     }
 
