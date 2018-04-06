@@ -150,10 +150,8 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         public void save(Task task) {
-            flushDeletions();
+            //flushDeletions();
             uploadLocalImages(task);
-
-            //Delete, upload, upload task
         }
     }
 
@@ -257,38 +255,33 @@ public class EditTaskActivity extends AppCompatActivity {
             }
         });
 
-        if (task != null) {
-            try {
-
-                //task.setRemoteThumbnails(new ArrayList<RemoteReference<CompressedBitmap>>());
-                //task.setRemoteImages(new ArrayList<RemoteReference<CompressedBitmap>>());
-
-                ArrayList<CompressedBitmap> thumbnails = task.getCompressedThumbnails();
-                ArrayList<RemoteReference<CompressedBitmap>> remoteImages = task.getRemoteImages();
-
-                imageManager.setThumbnails(thumbnails);
-                imageManager.setRemoteImages(remoteImages);
-
-                adapter = new TaskImageListAdapter(thumbnails) {
-                    @Override
-                    public void buttonClicked(int position) {
-                        showImage(position);
-                    }
-                };
-
-                recyclerView = findViewById(R.id.editTaskImageRecyclerView);
-                LinearLayoutManager manager = new LinearLayoutManager(this);
-                manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-                recyclerView.setLayoutManager(manager);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            } catch (IOException e) {
-                Log.e("EditTaskActivity", e.toString());
-            }
-
-
+        ArrayList<CompressedBitmap> thumbnails = new ArrayList<>();
+        ArrayList<RemoteReference<CompressedBitmap>> remoteImages = new ArrayList<>();
+        try {
+            thumbnails = task.getCompressedThumbnails();
+            remoteImages = task.getRemoteImages();
+        } catch (IOException e) {
+            Log.e("EditTaskActivity", "IOException when getting images from task");
+        } catch (NullPointerException e) {
+            Log.e("EditTaskActivity", "NullPointer when getting images from task -- probably a new task");
         }
 
+        imageManager.setThumbnails(thumbnails);
+        imageManager.setRemoteImages(remoteImages);
+
+        adapter = new TaskImageListAdapter(thumbnails) {
+            @Override
+            public void buttonClicked(int position) {
+                showImage(position);
+            }
+        };
+
+        recyclerView = findViewById(R.id.editTaskImageRecyclerView);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -485,13 +478,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
-        if (true) {
-            task.deleteAllImages();
-            imageManager = new ImageManager();
-            saveAndFinish();
-            return;
-        }
-
+        task.deleteAllImages();
         WrkifyClient.getInstance().delete(this.task);
         setResult(RESULT_TASK_DELETED);
         View view = this.getCurrentFocus();
@@ -509,7 +496,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
-        imageManager.save(task);
+
 
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
@@ -521,8 +508,11 @@ public class EditTaskActivity extends AppCompatActivity {
                             Session.getInstance(this).getUser(),
                             this.descriptionField.getText().toString()
                     );
+            imageManager.save(this.task);
             task.setCheckList(this.checkList);
+            WrkifyClient.getInstance().upload(task);
         } else {
+            imageManager.save(this.task);
             task.setTitle(titleField.getText().toString());
             task.setDescription(descriptionField.getText().toString());
             WrkifyClient.getInstance().upload(this.task);

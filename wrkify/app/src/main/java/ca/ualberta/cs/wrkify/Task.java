@@ -106,6 +106,8 @@ public class Task extends RemoteObject {
         this.checkList = new CheckList();
         this.imageList = new ArrayList<Bitmap>();
         this.bidList = new ArrayList<Bid>();
+        this.remoteThumbnails = new ArrayList<>();
+        this.remoteImages = new ArrayList<>();
     }
 
     public Task(String title, User requester, String description) {
@@ -386,18 +388,21 @@ public class Task extends RemoteObject {
         return null;
     }
 
-    public boolean deleteAllImages() {
-        boolean success = true;
-        for (int i = 0; i < remoteThumbnails.size(); i++) {
-            WrkifyClient.getInstance().deleteByReference(remoteThumbnails.get(i), CompressedBitmap.class);
+    public void deleteAllImages() {
+        if (remoteThumbnails != null) {
+            for (int i = 0; i < remoteThumbnails.size(); i++) {
+                WrkifyClient.getInstance().deleteByReference(remoteThumbnails.get(i), CompressedBitmap.class);
+            }
+            remoteThumbnails.clear();
         }
 
-        for (int i = 0; i < remoteImages.size(); i++) {
-            WrkifyClient.getInstance().deleteByReference(remoteImages.get(i), CompressedBitmap.class);
+        if (remoteImages != null) {
+            for (int i = 0; i < remoteImages.size(); i++) {
+                WrkifyClient.getInstance().deleteByReference(remoteImages.get(i), CompressedBitmap.class);
+            }
+            remoteImages.clear();
         }
-        remoteThumbnails.clear();
-        remoteImages.clear();
-        return success;
+
     }
 
 }
