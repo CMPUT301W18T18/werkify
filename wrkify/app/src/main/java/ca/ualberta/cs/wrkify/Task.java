@@ -389,21 +389,11 @@ public class Task extends RemoteObject {
     public boolean deleteAllImages() {
         boolean success = true;
         for (int i = 0; i < remoteThumbnails.size(); i++) {
-            try {
-                WrkifyClient.getInstance().delete(remoteThumbnails.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
-            } catch (IOException e) {
-                success = false;
-                e.printStackTrace();
-            }
+            WrkifyClient.getInstance().deleteByReference(remoteThumbnails.get(i), CompressedBitmap.class);
         }
 
         for (int i = 0; i < remoteImages.size(); i++) {
-            try {
-                WrkifyClient.getInstance().delete(remoteImages.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
-            } catch (IOException e) {
-                success = false;
-                e.printStackTrace();
-            }
+            WrkifyClient.getInstance().deleteByReference(remoteImages.get(i), CompressedBitmap.class);
         }
         remoteThumbnails.clear();
         remoteImages.clear();

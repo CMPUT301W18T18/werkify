@@ -82,6 +82,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     }
 
     @Override
+    public void deleteByReference(RemoteReference ref, Class type) {
+        client.deleteByReference(ref, type);
+        cache.discard(ref.getId());
+    }
+
+    @Override
     public <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
         return client.search(query, type);
     }

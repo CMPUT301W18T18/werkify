@@ -259,6 +259,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
         if (task != null) {
             try {
+
                 //task.setRemoteThumbnails(new ArrayList<RemoteReference<CompressedBitmap>>());
                 //task.setRemoteImages(new ArrayList<RemoteReference<CompressedBitmap>>());
 

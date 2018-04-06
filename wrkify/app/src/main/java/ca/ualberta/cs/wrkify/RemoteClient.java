@@ -45,6 +45,8 @@ abstract class RemoteClient {
      */
     abstract void delete(RemoteObject obj);
 
+    abstract void deleteByReference(RemoteReference ref, Class type);
+
     /**
      * Downloads an object given type and id
      *

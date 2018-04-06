@@ -47,4 +47,8 @@ public class RemoteReference<T extends RemoteObject> implements Serializable {
     public T getRemote(RemoteClient client, Class<T> tClass) throws IOException {
         return client.download(this.refId, tClass);
     }
+
+    public String getId(){
+        return refId;
+    }
 }

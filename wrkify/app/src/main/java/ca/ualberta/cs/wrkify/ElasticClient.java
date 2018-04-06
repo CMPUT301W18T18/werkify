@@ -132,6 +132,20 @@ public class ElasticClient extends RemoteClient {
         }
     }
 
+    @Override
+    public void deleteByReference(RemoteReference ref, Class type) {
+        Log.i("elastic", "DELETE BY REF :" + ref.getId());
+
+        Delete del = new Delete.Builder(ref.getId()).index(this.index)
+                .type(type.getName()).build();
+
+        try {
+            this.client.execute(del);
+        } catch (IOException e) {
+            //TODO buffer deletion
+        }
+    }
+
     /**
      * downloads an object from elasticsearch given type and id
      *
