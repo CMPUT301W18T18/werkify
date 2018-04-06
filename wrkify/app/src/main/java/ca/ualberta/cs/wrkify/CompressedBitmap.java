@@ -39,4 +39,8 @@ public class CompressedBitmap extends RemoteObject {
         this.data = data.clone();
     }
 
+    public byte[] getData() {
+        return data;
+    }
+
 }

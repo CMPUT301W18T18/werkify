@@ -117,6 +117,43 @@ public class EditTaskActivity extends AppCompatActivity {
 
         }
 
+        private void flushDeletions() {
+            for (int i = 0; i < toDelete.size(); i++) {
+                try {
+                    WrkifyClient.getInstance().delete(toDelete.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        private void uploadLocalImages(Task task) {
+            for (int i = 0; i < localImages.size(); i++) {
+                CompressedBitmap uploadedImage = WrkifyClient.getInstance().create(CompressedBitmap.class, localImages.get(i).getData());
+                remoteImages.add(uploadedImage.<CompressedBitmap>reference());
+
+                int thumbnailIndex = i + remoteImages.size() - 1;
+                CompressedBitmap uploadedThumbnail = WrkifyClient.getInstance().create(CompressedBitmap.class, thumbnails.get(thumbnailIndex).getData());
+                thumbnails.set(thumbnailIndex, uploadedThumbnail);
+            }
+            localImages.clear();
+            ArrayList<RemoteReference<CompressedBitmap>> newRemoteThumbnails = new ArrayList<>();
+            for (int i = 0; i < thumbnails.size(); i++) {
+                newRemoteThumbnails.add(thumbnails.get(i).<CompressedBitmap>reference());
+            }
+
+            task.setRemoteImages(remoteImages);
+            task.setRemoteThumbnails(newRemoteThumbnails);
+
+        }
+
+        public void save(Task task) {
+            flushDeletions();
+            uploadLocalImages(task);
+
+            //Delete, upload, upload task
+        }
     }
 
     /** Task being passed in to EditTaskActivity */
@@ -221,6 +258,9 @@ public class EditTaskActivity extends AppCompatActivity {
 
         if (task != null) {
             try {
+                //task.setRemoteThumbnails(new ArrayList<RemoteReference<CompressedBitmap>>());
+                //task.setRemoteImages(new ArrayList<RemoteReference<CompressedBitmap>>());
+
                 ArrayList<CompressedBitmap> thumbnails = task.getCompressedThumbnails();
                 ArrayList<RemoteReference<CompressedBitmap>> remoteImages = task.getRemoteImages();
 
@@ -272,7 +312,17 @@ public class EditTaskActivity extends AppCompatActivity {
             }
             //Add the image
         } else if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(bm);
+                CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(bm);
+                imageManager.addImagePair(compressedThumbnail, compressedImage);
+                adapter.notifyDataSetChanged();
 
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -327,7 +377,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
     protected void openGallery() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("image*/");
+        i.setType("image/*");
         if (i.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(i, REQUEST_IMAGE_GALLERY);
         }
@@ -433,6 +483,13 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
+        if (true) {
+            task.deleteAllImages();
+            imageManager = new ImageManager();
+            saveAndFinish();
+            return;
+        }
+
         WrkifyClient.getInstance().delete(this.task);
         setResult(RESULT_TASK_DELETED);
         View view = this.getCurrentFocus();
@@ -450,6 +507,8 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
+        imageManager.save(task);
+
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
 
