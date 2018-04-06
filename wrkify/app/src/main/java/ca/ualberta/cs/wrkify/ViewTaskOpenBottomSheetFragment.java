@@ -69,11 +69,19 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
                     new ConfirmationDialogFragment.OnConfirmListener() {
                         @Override
                         public void onConfirm() {
-                            tsk.addBid(new Bid(
+                            Bid bid = new Bid(
                                     new Price(bidField.getText().toString()),
-                                    Session.getInstance(ctx).getUser()
-                            ));
-                            WrkifyClient.getInstance().upload(tsk);
+                                    Session.getInstance(ctx).getUser());
+                            tsk.addBid(bid);
+
+                            TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+                            transactionManager.enqueue(new TaskAddBidTransaction(tsk, bid));
+
+                            // TODO notify of offline status
+                            transactionManager.flush(WrkifyClient.getInstance());
+
+                            WrkifyClient.getInstance().updateCached(tsk);
+                            Session.getInstance(getActivity()).addUserBiddedTask(tsk);
                         }
                     }
         );

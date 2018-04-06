@@ -37,7 +37,12 @@ abstract class RemoteClient {
      * to this RemoteClient
      * @param obj the object to upload
      */
-    abstract void upload(RemoteObject obj);
+    abstract void upload(RemoteObject obj) throws IOException;
+
+    /**
+     * Uploads a RemoteObject to the server that was not initially there.
+     */
+    abstract <T extends RemoteObject> T uploadNew(Class<T> type, T obj) throws IOException;
 
     /**
      * Deletes a remote object

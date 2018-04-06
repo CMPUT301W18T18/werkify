@@ -97,7 +97,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     private void refreshUser() {
         try {
             ((CachingClient) WrkifyClient.getInstance()).discardCached(this.user.getId());
-            this.user = WrkifyClient.getInstance().download(this.user.getId(), this.user.getClass());
+            this.user = (User) WrkifyClient.getInstance().download(this.user.getId(), this.user.getClass());
         } catch (IOException e) {
             // TODO You are offline.
         }

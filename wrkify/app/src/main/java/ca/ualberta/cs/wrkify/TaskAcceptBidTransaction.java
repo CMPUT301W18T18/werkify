@@ -21,11 +21,11 @@ package ca.ualberta.cs.wrkify;
  * TaskAcceptBidTransaction models accepting a bid as
  * a Transaction
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
 
-public class TaskAcceptBidTransaction extends Transaction<Task> {
+public class TaskAcceptBidTransaction extends StateChangeTransaction<Task> {
     private Bid bid;
 
     /**

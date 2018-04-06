@@ -30,8 +30,8 @@ import java.util.List;
 public class ProviderFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawProvidedTasks = Session.getInstance(getContext()).getUserProvidedCache();
-        List<Task> rawBiddedTasks = Session.getInstance(getContext()).getUserBiddedCache();
+        List<Task> rawProvidedTasks = Session.getInstance(getContext()).getUserProvidedCache(WrkifyClient.getInstance());
+        List<Task> rawBiddedTasks = Session.getInstance(getContext()).getUserBiddedCache(WrkifyClient.getInstance());
 
         // Filter tasks into assigned, completed
         ArrayList<Task> assignedTasks = new ArrayList<>();
