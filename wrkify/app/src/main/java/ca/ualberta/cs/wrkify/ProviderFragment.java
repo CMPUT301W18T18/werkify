@@ -33,30 +33,62 @@ import java.util.List;
  * this Fragment is displayed by MainActivity
  *
  * @see MainActivity
+ * @see TasksOverviewFragment
  */
 public class ProviderFragment extends TasksOverviewFragment {
 
+    /**
+     * get the title of the fragment
+     * so TasksOverview fragment can display it
+     * @return the fragment title
+     */
     @Override
     protected String getAppBarTitle() {
         return "My tasks";
     }
 
+    /**
+     * return the FragmentPagerAdapter that this Fragment uses
+     * @param fragmentManager the fragmentmanger needed FragmentPagerAdapter
+     * @return the FragmentPagerAdapter
+     */
     @Override
     protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
         return new ProviderFragmentPagerAdapter(fragmentManager);
     }
 
+    /**
+     * indicates whether we dispaly the add button for the
+     * TaskListFragment at index
+     * @param index Index of the current tab
+     * @return always false, because we dont need that as a provider
+     */
     @Override
     protected boolean isAddButtonEnabled(int index) {
         return false;
     }
 
+    /**
+     * ProviderFragmentAdapter is a FragmentPagerAdapter that
+     * switches between the Assigned, Bidded, and Complete views
+     * that a task provider will see.
+     */
     static class ProviderFragmentPagerAdapter extends FragmentPagerAdapter {
 
+        /**
+         * create a ProviderFragmentPagerAdapter
+         * @param fragmentManager the fragmentmanager
+         */
         public ProviderFragmentPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
+        /**
+         * gets the TaskListFragment at position
+         *
+         * @param position the position of the fragment in the tasklist
+         * @return the TaskListFragment
+         */
         @Override
         public Fragment getItem(int position) {
             Log.i("-->", "got item " + position);
@@ -72,18 +104,33 @@ public class ProviderFragment extends TasksOverviewFragment {
             }
         }
 
+        /**
+         * gets the title of a page given the postion
+         * @param position the postion of the tab
+         * @return the title of the tab
+         */
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
             return (new CharSequence[]{"Assigned", "Bidded", "Completed"})[position];
         }
 
+        /**
+         * gets the number of tabs
+         * @return the number of tabs
+         */
         @Override
         public int getCount() {
             return 3;
         }
     }
 
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are assigned to the session user
+     *
+     * @see TaskListFragment
+     */
     public static class AssignedListFragment extends TaskListFragment {
         @Override
         protected RemoteList getTaskList() {
@@ -104,6 +151,12 @@ public class ProviderFragment extends TasksOverviewFragment {
         }
     }
 
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are bidded on by the session error
+     *
+     * @see TaskListFragment
+     */
     public static class BiddedListFragment extends TaskListFragment {
         @Override
         protected RemoteList getTaskList() {
@@ -124,6 +177,12 @@ public class ProviderFragment extends TasksOverviewFragment {
         }
     }
 
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are completed by the session user
+     *
+     * @see TaskListFragment
+     */
     public static class CompletedListFragment extends TaskListFragment {
         @Override
         protected RemoteList getTaskList() {

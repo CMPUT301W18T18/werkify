@@ -41,39 +41,74 @@ public class RequesterFragment extends TasksOverviewFragment {
     private static final int REQUEST_NEW_TASK = 13;
 
     private RequesterFragmentPagerAdapter adapter;
-    
+
+    /**
+     * get the title of the fragment
+     * so TasksOverview fragment can display it
+     * @return the fragment title
+     */
     @Override
     protected String getAppBarTitle() {
         return "My posts";
     }
 
+    /**
+     * indicates whether we dispaly the add button for the
+     * TaskListFragment at index
+     * @param index Index of the current tab
+     * @return true when we are on the requested tab
+     */
     @Override
     protected boolean isAddButtonEnabled(int index) {
         return (index == 0);
     }
 
+    /**
+     * starts the edit task activity wehn the add button is clicked
+     * @param v View corresponding to the add button
+     */
     @Override
     protected void onAddButtonClick(View v) {
         Intent newTaskIntent = new Intent(getContext(), EditTaskActivity.class);
         startActivityForResult(newTaskIntent, REQUEST_NEW_TASK);
     }
 
+    /**
+     * refresh the reuqested taskList when we return from editing it
+     * @param requestCode the android RequestCode
+     * @param resultCode the android ResultCode
+     * @param data the intent associated with the result
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // update the list
-        this.adapter.refreshRequester();
+        this.adapter.refreshRequested();
     }
 
+    /**
+     * return the FragmentPagerAdapter that this Fragment uses
+     * @param fragmentManager the fragmentmanger needed FragmentPagerAdapter
+     * @return the FragmentPagerAdapter
+     */
     @Override
     protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
         this.adapter = new RequesterFragmentPagerAdapter(fragmentManager);
         return this.adapter;
     }
 
+    /**
+     * RequesterFragmentAdapter is a FragmentPagerAdapter that
+     * switches between the Requested, Assigned, and Closed views
+     * that a task requester will see.
+     */
     static class RequesterFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        private RequestedListFragment requester;
+        private RequestedListFragment requested;
 
+        /**
+         * create a RequesterFragmentPagerAdapter
+         * @param fragmentManager the fragment manager
+         */
         public RequesterFragmentPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
@@ -83,8 +118,8 @@ public class RequesterFragment extends TasksOverviewFragment {
             Log.i("-->", "got item " + position);
             switch (position) {
                 case 0:
-                    this.requester = new RequestedListFragment();
-                    return this.requester;
+                    this.requested = new RequestedListFragment();
+                    return this.requested;
                 case 1:
                     return new AssignedListFragment();
                 case 2:
@@ -94,22 +129,41 @@ public class RequesterFragment extends TasksOverviewFragment {
             }
         }
 
-        public void refreshRequester() {
-            this.requester.refresh();
+        /**
+         * refreshed the requested TaskList
+         */
+        public void refreshRequested() {
+            this.requested.refresh();
         }
 
+        /**
+         * gets the title of the page by the position
+         * @param position the position
+         * @return the title of the page
+         */
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
             return (new CharSequence[]{"Requested", "Assigned", "Closed"})[position];
         }
 
+        /**
+         * returns the number of tabs in our tabview.
+         * @return the number of tabs.
+         */
         @Override
         public int getCount() {
             return 3;
         }
     }
 
+    /**
+     * RequestedListFragment is a TaskListFragment based off of
+     * tasks that are requested by the session user and may or
+     * may not have been bidded on
+     *
+     * @see TaskListFragment
+     */
     public static class RequestedListFragment extends TaskListFragment {
         @Override
         protected RemoteList getTaskList() {
@@ -130,6 +184,13 @@ public class RequesterFragment extends TasksOverviewFragment {
         }
     }
 
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are requested by the session user and have
+     * been assigned to a provider
+     *
+     * @see TaskListFragment
+     */
     public static class AssignedListFragment extends TaskListFragment {
         @Override
         protected RemoteList getTaskList() {
@@ -150,6 +211,13 @@ public class RequesterFragment extends TasksOverviewFragment {
         }
     }
 
+    /**
+     * ClosedListFragment is a TaskListFragment based off of
+     * tasks that are requested by the session user and have
+     * been finished
+     *
+     * @see TaskListFragment
+     */
     public static class ClosedListFragment extends TaskListFragment {
         @Override
         protected RemoteList getTaskList() {

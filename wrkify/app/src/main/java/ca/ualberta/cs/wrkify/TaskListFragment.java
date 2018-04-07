@@ -17,7 +17,6 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,31 +27,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
- * TODO: this is now wrong
- * Fragment that displays a list of tasks.
- * This is used as the pages of a TaskListFragmentPagerAdapter,
- * but can probably be used in other contexts as well.
- * Receives an ArrayList of Tasks as ARGUMENT_TASK_LIST,
- * and displays those tasks.
+ * TaskListFragment is an abstract class that handles the
+ * behavior of a List of tasks it defines the behavior
+ * of scrolling as well as selecting tasks.
+ *
+ * @see Fragment
  */
 public abstract class TaskListFragment extends Fragment {
 
     private RemoteList<Task> tasks;
     private TaskListAdapter<Task> taskListAdapter;
 
+    /**
+     * create our TaskListFragment
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.tasks = getTaskList();
     }
 
+    /**
+     * create the view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,10 +76,12 @@ public abstract class TaskListFragment extends Fragment {
         return view;
     }
 
+    /**
+     * refresh the view when the you go aaway and look back.
+     */
     @Override
     public void onResume() {
-        super.onResume();
-        this.tasks.refresh();
+        this.refresh();
         this.taskListAdapter.notifyDataSetChanged();
         if (this.getView() != null) {
             this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
@@ -82,10 +89,17 @@ public abstract class TaskListFragment extends Fragment {
         }
     }
 
+    /**
+     * refresh the view
+     */
     protected void refresh() {
         this.tasks.refresh();
         this.taskListAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * allow the subclass to define the creation of the TaskList
+     * @return
+     */
     protected abstract RemoteList getTaskList();
 }
