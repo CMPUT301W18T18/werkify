@@ -77,6 +77,13 @@ public class Searcher {
                 TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
+    static List<Task> findTasksByBidder(RemoteClient client, User bidder, TaskStatus... statuses) throws IOException {
+        String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"bidList.bidder\",\"query\":"
+                + "{\"match\":{\"bidList.bidder.refId\":\"" + bidder.getId() + "\"}}}},{"
+                + getRequestQuery(statuses)+ "}]}}}";
+        return client.search(query, Task.class);
+    }
+
     /**
      * Find all tasks where the given User has placed a bid.
      * @param client RemoteClient to search in
@@ -85,9 +92,8 @@ public class Searcher {
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByBidder(RemoteClient client, User bidder) throws IOException {
-        String query = "{\"query\":{\"nested\":{\"path\": \"bidList.bidder\",\"query\":"
-                +"{\"match\":{\"bidList.bidder.refId\": \"" + bidder.getId() + "\"}}}}}";
-        return client.search(query, Task.class);
+        return findTasksByBidder(client, bidder,
+                TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
     /**
