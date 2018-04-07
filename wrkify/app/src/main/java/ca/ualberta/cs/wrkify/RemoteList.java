@@ -99,6 +99,13 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
         }
     }
 
+    protected void setObjs(List<T> objs) {
+        for (T obj: objs) {
+            this.objs.add(obj);
+            this.refs.add(obj.<T>reference());
+        }
+    }
+
     /**
      * A named constructor to create a RemoteList from a
      * List of RemoteObjects
@@ -117,11 +124,7 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
     fromObjects(RemoteClient rc, Class<E> type, List<E> objs) {
 
         RemoteList<E> list = new RemoteList<E>(rc, type);
-
-        for (E obj: objs) {
-            list.objs.add(obj);
-            list.refs.add(obj.<E>reference());
-        }
+        list.setObjs(objs);
 
         return list;
     }
