@@ -84,6 +84,9 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     @Nullable
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
         T object = client.create(type, conArgs);
+
+        if (object == null) { return null; }
+
         cache.put(object.getId(), object);
         return object;
     }

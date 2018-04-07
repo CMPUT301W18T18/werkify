@@ -71,7 +71,7 @@ public class SearcherTest {
 
             locationTask1 = rc.create(Task.class, "location task 1", user1, "");
             locationTask2 = rc.create(Task.class, "location task 2", user2, "");
-            locationTask3 = rc.create(Task.class, "location task 3", user3, "");
+            locationTask3 = rc.create(Task.class, "location task 3", user2, "");
 
             locationTask1.setLocation(new TaskLocation(38.9, -171.4));
             locationTask2.setLocation(new TaskLocation(38.9001, -171.4001));
@@ -102,6 +102,10 @@ public class SearcherTest {
         rc.delete(task2);
         rc.delete(task3);
         rc.delete(task4);
+
+        rc.delete(locationTask1);
+        rc.delete(locationTask2);
+        rc.delete(locationTask3);
     }
 
     @Test
@@ -115,9 +119,10 @@ public class SearcherTest {
             return;
         }
 
-        assertEquals(2, res1.size());
+        assertEquals(3, res1.size());
         assertTrue(res1.contains(task1));
         assertTrue(res1.contains(task2));
+        assertTrue(res1.contains(locationTask1));
 
         List<Task> res3;
         try {
@@ -189,7 +194,7 @@ public class SearcherTest {
             return;
         }
 
-        assertEquals(4, results.size());
+        assertEquals(7, results.size());
         assertTrue(results.contains(task1));
         assertTrue(results.contains(task2));
         assertTrue(results.contains(task3));
