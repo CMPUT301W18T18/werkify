@@ -214,7 +214,7 @@ public class TestActivity extends AppCompatActivity {
 
 
 
-        CompressedBitmap cb = new CompressedBitmap(ImageUtilities.compressBitmapToBytes(fullImage, 65536, 10));
+        CompressedBitmap cb = new CompressedBitmap(ImageUtilities.compressBitmapToB64(fullImage, 65536, 10));
         Bitmap compressed = cb.getBitmap();
         fullImageView.setImageBitmap(compressed);
         curImage = compressed;
@@ -228,7 +228,7 @@ public class TestActivity extends AppCompatActivity {
 
     //Don't pass a compressed image to this
     protected void upload(Bitmap bm) {
-        CompressedBitmap cb = WrkifyClient.getInstance().create(CompressedBitmap.class, ImageUtilities.compressBitmapToBytes(bm, 65536, 0));
+        CompressedBitmap cb = WrkifyClient.getInstance().create(CompressedBitmap.class, ImageUtilities.compressBitmapToB64(bm, 65536, 0));
         Log.i("REMOTE ID", cb.getId());
     }
 

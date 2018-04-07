@@ -19,27 +19,28 @@ package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class CompressedBitmap extends RemoteObject {
-    byte[] data;
+    String data;
 
-    public CompressedBitmap(byte[] data) {
-        this.data = data.clone();
+    public CompressedBitmap(String data) {
+        this.data = data;
     }
 
     public Bitmap getBitmap() {
-        ByteArrayInputStream is = new ByteArrayInputStream(data);
+        ByteArrayInputStream is = new ByteArrayInputStream(Base64.decode(data, Base64.DEFAULT));
         return BitmapFactory.decodeStream(is);
     }
 
-    public void setData(byte[] data) {
-        this.data = data.clone();
+    public void setData(String data) {
+        this.data = data;
     }
 
-    public byte[] getData() {
+    public String getData() {
         return data;
     }
 

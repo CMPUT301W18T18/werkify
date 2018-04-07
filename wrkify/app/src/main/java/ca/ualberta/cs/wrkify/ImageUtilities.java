@@ -18,60 +18,66 @@
 package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
 public abstract class ImageUtilities {
 
-    public static byte[] compressBitmapToBytes(Bitmap bitmap, int bytes, int minQuality) {
-        Log.i("Compress image to size", "START");
-        //try to get it as a jpeg
-        int low = 0;
-        int high = 100;
-        int bestQuality = -1;
-        byte[] best = new byte[0];
-        int mid;
-        int iterations = 0;
-        while (low <= high) {
-            mid = (low + high)/2;
+    public static String compressBitmapToB64(Bitmap bitmap, int bytes, int minQuality) {
 
-            if (mid < 0 || mid > 100) {
-                break;
+        while (true) {
+            Log.i("Compress image to B64", "START");
+
+            int low = 0;
+            int high = 100;
+            int bestQuality = -1;
+            String best = "";
+            int mid;
+            int iterations = 0;
+
+            while (low <= high) {
+                mid = (low + high) / 2;
+
+                if (mid < 0 || mid > 100) {
+                    break;
+                }
+
+                iterations++;
+                //Do compress
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, mid, os);
+                String result = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
+
+                if (result.getBytes().length <= bytes) {
+                    best = result;
+                    bestQuality = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+
             }
 
-            iterations++;
-            //Try to compress
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, mid, os);
-            byte[] result = os.toByteArray();
-
-            if (result.length <= bytes) {
-                bestQuality = mid;
-                best = result;
-                low = mid + 1;
-            } else {
-                high = mid - 1;
+            Log.i("Compress image to B64", "Iterations: " + iterations);
+            if (bestQuality >= minQuality) {
+                Log.i("Compress image to B64", "Quality: " + bestQuality);
+                return best;
             }
+
+            Log.i("Compress image to B64", "Failed, decreasing dimensions and retrying...");
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+
+            int newWidth = (int) (width * (1 - 0.15));
+            int newHeight = (int) (height / ((double) width) * newWidth);
+
+            bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
+
         }
-        Log.i("Compress image to size", "Iterations: " + iterations);
-
-        if (bestQuality >= minQuality) {
-            Log.i("Compress image to size", "JPEG quality: " + bestQuality);
-            return best;
-        }
-
-        Log.i("Compress image to size", "Failed, decreasing size and retrying");
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-
-        int newWidth = (int) (width * (1 - 0.15));
-        int newHeight = (int) (height/( (double) width) * newWidth);
-
-
-        Bitmap retry = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
-        return compressBitmapToBytes(retry, bytes, minQuality);
     }
+
 
     public static Bitmap makeThumbnail (Bitmap image){
         return Bitmap.createScaledBitmap(image, 100, 100, false);
@@ -80,12 +86,12 @@ public abstract class ImageUtilities {
 
     public static CompressedBitmap makeCompressedThumbnail(Bitmap image) {
         Bitmap thumb = makeThumbnail(image);
-        CompressedBitmap bm = new CompressedBitmap(compressBitmapToBytes(thumb, 10000, 0));
+        CompressedBitmap bm = new CompressedBitmap(compressBitmapToB64(thumb, 10000, 0));
         return bm;
     }
 
     public static CompressedBitmap makeCompressedImage(Bitmap image) {
-        CompressedBitmap bm = new CompressedBitmap(compressBitmapToBytes(image, 65536, 10));
+        CompressedBitmap bm = new CompressedBitmap(compressBitmapToB64(image, 65536, 10));
         return bm;
     }
 

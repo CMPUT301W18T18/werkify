@@ -74,7 +74,7 @@ public class ElasticClient extends RemoteClient {
     @Override
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
         Log.i("elastic", "CREATE " + type.toString());
-
+        
         T instance;
         try {
             instance = newInstance(type, conArgs);

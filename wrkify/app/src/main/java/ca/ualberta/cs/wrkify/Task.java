@@ -369,8 +369,8 @@ public class Task extends RemoteObject {
     }
 
     public void addImagePair(Bitmap thumbnail, Bitmap fullImage) {
-        byte[] c_thumbnail = ImageUtilities.compressBitmapToBytes(thumbnail, 65536,10);
-        byte[] c_fullImage = ImageUtilities.compressBitmapToBytes(fullImage, 65536,10);
+        String c_thumbnail = ImageUtilities.compressBitmapToB64(thumbnail, 65536,10);
+        String c_fullImage = ImageUtilities.compressBitmapToB64(fullImage, 65536,10);
         CompressedBitmap cb_thumbnail = WrkifyClient.getInstance().create(CompressedBitmap.class, c_thumbnail);
         CompressedBitmap cb_fullImage = WrkifyClient.getInstance().create(CompressedBitmap.class, c_fullImage);
         RemoteReference<CompressedBitmap> remoteThumbnail = cb_thumbnail.reference();
