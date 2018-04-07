@@ -41,7 +41,6 @@ public class Searcher {
         String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"requester\",\"query\":"
                 + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}}}},{"
                 + getRequestQuery(statuses)+ "}]}}}";
-        Log.e("query", query);
         return client.search(query, Task.class);
     }
 
@@ -54,13 +53,28 @@ public class Searcher {
      * Find all tasks where the given User is the assigned task provider.
      * @param client RemoteClient to search in
      * @param provider User to search for
+     * @param statuses the statuses you want in your search
+     * @return List of tasks matching the search (may be empty)
+     * @throws IOException if RemoteClient is disconnected
+     */
+    static List<Task> findTasksByProvider(RemoteClient client, User provider, TaskStatus... statuses) throws IOException {
+        String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"provider\",\"query\":"
+                + "{\"match\":{\"provider.refId\":\"" + provider.getId() + "\"}}}},{"
+                + getRequestQuery(statuses)+ "}]}}}";
+        Log.e("query", query);
+        return client.search(query, Task.class);
+    }
+
+    /**
+     * Find all tasks where the given User is the assigned task provider.
+     * @param client RemoteClient to search in
+     * @param provider User to search for
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByProvider(RemoteClient client, User provider) throws IOException {
-        String query = "{\"query\":{\"nested\":{\"path\":\"provider\",\"query\":"
-                + "{\"match\":{\"provider.refId\":\"" + provider.getId() + "\"}}}}}";
-        return client.search(query, Task.class);
+        return findTasksByProvider(client, provider,
+                TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
     /**
