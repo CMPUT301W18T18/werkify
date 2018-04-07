@@ -23,10 +23,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.transition.Slide;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.transition.Slide;
-import android.transition.TransitionManager;
+import android.support.transition.TransitionManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,6 +51,8 @@ abstract class TasksOverviewFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager pager;
     private FloatingActionButton addButton;
+
+    private boolean addButtonVisible;
     
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
@@ -118,7 +120,8 @@ abstract class TasksOverviewFragment extends Fragment {
         pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
 
         // Initialize add button
-        addButton.setVisibility(isAddButtonEnabled(0)? View.VISIBLE : View.GONE);
+        addButtonVisible = isAddButtonEnabled(0);
+        addButton.setVisibility(addButtonVisible? View.VISIBLE : View.GONE);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,13 +154,14 @@ abstract class TasksOverviewFragment extends Fragment {
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                /*Log.d("TasksOverview", "onPageSelected");
                 tabLayout.setScrollPosition(position, 0, true);
 
                 if (isAddButtonEnabled(position)) {
                     showAddButton();
                 } else {
                     hideAddButton();
-                }
+                }*/
             }
 
             @Override
@@ -169,9 +173,11 @@ abstract class TasksOverviewFragment extends Fragment {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 tabLayout.setScrollPosition(position, positionOffset, true);
 
-                if (positionOffset != 0 && addButton.getVisibility() == View.VISIBLE) {
+                if (positionOffset != 0 && addButtonVisible) {
+                    addButtonVisible = false;
                     hideAddButton();
-                } else if (positionOffset == 0 && isAddButtonEnabled(position)) {
+                } else if (positionOffset == 0 && isAddButtonEnabled(position) && !addButtonVisible) {
+                    addButtonVisible = true;
                     showAddButton();
                 }
             }
@@ -185,6 +191,7 @@ abstract class TasksOverviewFragment extends Fragment {
      * TODO add transition
      */
     private void hideAddButton() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.GONE);
     }
 
@@ -193,6 +200,7 @@ abstract class TasksOverviewFragment extends Fragment {
      * TODO add transition
      */
     private void showAddButton() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.VISIBLE);
     }
 
