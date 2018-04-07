@@ -22,7 +22,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -41,6 +44,8 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private TClient client;
     private Cache cache;
 
+    private CachingClientSearcher searcher = new CachingClientSearcher(this);
+
     public CachingClient(TClient client) {
         this.client = client;
         this.cache = new Cache();
@@ -53,7 +58,9 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     @Override
     @Nullable
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
-        return client.create(type, conArgs);
+        T object = client.create(type, conArgs);
+        cache.put(object.getId(), object);
+        return object;
     }
 
     @Override
@@ -81,8 +88,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     }
 
     @Override
-    public <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
-        return client.search(query, type);
+    Searcher getSearcher() {
+        return client.getSearcher();
+    }
+
+    Searcher getLocalSearcher() {
+        return searcher;
     }
 
     /**
@@ -95,5 +106,113 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private String makeTransientId() {
         // TODO not sure if this is the best way to do this
         return UUID.randomUUID().toString();
+    }
+
+    public class CachingClientSearcher extends Searcher<CachingClient> {
+        public CachingClientSearcher(CachingClient client) {
+            super(client);
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(final User bidder) {
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    return (task.getBidForUser(bidder) != null);
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(final User bidder, final TaskStatus... statuses) {
+            final List<TaskStatus> statusList = Arrays.asList(statuses);
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    return (task.getBidForUser(bidder) != null && statusList.contains(task.getStatus()));
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) {
+            throw new IllegalStateException("Can't perform keyword search on cache");
+        }
+
+        @Override
+        public List<Task> findTasksByKeywords(String keywords) {
+            throw new IllegalStateException("Can't perform keyword search on cache");
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(final User provider) {
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (provider.equals(task.getRemoteProvider(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(final User provider, final TaskStatus... statuses) {
+            final List<TaskStatus> statusList = Arrays.asList(statuses);
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (provider.equals(task.getRemoteProvider(client)) && statusList.contains(task.getStatus()));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(final User requester) {
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (requester.equals(task.getRemoteRequester(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(final User requester, TaskStatus... statuses) {
+            final List<TaskStatus> statusList = Arrays.asList(statuses);
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (requester.equals(task.getRemoteRequester(client)) && statusList.contains(task.getStatus()));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public User getUser(final String username) {
+            List<User> results = cache.findMatching(new CacheMatcher<User>() {
+                @Override
+                public boolean isMatch(User user) {
+                    return (username.equals(user.getUsername()));
+                }
+            });
+
+            if (results.size() == 0) { return null; }
+            else { return results.get(0); }
+        }
     }
 }

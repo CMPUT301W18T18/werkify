@@ -117,9 +117,9 @@ public class Session {
      * @throws IOException if network is disconnected
      */
     public void refreshCaches(RemoteClient client) throws IOException {
-        this.userProvidedCache = Searcher.findTasksByProvider(client, getUser());
-        this.userRequestedCache = Searcher.findTasksByRequester(client, getUser());
-        this.userBiddedCache = Searcher.findTasksByBidder(client, getUser());
+        this.userProvidedCache = client.getSearcher().findTasksByProvider(getUser());
+        this.userRequestedCache = client.getSearcher().findTasksByRequester(getUser());
+        this.userBiddedCache = client.getSearcher().findTasksByBidder(getUser());
     }
 
     /**

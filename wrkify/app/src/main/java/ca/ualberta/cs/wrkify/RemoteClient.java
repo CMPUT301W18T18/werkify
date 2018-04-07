@@ -55,16 +55,7 @@ abstract class RemoteClient {
      */
     abstract <T extends RemoteObject> T download(String id, Class<T> type) throws IOException;
 
-    /**
-     * Returns objects matching a query
-     *
-     * @param query query string
-     * @param type a remote object you are searching for
-     * @param <T> the type of remote object you are searching for
-     * @return a list<T>
-     * @throws IOException according to execute
-     */
-    abstract  <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException;
+    abstract Searcher getSearcher();
 
     /**
      * newInstance provides a dynamic constructor interface that takes a Class

@@ -44,9 +44,10 @@ import io.searchbox.core.SearchResult;
  * @see RemoteObject
  */
 public class ElasticClient extends RemoteClient {
-
     private JestDroidClient client;
     private String index;
+
+    private Searcher<ElasticClient> searcher = new ElasticSearcher(this);
 
     /**
      * creates an ElasticClient based on a url and index
@@ -62,6 +63,11 @@ public class ElasticClient extends RemoteClient {
         this.client = (JestDroidClient) factory.getObject();
 
         this.index = index;
+    }
+
+    @Override
+    Searcher<ElasticClient> getSearcher() {
+        return searcher;
     }
 
     /**
@@ -165,8 +171,7 @@ public class ElasticClient extends RemoteClient {
      * @return a list<T>
      * @throws IOException according to execute
      */
-    @Override
-    public <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+    public <T extends RemoteObject> List<T> executeQuery(String query, Class<T> type) throws IOException {
         Log.i("elastic", "SEARCH " + type);
 
         Search search = new Search.Builder(query).addIndex(this.index)

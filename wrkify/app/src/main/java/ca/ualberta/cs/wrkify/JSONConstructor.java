@@ -76,7 +76,7 @@ public class JSONConstructor {
     }
 
     private static String escape(String string) {
-        return string.replaceAll("[\"\\\\]", "\\\\\1");
+        return string.replaceAll("[\"\\\\]", "\\\\$0");
     }
 
     static class JSONConstructorElement {

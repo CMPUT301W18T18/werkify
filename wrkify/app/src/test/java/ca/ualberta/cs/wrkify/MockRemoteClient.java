@@ -62,7 +62,7 @@ class MockRemoteClient extends RemoteClient {
     }
 
     @Override
-    <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+    Searcher getSearcher() {
         return null;
     }
 }

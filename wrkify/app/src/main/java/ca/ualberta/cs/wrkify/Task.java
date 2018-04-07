@@ -16,6 +16,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -256,6 +257,17 @@ public class Task extends RemoteObject {
         } else {
             throw new UnsupportedOperationException("cannot bid on assigned or done task");
         }
+    }
+
+    @Nullable
+    public Bid getBidForUser(User user) {
+        for (Bid bid: this.bidList) {
+            if (bid.getBidderReference().equals(user.<User>reference())) {
+                return bid;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -30,7 +30,7 @@ import static junit.framework.Assert.*;
  * Created by peter on 18/03/18.
  */
 
-public class SearcherTest {
+public class CachingClientSearcherTest {
 
     private static User user1;
     private static User user2;
@@ -41,51 +41,31 @@ public class SearcherTest {
     private static Task task3;
     private static Task task4;
 
-    private static Task locationTask1;
-    private static Task locationTask2;
-    private static Task locationTask3;
-
-    private static RemoteClient rc;
-    private static Searcher<RemoteClient> searcher;
+    private static CachingClient rc;
+    private static Searcher<CachingClient> searcher;
 
     @BeforeClass
     public static void createData() {
-        rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
-        searcher = rc.getSearcher();
+        MockRemoteClient innerClient = new MockRemoteClient();
+        rc = new CachingClient<>(innerClient);
+        searcher = rc.getLocalSearcher();
 
-        user1 = rc.create(User.class, "peter", "peter@a.com", "1");
-        user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
-        user3 = rc.create(User.class, "john", "john@a.com", "3");
+        user1 = (User) rc.create(User.class, "peter", "peter@a.com", "1");
+        user2 = (User) rc.create(User.class, "taylor", "taylor@a.com", "2");
+        user3 = (User) rc.create(User.class, "john", "john@a.com", "3");
 
-        task1 = rc.create(Task.class, "task 1", user1, "do nothing");
-        task2 = rc.create(Task.class, "task 2", user1, "blah");
-        task3 = rc.create(Task.class, "task 3", user2, "blah blah");
-        task4 = rc.create(Task.class, "task 4", user2, "do something");
+        task1 = (Task) rc.create(Task.class, "task 1", user1, "do nothing");
+        task2 = (Task) rc.create(Task.class, "task 2", user1, "blah");
+        task3 = (Task) rc.create(Task.class, "task 3", user2, "blah blah");
+        task4 = (Task) rc.create(Task.class, "task 4", user2, "do something");
 
-        task2.acceptBid(new Bid(new Price(1.0), user3));
+        Bid bid = new Bid(new Price(1.0), user3);
+        task2.addBid(bid);
+        task2.acceptBid(bid);
         rc.upload(task2);
 
         task4.addBid(new Bid(new Price(1.0), user3));
         rc.upload(task4);
-
-        locationTask1 = rc.create(Task.class, "location task 1", user1, "");
-        locationTask2 = rc.create(Task.class, "location task 2", user2, "");
-        locationTask3 = rc.create(Task.class, "location task 3", user3, "");
-
-        locationTask1.setLocation(new TaskLocation(38.9, -171.4));
-        locationTask2.setLocation(new TaskLocation(38.9001, -171.4001));
-        locationTask3.setLocation(new TaskLocation(38.8, -171.3));
-
-        rc.upload(locationTask1);
-        rc.upload(locationTask2);
-        rc.upload(locationTask3);
-
-        // give elasticsearch time to index
-        try {
-            Thread.sleep(1000);
-        } catch (Exception e) {
-
-        }
     }
 
     @AfterClass
@@ -165,47 +145,11 @@ public class SearcherTest {
     }
 
     @Test
-    public void testFindTasksByKeywords() {
-        List<Task> results;
-        try {
-            results = searcher.findTasksByKeywords("blah rah");
-        } catch (IOException e) {
-            fail();
-            return;
-        }
-
-        assertEquals(2, results.size());
-        assertTrue(results.contains(task2));
-        assertTrue(results.contains(task3));
-
-        try {
-            results = searcher.findTasksByKeywords("task");
-        } catch (IOException e) {
-            fail();
-            return;
-        }
-
-        assertEquals(4, results.size());
-        assertTrue(results.contains(task1));
-        assertTrue(results.contains(task2));
-        assertTrue(results.contains(task3));
-        assertTrue(results.contains(task4));
-
-        try {
-            results = searcher.findTasksByKeywords("kjdsfla");
-        } catch (IOException e) {
-            fail();
-            return;
-        }
-
-        assertEquals(0, results.size());
-    }
-
-    @Test
     public void testGetUser() {
         User peter;
         User taylor;
         User john;
+
         try {
             peter = searcher.getUser("peter");
             taylor = searcher.getUser("taylor");
@@ -218,20 +162,5 @@ public class SearcherTest {
         assertEquals(user1, peter);
         assertEquals(user2, taylor);
         assertEquals(user3, john);
-    }
-
-    @Test
-    public void testFindByLocation() {
-        List<Task> results;
-        try {
-            results = searcher.findTasksByKeywordsNear("location task", new TaskLocation(38.9, -171.4));
-        } catch (IOException e) {
-            fail();
-            return;
-        }
-
-        assertTrue(results.contains(locationTask1));
-        assertTrue(results.contains(locationTask2));
-        assertFalse(results.contains(locationTask3));
     }
 }
