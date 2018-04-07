@@ -25,7 +25,13 @@ package ca.ualberta.cs.wrkify;
  */
 
 public class WrkifyClient {
+    /**
+     * url is the default server that wrkify uses
+     */
     public static final String URL = "http://cmput301.softwareprocess.es:8080";
+    /**
+     * INDEX the default elasticsearch index that wrkify uses
+     */
     public static final String INDEX = "cmput301w18t18";
 
     private static RemoteClient instance;
@@ -37,10 +43,21 @@ public class WrkifyClient {
      */
     public static RemoteClient getInstance() {
         if (instance == null) {
-            instance = new RemoteClient(URL, INDEX);
+            instance = new CachingClient<>(new ElasticClient(URL, INDEX));
         }
         return instance;
     }
 
+    /**
+     * Overrides the global instance.
+     * @param instance new RemoteClient to use as the global instance
+     */
+    public static void setInstance(RemoteClient instance) {
+        WrkifyClient.instance = instance;
+    }
+
+    /**
+     * private to prevent instatiation
+     */
     private WrkifyClient() {}
 }

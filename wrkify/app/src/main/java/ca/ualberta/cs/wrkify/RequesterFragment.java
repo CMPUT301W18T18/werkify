@@ -17,6 +17,12 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +33,34 @@ import java.util.List;
  * @see MainActivity
  */
 public class RequesterFragment extends TasksOverviewFragment {
+    private static final int REQUEST_NEW_TASK = 13;
+
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        // TODO get actual tasks
+        List<Task> rawTasks = Session.getInstance(getContext()).getUserRequestedCache();
+
+        // Filter tasks into requested, assigned, completed
+        ArrayList<Task> requestedTasks = new ArrayList<>();
+        ArrayList<Task> assignedTasks = new ArrayList<>();
+        ArrayList<Task> completedTasks = new ArrayList<>();
+        for (Task t: rawTasks) {
+            switch (t.getStatus()) {
+                case REQUESTED:
+                case BIDDED:
+                    requestedTasks.add(t);
+                    break;
+                case ASSIGNED:
+                    assignedTasks.add(t);
+                    break;
+                case DONE:
+                    completedTasks.add(t);
+            }
+        }
+
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(new ArrayList<Task>());
-        pageTaskLists.add(new ArrayList<Task>());
-        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(requestedTasks);
+        pageTaskLists.add(assignedTasks);
+        pageTaskLists.add(completedTasks);
 
         return pageTaskLists;
     }
@@ -46,5 +73,26 @@ public class RequesterFragment extends TasksOverviewFragment {
     @Override
     protected String getAppBarTitle() {
         return "My posts";
+    }
+
+    @Override
+    protected boolean isAddButtonEnabled(int index) {
+        return (index == 0);
+    }
+
+    @Override
+    protected void onAddButtonClick(View v) {
+        Intent newTaskIntent = new Intent(getContext(), EditTaskActivity.class);
+        startActivityForResult(newTaskIntent, REQUEST_NEW_TASK);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_NEW_TASK && resultCode == EditTaskActivity.RESULT_TASK_CREATED) {
+            // Append the new task to task list
+            TaskListFragmentPagerAdapter adapter = (TaskListFragmentPagerAdapter) getPager().getAdapter();
+            Task task = (Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK);
+            adapter.appendTaskToList(0, task);
+        }
     }
 }

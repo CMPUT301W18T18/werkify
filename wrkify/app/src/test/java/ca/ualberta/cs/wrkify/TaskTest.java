@@ -79,7 +79,7 @@ public class TaskTest {
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");
 
-        Bid bid = new Bid(5.0, use);
+        Bid bid = new Bid(new Price(5.0), use);
 
         concTask.addBid(bid);
         concTask.cancelBid(bid);
@@ -100,17 +100,6 @@ public class TaskTest {
     }
 
     @Test
-    public void testSetGetLocation() {
-        User use = new User("a", "a@a.com", "7");
-        Task concTask = new Task("def title", use, "");
-        Location location = new Location("Test");
-
-        concTask.setLocation(location);
-
-        assertEquals(location, concTask.getLocation());
-    }
-
-    @Test
     public void testSetGetChecklist() {
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");
@@ -126,8 +115,8 @@ public class TaskTest {
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");
 
-        Bid bid = new Bid(5.0, use);
-        Bid bid2 = new Bid(3.0, use);
+        Bid bid = new Bid(new Price(5.0), use);
+        Bid bid2 = new Bid(new Price(3.0), use);
 
         concTask.addBid(bid);
         concTask.addBid(bid2);
@@ -167,11 +156,11 @@ public class TaskTest {
                 lowbid = number;
             }
             User bidder = new User("username", "email@example.com", "(555) 555-5555");
-            Bid bid = new Bid(number, bidder);
+            Bid bid = new Bid(new Price(number), bidder);
             concTask.addBid(bid);
         }
 
-        assertTrue(lowbid == concTask.getBidList().get(0).getValue());
+        assertEquals(new Price(lowbid), concTask.getBidList().get(0).getValue());
     }
 
     @Test
@@ -179,7 +168,7 @@ public class TaskTest {
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");
         User bidder = new User("username", "email@example.com", "(555) 555-5555");
-        Bid bid = new Bid(20.0, bidder);
+        Bid bid = new Bid(new Price(20.0), bidder);
 
         concTask.acceptBid(bid);
 
@@ -192,16 +181,19 @@ public class TaskTest {
 
     @Test
     public void testGetPrice() {
+        Price price1 = new Price(20.0);
+        Price price2 = new Price(10.0);
+
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");
-        concTask.addBid(new Bid(20.0, use));
-        concTask.addBid(new Bid(10.0, use));
+        concTask.addBid(new Bid(price1, use));
+        concTask.addBid(new Bid(price2, use));
 
-        assertTrue(10.0 == concTask.getPrice());
+        assertEquals(price2, concTask.getPrice());
 
         concTask.acceptBid(concTask.getBidList().get(1));
 
-        assertTrue(20 == concTask.getPrice());
+        assertEquals(price1, concTask.getPrice());
     }
 
     @Test
@@ -209,7 +201,7 @@ public class TaskTest {
         User use = new User("a", "a@a.com", "7");
         Task concTask = new Task("def title", use, "");
 
-        Bid bid = new Bid(10.0, use);
+        Bid bid = new Bid(new Price(10.0), use);
         concTask.addBid(bid);
         concTask.acceptBid(bid);
 

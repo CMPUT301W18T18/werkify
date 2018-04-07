@@ -26,12 +26,16 @@ import android.transition.AutoTransition;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.IOException;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
+import static ca.ualberta.cs.wrkify.ViewBidsActivity.EXTRA_RETURNED_TASK;
 
 /**
  * For use with ViewBidsActivity
@@ -371,6 +375,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
                 adapter.deleteItem(holder, position);
+                WrkifyClient.getInstance().upload(task);
             }
 
             @Override
@@ -380,7 +385,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
                 adapter.deleteItem(holder, position);
-
+                WrkifyClient.getInstance().upload(task);
             }
 
             @Override
@@ -406,7 +411,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         currentSelectedPos = -1;
         currentSelected = null;
         selectedIsVisible = false;
-        data.remove(position);
+        task.cancelBid(data.get(position));
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, data.size());
         holder.restoreSize();
@@ -419,7 +424,11 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      */
     protected void acceptClicked(int position) {
         task.acceptBid(data.get(position));
+        WrkifyClient.getInstance().upload(task);
+
+        Intent resultIntent = context.getIntent();
+        resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
+        context.setResult(RESULT_OK, resultIntent);
         context.finish();
     }
-
 }

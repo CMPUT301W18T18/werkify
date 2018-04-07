@@ -29,49 +29,127 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.List;
+
 
 /**
- * Created by peter on 18/03/18.
+ * Session is a global singleton that holds a reference
+ * to the user that is currently logged in. It automatically
+ * saves and restores a user identity from file when the app
+ * is restarted.
  */
-
 public class Session {
     private static final String FILENAME = "ca.ualberta.cs.wrkify.Session";
     private static Session instance;
 
     private User user;
+    private List<Task> userRequestedCache;
+    private List<Task> userProvidedCache;
+    private List<Task> userBiddedCache;
 
-    private Session() {}
+    protected Session() {}
 
+    /**
+     * Gets the global Session.
+     * @param context application context; used to restore a preserved Session
+     * @param client RemoteClient to load user data from
+     * @return global Session object
+     */
     public static Session getInstance(Context context, RemoteClient client) {
         if (instance == null) {
             instance = new Session();
         }
 
-        if (instance.user == null) {
+        if (instance.getUser() == null) {
             instance.load(context, client);
         }
 
         return instance;
     }
 
+    /**
+     * Gets the global Session using the default WrkifyClient.
+     * @param context application context; used to restore a preserved Session
+     * @return global Session object
+     */
     public static Session getInstance(Context context) {
         return getInstance(context, WrkifyClient.getInstance());
     }
 
+    /**
+     * Override the Session instance.
+     * @param instance new Session instance
+     */
+    public static void setInstance(Session instance) {
+        Session.instance = instance;
+    }
+
+    /**
+     * Gets the logged-in user.
+     * @return logged-in user
+     */
     public User getUser() {
         return this.user;
     }
 
+    /**
+     * Sets the logged-in user.
+     * @param user User to set as the session user
+     * @param context application context; used to save Session
+     */
     public void setUser(User user, Context context) {
         this.user = user;
         save(context);
     }
 
-    public void logout() {
+    /**
+     * Unsets the logged-in user.
+     * @param context application context; used to clear saved Session
+     */
+    public void logout(Context context) {
         this.user = null;
-        //TODO clear savefile;
+        context.deleteFile(FILENAME);
     }
 
+    /**
+     * Refreshes user task caches.
+     * @param client RemoteClient to find user's tasks in
+     * @throws IOException if network is disconnected
+     */
+    public void refreshCaches(RemoteClient client) throws IOException {
+        this.userProvidedCache = Searcher.findTasksByProvider(client, getUser());
+        this.userRequestedCache = Searcher.findTasksByRequester(client, getUser());
+        this.userBiddedCache = Searcher.findTasksByBidder(client, getUser());
+    }
+
+    /**
+     * Gets the cache of the user's requested tasks.
+     * @return cached list of requested tasks
+     */
+    public List<Task> getUserRequestedCache() {
+        return userRequestedCache;
+    }
+
+    /**
+     * Gets the cache of the user's provided tasks.
+     * @return cached list of provided tasks
+     */
+    public List<Task> getUserProvidedCache() {
+        return userProvidedCache;
+    }
+
+    /**
+     * Gets the cache of the user's bidded tasks.
+     * @return cached list of bidded tasks
+     */
+    public List<Task> getUserBiddedCache() {
+        return userBiddedCache;
+    }
+
+    /**
+     * Preserves Session to file
+     * @param context application context; used to write file
+     */
     private void save(Context context) {
         // this is adapted from the lab 26-01-2018
         try {
@@ -92,6 +170,11 @@ public class Session {
         }
     }
 
+    /**
+     * Loads Session from file and gets user data from RemoteClient
+     * @param context application context; used to read file
+     * @param client RemoteClient; used to retrieve user data
+     */
     private void load(Context context, RemoteClient client) {
         // this is adapted from the lab 26-01-2018
         try {

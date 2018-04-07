@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
  * Created by peter on 17/03/18.
  */
 
-public class RemoteClientTest {
+public class ElasticClientTest {
     @Test
     public void testInternet() {
         String command = "ping -c 1 google.com";
@@ -42,7 +42,7 @@ public class RemoteClientTest {
 
     @Test
     public void TestEquals() {
-        RemoteClient rc = WrkifyClient.getInstance();
+        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         ConcreteTestObject cto = rc.create(ConcreteTestObject.class, "p1", "p2", 1);
         ConcreteTestObject cto1 = rc.create(ConcreteTestObject.class, "p1", "p2", 1);
@@ -65,7 +65,7 @@ public class RemoteClientTest {
 
     @Test
     public void TestCreateGetDelete() {
-        RemoteClient rc = WrkifyClient.getInstance();
+        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         ConcreteTestObject cto = rc.create(ConcreteTestObject.class, "p1", "p2", 1);
 
@@ -95,7 +95,7 @@ public class RemoteClientTest {
 
     @Test
     public void testSearch() {
-        RemoteClient rc = WrkifyClient.getInstance();
+        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         ConcreteTestObject co = rc.create(ConcreteTestObject.class,"t1", "t1", 0);
         ConcreteTestObject co2 = rc.create(ConcreteTestObject.class,"t2", "t1", 0);

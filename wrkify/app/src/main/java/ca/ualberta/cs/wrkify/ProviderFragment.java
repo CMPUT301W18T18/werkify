@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +30,35 @@ import java.util.List;
 public class ProviderFragment extends TasksOverviewFragment {
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        // TODO get actual tasks
+        List<Task> rawProvidedTasks = Session.getInstance(getContext()).getUserProvidedCache();
+        List<Task> rawBiddedTasks = Session.getInstance(getContext()).getUserBiddedCache();
+
+        // Filter tasks into assigned, completed
+        ArrayList<Task> assignedTasks = new ArrayList<>();
+        ArrayList<Task> completedTasks = new ArrayList<>();
+        for (Task t: rawProvidedTasks) {
+            switch (t.getStatus()) {
+                case ASSIGNED:
+                    assignedTasks.add(t);
+                    break;
+                case DONE:
+                    completedTasks.add(t);
+            }
+        }
+
+        // Only show bidded tasks (you can also be a bidder on an assigned task)
+        ArrayList<Task> biddedTasks = new ArrayList<>();
+        for (Task t: rawBiddedTasks) {
+            switch (t.getStatus()) {
+                case BIDDED:
+                    biddedTasks.add(t);
+            }
+        }
+
         List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(new ArrayList<Task>());
-        pageTaskLists.add(new ArrayList<Task>());
-        pageTaskLists.add(new ArrayList<Task>());
+        pageTaskLists.add(assignedTasks);
+        pageTaskLists.add(biddedTasks);
+        pageTaskLists.add(completedTasks);
 
         return pageTaskLists;
     }
@@ -46,5 +71,10 @@ public class ProviderFragment extends TasksOverviewFragment {
     @Override
     protected String getAppBarTitle() {
         return "My tasks";
+    }
+
+    @Override
+    protected boolean isAddButtonEnabled(int index) {
+        return false;
     }
 }

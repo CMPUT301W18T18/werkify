@@ -16,6 +16,8 @@ package ca.ualberta.cs.wrkify;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.Assert.*;
 
 /**
@@ -29,11 +31,11 @@ public class BidTest {
 
     @Test
     public void testBid() throws Exception {
-        Double value = 123.45;
+        Price value = new Price(123.45);
         User bidder = remoteClient.create(User.class, "A", "A@example.com", "(555) 555-555");
 
         Bid user = new Bid(value, bidder);
-        Double resultvalue = user.getValue();
+        Price resultvalue = user.getValue();
         User resultbidder = user.getRemoteBidder(remoteClient);
 
         assertEquals(resultvalue, value);
@@ -43,9 +45,9 @@ public class BidTest {
 
     @Test
     public void testGettersAndSetters() throws Exception {
-        Double A_value = 123.45;
-        Double B_value = 456.78;
-        Double C_value = 0.00;
+        Price A_value = new Price(123.45);
+        Price B_value = new Price(456.78);
+        Price C_value = new Price(0.00);
 
         User A_bidder = remoteClient.create(User.class, "ABC", "ABC@example.com", "(555) 555-555");
         User B_bidder = remoteClient.create(User.class, "CDE", "CDE@example.com", "(666) 666-666");
@@ -57,13 +59,5 @@ public class BidTest {
         user.setBidder(B_bidder);
         assertEquals(user.getRemoteBidder(remoteClient), B_bidder);
 
-        boolean failed = false;
-        try {
-            user.setValue(C_value);
-        } catch (IllegalArgumentException e) {
-            failed = true;
-        }
-
-        assertTrue(failed);
     }
 }

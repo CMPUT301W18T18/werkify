@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
@@ -29,12 +30,12 @@ import java.io.IOException;
  * ViewBidsActivity shows a list of bids on a task that the viewer can scroll through, and if the
  * viewer is a requester of said task, they can accept or reject bids
  *
- * Start with an Intent that has extras:
- * EXTRA_VIEWBIDS_VIEWER: User who is viewing the list
+ * Start with an Intent that has extra:
  * EXTRA_VIEWBIDS_TASK: Task that is being viewed
  */
 public class ViewBidsActivity extends AppCompatActivity {
     public static final String EXTRA_VIEWBIDS_TASK = "ca.ualberta.cs.wrkify.EXTRA_VIEWBIDS_TASK";
+    public static final String EXTRA_RETURNED_TASK = "ca.ualberta.cs.wrkify.EXTRA_RETURNED_TASK";
 
     protected RecyclerView recyclerView;
     protected BidListAdapter adapter;
@@ -42,13 +43,14 @@ public class ViewBidsActivity extends AppCompatActivity {
 
     protected Intent intent;
 
+    private Task task;
+
     /**
      * Initializes activity, setting up all Views and data
-     *
-     * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
@@ -56,11 +58,15 @@ public class ViewBidsActivity extends AppCompatActivity {
 
         //Get the data
         User viewer = Session.getInstance(this).getUser();
-        Task task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+        this.task = (Task) intent.getSerializableExtra(EXTRA_VIEWBIDS_TASK);
+
+        TextView titleView = findViewById(R.id.bidListActivity_taskTitle);
+        titleView.setText(task.getTitle());
+
 
         boolean isRequester;
         try {
-            isRequester = viewer.getUsername().equals(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+            isRequester = viewer.equals(task.getRemoteRequester(WrkifyClient.getInstance()));
         } catch (IOException e) {
             // TODO handle this correctly
             return;
@@ -109,4 +115,13 @@ public class ViewBidsActivity extends AppCompatActivity {
         this.bidCountView.setText(Integer.toString(count) + message);
     }
 
+    /**
+     * Pass back changes to the task when the activity is exited.
+     */
+    @Override
+    public void onBackPressed() {
+        intent.putExtra(EXTRA_RETURNED_TASK, this.task);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }

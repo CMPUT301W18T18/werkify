@@ -54,7 +54,7 @@ public class Searcher {
      * Find all tasks where the given User is the assigned task provider.
      * @param client RemoteClient to search in
      * @param provider User to search for
-     * @return List of tasks matching the search
+     * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByProvider(RemoteClient client, User provider) throws IOException {
@@ -67,7 +67,7 @@ public class Searcher {
      * Find all tasks where the given User has placed a bid.
      * @param client RemoteClient to search in
      * @param bidder User to search for
-     * @return List of tasks matching the search
+     * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByBidder(RemoteClient client, User bidder) throws IOException {
@@ -80,11 +80,11 @@ public class Searcher {
      * Find all tasks matching a search string.
      * @param client RemoteClient to search in
      * @param keywords Keywords to search for
-     * @return List of tasks matching the search
+     * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByKeywords(RemoteClient client, String keywords) throws IOException {
-        // from https://stackoverflow.com/questions/7899525/ (2018-03-18)
+     // from https://stackoverflow.com/questions/7899525/ (2018-03-18)
         String[] splited = keywords.split("\\s+");
 
         // from http://www.appsdeveloperblog.com/java-into-json-json-into-java-all-possible-examples/ (2018-03-18)

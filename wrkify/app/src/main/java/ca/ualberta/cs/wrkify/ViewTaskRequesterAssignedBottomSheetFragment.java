@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ import static android.view.View.inflate;
 public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottomSheetFragment {
 
     @Override
-    protected void initializeWithTask(ViewGroup container, Task task) {
+    protected void initializeWithTask(ViewGroup container, final Task task) {
         User assignee;
         try {
             assignee = task.getRemoteProvider(WrkifyClient.getInstance());
@@ -49,18 +50,12 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
             setDetailString(container,
                     String.format(Locale.US,"to %s", assignee.getUsername()));
         }
-        setRightStatusString(container,
-                String.format(Locale.US, "$%.2f", task.getPrice()));
-    }
+        setRightStatusString(container, task.getPrice().toString());
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+        Button closeTaskButton = container.findViewById(R.id.taskViewBottomSheetButtonMarkDone);
+        Button deassignButton = container.findViewById(R.id.taskViewBottomSheetButtonDeassign);
 
-        Button closeTaskButton = view.findViewById(R.id.taskViewBottomSheetButtonMarkDone);
-        Button deassignButton = view.findViewById(R.id.taskViewBottomSheetButtonDeassign);
-
+        final FragmentManager fm = getActivity().getFragmentManager();
         closeTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,10 +64,12 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                         new ConfirmationDialogFragment.OnConfirmListener() {
                             @Override
                             public void onConfirm() {
-                                // TODO not modifying tasks yet
+                                task.complete();
+                                WrkifyClient.getInstance().upload(task);
+                                ((ViewTaskActivity) getActivity()).replaceTask(task);
                             }
                         });
-                dialog.show(getFragmentManager(), null);
+                dialog.show(fm, null);
             }
         });
         deassignButton.setOnClickListener(new View.OnClickListener() {
@@ -84,15 +81,15 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                         new ConfirmationDialogFragment.OnConfirmListener() {
                             @Override
                             public void onConfirm() {
-                                // TODO not modifying tasks yet
+                                task.unassign();
+                                WrkifyClient.getInstance().upload(task);
+                                ((ViewTaskActivity) getActivity()).replaceTask(task);
                             }
                         }
                 );
-                dialog.show(getFragmentManager(), null);
+                dialog.show(fm, null);
             }
         });
-
-        return view;
     }
 
     @Override

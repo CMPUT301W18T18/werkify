@@ -20,12 +20,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context="ca.ualberta.cs.wrkify.EditTaskActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/editTaskTitleSheet"
@@ -74,13 +75,61 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             app:layout_constraintTop_toBottomOf="@id/editTaskTitleSheet"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0"
             android:layout_marginTop="36dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="false"
             android:inputType="textMultiLine" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_task_checklist_label"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:layout_constraintBottom_toTopOf="@id/editTaskDivider"
+            app:layout_constraintStart_toStartOf="@id/editTaskDivider"/>
+
+        <FrameLayout
+            android:id="@+id/editTaskDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#1E000000"
+            app:layout_constraintTop_toBottomOf="@id/editTaskDescriptionField"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="36dp"
+            android:layout_marginStart="8dp"/>
+
+        <ca.ualberta.cs.wrkify.CheckListEditorView
+            android:id="@+id/editTaskChecklist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/editTaskDivider"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="12dp"
+            android:visibility="gone" />
+
+        <!-- TODO shouldn't there be a way to attach an icon to a button? -->
+        <Button
+            android:id="@+id/editTaskButtonChecklistNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+  Add checklist"
+            app:layout_constraintTop_toBottomOf="@id/editTaskDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp" />
+
+        <Button
+            android:id="@+id/editTaskButtonChecklistAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/editTaskChecklist"
+            app:layout_constraintLeft_toLeftOf="@id/editTaskChecklist"
+            android:layout_marginStart="8dp"
+            android:text="+  Add item"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:visibility="gone" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,16 +75,27 @@ public class TaskListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i("-->", "created view");
         View view = inflater.inflate(R.layout.fragment_task_list, container, false);
         if (tasks.size() == 0) {
             view.findViewById(R.id.taskListView).setVisibility(View.GONE);
             view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
         }
-        else {
-            RecyclerView recyclerView = view.findViewById(R.id.taskListView);
-            recyclerView.setAdapter(null); // TODO adapter doesn't exist yet
-        }
+
+        TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
+        RecyclerView recyclerView = view.findViewById(R.id.taskListView);
+        recyclerView.setAdapter(taskListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (this.getView() != null) {
+            this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
+            this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
+        }
     }
 }

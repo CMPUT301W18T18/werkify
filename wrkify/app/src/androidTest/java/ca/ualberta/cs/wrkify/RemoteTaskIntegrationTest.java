@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNotEquals;
 public class RemoteTaskIntegrationTest {
     @Test
     public void testGetRequester() {
-        RemoteClient rc = WrkifyClient.getInstance();
+        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         User use = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");
         Task task = rc.create(Task.class, "mow my lawn", use, "mow my lawn");

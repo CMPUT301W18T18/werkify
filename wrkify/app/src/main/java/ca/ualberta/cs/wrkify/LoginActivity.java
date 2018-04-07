@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -59,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (sessionuser != null) {
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
 
         this.loginField = findViewById(R.id.loginField);
@@ -110,9 +112,18 @@ public class LoginActivity extends AppCompatActivity {
             if (user != null) {
                 session.setUser(user, this);
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
+            } else {
+                Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                        R.string.login_fail, Snackbar.LENGTH_LONG);
+                snack.setAction("Action", null);
+                snack.show();
             }
         } catch (IOException e) {
-
+            Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                    R.string.no_internet, Snackbar.LENGTH_LONG);
+            snack.setAction("Action", null);
+            snack.show();
         }
     }
 
@@ -127,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
             User sessionuser = Session.getInstance(this).getUser();
             if (sessionuser != null) {
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
             }
         }
     }

@@ -17,28 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
-
-import org.junit.Rule;
-import org.junit.Test;
-
 /**
- * Empty test to run ViewProfileActivity
+ * Created by peter on 03/04/18.
  */
 
-public class TestViewProfileActivity {
-    @Rule
-    public ActivityTestRule<ViewProfileActivity> activityTestRule = new ActivityTestRule<>(
-            ViewProfileActivity.class, false, false);
+public class SimpleTransaction2 extends Transaction<SimpleRemoteObject> {
 
-    @Test
-    public void testViewProfileActivity() {
-        Intent intent = new Intent();
+    public SimpleTransaction2(SimpleRemoteObject sro) {
+        super(sro, SimpleRemoteObject.class);
+    }
 
-        User user = new User("user1", "user1@example.com", "(555) 555-5555");
-
-        intent.putExtra(ViewProfileActivity.USER_EXTRA, user);
-        activityTestRule.launchActivity(intent);
+    @Override
+    public Boolean apply(SimpleRemoteObject object) {
+        object.setFieldTo2();
+        return true;
     }
 }

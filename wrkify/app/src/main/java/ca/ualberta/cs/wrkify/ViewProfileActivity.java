@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 /**
  * ViewProfileActivity displays the contact information of
  * a User, as well as provides the option to edit info
@@ -46,8 +48,13 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         this.initializeFromUser((User) getIntent().getSerializableExtra(USER_EXTRA));
 
-        // Open EditProfileActivity on edit button press
+        // Show the Edit button if the user being viewed is the session user
         FloatingActionButton editButton = findViewById(R.id.editButton);
+        if (Session.getInstance(this).getUser().equals(user)) {
+            editButton.setVisibility(View.VISIBLE);
+        }
+
+        // Open EditProfileActivity on edit button press
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +76,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     private void initializeFromUser(User user) {
         this.user = user;
+        refreshUser();
 
         TextView username = findViewById(R.id.UserName);
         TextView email = findViewById(R.id.email);
@@ -80,5 +88,18 @@ public class ViewProfileActivity extends AppCompatActivity {
         phonenumber.setText(user.getPhoneNumber());
 
         //TODO FAB hidden if user is not us
+    }
+
+    /**
+     * Re-downloads the user being viewed from the remote server.
+     * This ensures the profile being viewed is up to date.
+     */
+    private void refreshUser() {
+        try {
+            ((CachingClient) WrkifyClient.getInstance()).discardCached(this.user.getId());
+            this.user = WrkifyClient.getInstance().download(this.user.getId(), this.user.getClass());
+        } catch (IOException e) {
+            // TODO You are offline.
+        }
     }
 }
