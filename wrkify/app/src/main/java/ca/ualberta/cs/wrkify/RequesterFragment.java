@@ -39,6 +39,8 @@ import java.util.List;
  */
 public class RequesterFragment extends TasksOverviewFragment {
     private static final int REQUEST_NEW_TASK = 13;
+
+    private RequesterFragmentPagerAdapter adapter;
     
     @Override
     protected String getAppBarTitle() {
@@ -57,19 +59,20 @@ public class RequesterFragment extends TasksOverviewFragment {
     }
 
     @Override
-    protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
-        return new RequesterFragment.RequesterFragmentPagerAdapter(fragmentManager);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // update the list
+        this.adapter.refreshRequester();
     }
 
-    // TODO move to the taskFragment
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_NEW_TASK && resultCode == EditTaskActivity.RESULT_TASK_CREATED) {
-
-        }
+    protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
+        this.adapter = new RequesterFragmentPagerAdapter(fragmentManager);
+        return this.adapter;
     }
 
     static class RequesterFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        private RequestedListFragment requester;
 
         public RequesterFragmentPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -80,7 +83,8 @@ public class RequesterFragment extends TasksOverviewFragment {
             Log.i("-->", "got item " + position);
             switch (position) {
                 case 0:
-                    return new RequestedListFragment();
+                    this.requester = new RequestedListFragment();
+                    return this.requester;
                 case 1:
                     return new AssignedListFragment();
                 case 2:
@@ -88,6 +92,10 @@ public class RequesterFragment extends TasksOverviewFragment {
                 default:
                     return null;
             }
+        }
+
+        public void refreshRequester() {
+            this.requester.refresh();
         }
 
         @Nullable

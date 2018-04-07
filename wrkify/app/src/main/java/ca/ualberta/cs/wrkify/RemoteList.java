@@ -100,6 +100,9 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
     }
 
     protected void setObjs(List<T> objs) {
+        this.objs.clear();
+        this.refs.clear();
+
         for (T obj: objs) {
             this.objs.add(obj);
             this.refs.add(obj.<T>reference());

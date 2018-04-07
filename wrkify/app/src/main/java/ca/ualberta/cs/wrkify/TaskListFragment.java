@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +45,7 @@ import java.util.List;
 public abstract class TaskListFragment extends Fragment {
 
     private RemoteList<Task> tasks;
+    private TaskListAdapter<Task> taskListAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public abstract class TaskListFragment extends Fragment {
             view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
         }
 
-        TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
+        this.taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
         RecyclerView recyclerView = view.findViewById(R.id.taskListView);
         recyclerView.setAdapter(taskListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -73,10 +75,16 @@ public abstract class TaskListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         this.tasks.refresh();
+        this.taskListAdapter.notifyDataSetChanged();
         if (this.getView() != null) {
             this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
             this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
         }
+    }
+
+    protected void refresh() {
+        this.tasks.refresh();
+        this.taskListAdapter.notifyDataSetChanged();
     }
 
     protected abstract RemoteList getTaskList();
