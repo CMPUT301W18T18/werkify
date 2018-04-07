@@ -29,6 +29,7 @@ import java.io.IOException;
 import static android.support.test.espresso.Espresso.*;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -104,6 +105,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         Intent intent = new Intent();
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
+
         launchActivity(intent);
     }
 
@@ -121,7 +123,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
     }
 
     private void assertBottomSheetCollapsed() {
-        onView(withId(R.id.taskViewBottomSheetContent)).check(matches(not(hasDescendant(isDisplayed()))));
+        onView(withId(R.id.taskViewBottomSheetContent)).check(doesNotExist());
     }
 
     private void assertBottomSheetExpanded() {
@@ -165,9 +167,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
         onView(withText("Bid")).perform(click());
 
-        closeSoftKeyboard();
-
-        pressBack();
         assertBottomSheetCollapsed();
     }
 
@@ -462,7 +461,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         onView(withId(R.id.taskViewBottomSheetButtonDeassign)).perform(click());
         onView(withText("Deassign")).perform(click());
 
-        pressBack();
         assertBottomSheetCollapsed();
 
         pressBackUnconditionally();
@@ -488,7 +486,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
         onView(withId(R.id.taskViewBottomSheetButtonMarkDone)).perform(click());
         onView(withText("Mark done")).perform(click());
 
-        pressBack();
         assertBottomSheetCollapsed();
 
         pressBackUnconditionally();

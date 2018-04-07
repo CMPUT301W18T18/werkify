@@ -24,6 +24,7 @@ import android.view.View;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -66,8 +67,8 @@ public class RequesterFragment extends TasksOverviewFragment {
     }
 
     @Override
-    protected String[] getTabTitles() {
-        return new String[]{"Requested", "Assigned", "Closed"};
+    protected List<String> getTabTitles() {
+        return Arrays.asList("Requested", "Assigned", "Closed");
     }
     
     @Override

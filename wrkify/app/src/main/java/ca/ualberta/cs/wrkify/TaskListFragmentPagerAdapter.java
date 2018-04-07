@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -35,6 +36,7 @@ import java.util.List;
  */
 public class TaskListFragmentPagerAdapter extends FragmentPagerAdapter {
     private List<ArrayList<Task>> pageTaskLists;
+    private List<String> pageTitles;
     
     /**
      * Creates a TaskListFragmentPagerAdapter for the specified set of task lists.
@@ -43,16 +45,28 @@ public class TaskListFragmentPagerAdapter extends FragmentPagerAdapter {
      * @param fragmentManager Fragment manager to instantiate from (passed to super FragmentPagerAdapter)
      * @param pageTaskLists List of task lists to display as pages
      */
-    public TaskListFragmentPagerAdapter(FragmentManager fragmentManager, List<ArrayList<Task>> pageTaskLists) {
+    public TaskListFragmentPagerAdapter(FragmentManager fragmentManager, List<ArrayList<Task>> pageTaskLists, List<String> pageTitles) {
         super(fragmentManager);
         Log.i("-->", "task lists: " + pageTaskLists.size());
+
+        if (pageTaskLists.size() != pageTitles.size()) {
+            throw new IllegalArgumentException();
+        }
+
         this.pageTaskLists = pageTaskLists;
+        this.pageTitles = pageTitles;
     }
 
     @Override
     public Fragment getItem(int position) {
         Log.i("-->", "got item " + position);
         return TaskListFragment.makeTaskList(this.pageTaskLists.get(position));
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return this.pageTitles.get(position);
     }
 
     @Override

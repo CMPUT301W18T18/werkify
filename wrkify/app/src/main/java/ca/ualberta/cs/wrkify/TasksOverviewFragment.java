@@ -23,10 +23,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.transition.Slide;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.transition.Slide;
-import android.transition.TransitionManager;
+import android.support.transition.TransitionManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,6 +51,8 @@ abstract class TasksOverviewFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager pager;
     private FloatingActionButton addButton;
+
+    private boolean addButtonVisible;
     
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
@@ -105,20 +107,14 @@ abstract class TasksOverviewFragment extends Fragment {
                 popup.show();
             }
         });
-        
-        // Create tabs
-        for (String tabTitle: getTabTitles()) {
-            TabLayout.Tab tab = tabLayout.newTab();
-            tab.setText(tabTitle);
-            this.tabLayout.addTab(tab);
-        }
 
         // Bind adapter to pager
         // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
-        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
+        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists(), getTabTitles()));
 
         // Initialize add button
-        addButton.setVisibility(isAddButtonEnabled(0)? View.VISIBLE : View.GONE);
+        addButtonVisible = isAddButtonEnabled(0);
+        addButton.setVisibility(addButtonVisible? View.VISIBLE : View.GONE);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,38 +122,14 @@ abstract class TasksOverviewFragment extends Fragment {
             }
         });
 
-        // Switch pager pages on tab move
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Log.i("-->", "switching to tab " + tab.getPosition());
-                pager.setCurrentItem(tab.getPosition());
-                pager.forceLayout();
-                Log.i("-->", "now: " + pager.getCurrentItem());
-            }
+        // Bind tab layout to pager
+        tabLayout.setupWithViewPager(pager);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // ignored
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // ignored
-            }
-        });
-
-        // Switch tabs on pager page
+        // Show/hide add button on appropriate pages
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                tabLayout.setScrollPosition(position, 0, true);
-
-                if (isAddButtonEnabled(position)) {
-                    showAddButton();
-                } else {
-                    hideAddButton();
-                }
+                // ignored
             }
 
             @Override
@@ -167,11 +139,11 @@ abstract class TasksOverviewFragment extends Fragment {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                tabLayout.setScrollPosition(position, positionOffset, true);
-
-                if (positionOffset != 0 && addButton.getVisibility() == View.VISIBLE) {
+                if (positionOffset != 0 && addButtonVisible) {
+                    addButtonVisible = false;
                     hideAddButton();
-                } else if (positionOffset == 0 && isAddButtonEnabled(position)) {
+                } else if (positionOffset == 0 && isAddButtonEnabled(position) && !addButtonVisible) {
+                    addButtonVisible = true;
                     showAddButton();
                 }
             }
@@ -185,6 +157,7 @@ abstract class TasksOverviewFragment extends Fragment {
      * TODO add transition
      */
     private void hideAddButton() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.GONE);
     }
 
@@ -193,6 +166,7 @@ abstract class TasksOverviewFragment extends Fragment {
      * TODO add transition
      */
     private void showAddButton() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.VISIBLE);
     }
 
@@ -221,7 +195,7 @@ abstract class TasksOverviewFragment extends Fragment {
      * correct behaviour.
      * @return list of tab titles
      */
-    protected abstract String[] getTabTitles();
+    protected abstract List<String> getTabTitles();
     
     /**
      * Determines the 'activity title' shown when viewing this Fragment.
