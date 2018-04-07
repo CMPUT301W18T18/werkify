@@ -60,8 +60,16 @@ public class ProviderFragment extends TasksOverviewFragment {
         @Override
         public Fragment getItem(int position) {
             Log.i("-->", "got item " + position);
-            //TODO get specific TaskListFragment
-            return null;
+            switch (position) {
+                case 0:
+                    return new AssignedListFragment();
+                case 1:
+                    return new BiddedListFragment();
+                case 2:
+                    return new CompletedListFragment();
+                default:
+                    return null;
+            }
         }
 
         @Nullable
@@ -73,6 +81,66 @@ public class ProviderFragment extends TasksOverviewFragment {
         @Override
         public int getCount() {
             return 3;
+        }
+    }
+
+    public static class AssignedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByProvider(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.ASSIGNED
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
+    }
+
+    public static class BiddedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByProvider(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.BIDDED
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
+    }
+
+    public static class CompletedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByProvider(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.DONE
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
         }
     }
 }
