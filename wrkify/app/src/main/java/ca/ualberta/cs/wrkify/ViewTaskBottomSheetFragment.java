@@ -117,6 +117,9 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
         View view = this.getView();
         if (view == null) throw new IllegalStateException();
 
+        // Avoid starting the transition while already in a transition
+        if (contentView.getParent() != null) { return; }
+
         // Show the content
         TransitionManager.beginDelayedTransition((ViewGroup) getView().getRootView(),
                 new ChangeBounds());
