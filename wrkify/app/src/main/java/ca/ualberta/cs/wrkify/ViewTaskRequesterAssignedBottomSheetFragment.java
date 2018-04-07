@@ -67,6 +67,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                                 task.complete();
                                 WrkifyClient.getInstance().upload(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+                                collapse();
                             }
                         });
                 dialog.show(fm, null);
@@ -84,6 +85,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                                 task.unassign();
                                 WrkifyClient.getInstance().upload(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+                                collapse();
                             }
                         }
                 );
