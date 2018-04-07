@@ -41,6 +41,10 @@ public class SearcherTest {
     private static Task task3;
     private static Task task4;
 
+    private static Task locationTask1;
+    private static Task locationTask2;
+    private static Task locationTask3;
+
     private static RemoteClient rc;
 
     @BeforeClass
@@ -61,6 +65,18 @@ public class SearcherTest {
 
         task4.addBid(new Bid(new Price(1.0), user3));
         rc.upload(task4);
+
+        locationTask1 = rc.create(Task.class, "location task 1", user1, "");
+        locationTask2 = rc.create(Task.class, "location task 2", user2, "");
+        locationTask3 = rc.create(Task.class, "location task 3", user3, "");
+
+        locationTask1.setLocation(new TaskLocation(38.9, -171.4));
+        locationTask2.setLocation(new TaskLocation(38.9001, -171.4001));
+        locationTask3.setLocation(new TaskLocation(38.8, -171.3));
+
+        rc.upload(locationTask1);
+        rc.upload(locationTask2);
+        rc.upload(locationTask3);
 
         // give elasticsearch time to index
         try {
@@ -200,5 +216,20 @@ public class SearcherTest {
         assertEquals(user1, peter);
         assertEquals(user2, taylor);
         assertEquals(user3, john);
+    }
+
+    @Test
+    public void testFindByLocation() {
+        List<Task> results;
+        try {
+            results = Searcher.findTasksByKeywordsNear(rc, "location task", new TaskLocation(38.9, -171.4));
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertTrue(results.contains(locationTask1));
+        assertTrue(results.contains(locationTask2));
+        assertFalse(results.contains(locationTask3));
     }
 }
