@@ -38,9 +38,9 @@ public class Searcher {
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByRequester(RemoteClient client, User requester, TaskStatus... statuses) throws IOException {
-        String query = "{\"query\":{\"bool\":{\"must\":[\"nested\":{\"path\":\"requester\",\"query\":"
-                + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}},"
-                + getRequestQuery(statuses)+ "]}}}";
+        String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"requester\",\"query\":"
+                + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}}}},{"
+                + getRequestQuery(statuses)+ "}]}}}";
         Log.e("query", query);
         return client.search(query, Task.class);
     }
@@ -118,7 +118,14 @@ public class Searcher {
 
     private static String getRequestQuery(TaskStatus... statuses) {
         Gson gson = new Gson();
-        String json = gson.toJson(statuses);
-        return String.format("\"terms\": {\"status\": %s, \"minimum_should_match\": 1}", json);
+
+        String arr = "";
+        for (TaskStatus status: statuses) {
+            arr += String.format("{\"match\": {\"status\": %s}},", gson.toJson(status));
+        }
+
+        arr = arr.substring(0, arr.length()-1);
+
+        return String.format("\"bool\":{\"should\":[%s],\"minimum_number_should_match\":1}", arr);
     }
 }
