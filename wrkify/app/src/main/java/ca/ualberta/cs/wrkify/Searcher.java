@@ -31,26 +31,36 @@ import java.util.List;
 public class Searcher {
 
     /**
-     * Find all tasks where the given User is the task requester.
+     * Find all tasks where the given User is the task requester and
+     * the status of the task is one of the provided statuses.
      * @param client RemoteClient to search in
      * @param requester User to search for
+     * @param statuses the statuses that are valid in your search
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
     static List<Task> findTasksByRequester(RemoteClient client, User requester, TaskStatus... statuses) throws IOException {
         String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"requester\",\"query\":"
                 + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}}}},{"
-                + getRequestQuery(statuses)+ "}]}}}";
+                + getTaskStatusQuery(statuses)+ "}]}}}";
         return client.search(query, Task.class);
     }
 
+    /**
+     * Find all tasks where the given User is the task requester.
+     * @param client RemoteClient to search in
+     * @param requester User to search for
+     * @return List of tasks matching the search (may be empty)
+     * @throws IOException if RemoteClient is disconnected
+     */
     static List<Task> findTasksByRequester(RemoteClient client, User requester) throws IOException {
         return findTasksByRequester(client, requester,
                 TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
     /**
-     * Find all tasks where the given User is the assigned task provider.
+     * Find all tasks where the given User is the assigned task provider and
+     * the status of the task is one of the provided statuses.
      * @param client RemoteClient to search in
      * @param provider User to search for
      * @param statuses the statuses you want in your search
@@ -60,7 +70,7 @@ public class Searcher {
     static List<Task> findTasksByProvider(RemoteClient client, User provider, TaskStatus... statuses) throws IOException {
         String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"provider\",\"query\":"
                 + "{\"match\":{\"provider.refId\":\"" + provider.getId() + "\"}}}},{"
-                + getRequestQuery(statuses)+ "}]}}}";
+                + getTaskStatusQuery(statuses)+ "}]}}}";
         Log.e("query", query);
         return client.search(query, Task.class);
     }
@@ -77,10 +87,19 @@ public class Searcher {
                 TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
+    /**
+     * Find all tasks where the given User has placed a bid and
+     * the status of the task is one of the provided statuses.
+     * @param client RemoteClient to search in
+     * @param bidder User to search for
+     * @param statuses the statuses you want in your search
+     * @return List of tasks matching the search (may be empty)
+     * @throws IOException if RemoteClient is disconnected
+     */
     static List<Task> findTasksByBidder(RemoteClient client, User bidder, TaskStatus... statuses) throws IOException {
         String query = "{\"query\":{\"bool\":{\"must\":[{\"nested\":{\"path\":\"bidList.bidder\",\"query\":"
                 + "{\"match\":{\"bidList.bidder.refId\":\"" + bidder.getId() + "\"}}}},{"
-                + getRequestQuery(statuses)+ "}]}}}";
+                + getTaskStatusQuery(statuses)+ "}]}}}";
         return client.search(query, Task.class);
     }
 
@@ -136,7 +155,13 @@ public class Searcher {
 
     // TODO findTasksByLocation?
 
-    private static String getRequestQuery(TaskStatus... statuses) {
+    /**
+     * generates an elasticsearch bool query to match
+     * tasks that have one of the provided statuses.
+     * @param statuses the valid statuses for this query.
+     * @return the json bool query as a string
+     */
+    private static String getTaskStatusQuery(TaskStatus... statuses) {
         Gson gson = new Gson();
 
         String arr = "";
