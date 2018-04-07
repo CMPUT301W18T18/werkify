@@ -25,7 +25,8 @@
                     "properties": {
                         "bidder": {"type": "nested"}
                     }
-                }
+                },
+                "location": {"type": "geo_point"}
             }
         }
     }

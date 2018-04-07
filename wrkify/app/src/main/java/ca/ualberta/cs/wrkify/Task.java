@@ -34,7 +34,7 @@ public class Task extends RemoteObject {
     private String title;
     private String description;
     private ArrayList<Bitmap> imageList;
-    private Location location;
+    private TaskLocation location;
     private CheckList checkList;
     private ArrayList<Bid> bidList;
     private RemoteReference<User> requester;
@@ -125,7 +125,7 @@ public class Task extends RemoteObject {
      * gets the location of the task
      * @return the location or null
      */
-    public Location getLocation() {
+    public TaskLocation getLocation() {
         return location;
     }
 
@@ -213,7 +213,7 @@ public class Task extends RemoteObject {
      * sets the location
      * @param location the location
      */
-    public void setLocation(Location location) {
+    public void setLocation(TaskLocation location) {
         if (this.status == TaskStatus.REQUESTED) {
             this.location = location;
         } else {
