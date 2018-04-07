@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -64,8 +65,8 @@ public class ProviderFragment extends TasksOverviewFragment {
     }
 
     @Override
-    protected String[] getTabTitles() {
-        return new String[]{"Assigned", "Bidded", "Completed"};
+    protected List<String> getTabTitles() {
+        return Arrays.asList("Assigned", "Bidded", "Completed");
     }
     
     @Override
