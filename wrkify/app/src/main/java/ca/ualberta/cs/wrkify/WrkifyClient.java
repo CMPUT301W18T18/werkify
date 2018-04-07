@@ -32,7 +32,7 @@ public class WrkifyClient {
     /**
      * INDEX the default elasticsearch index that wrkify uses
      */
-    public static final String INDEX = "9200/cmput301w18t18";
+    public static final String INDEX = "9200/cmput301w18";
 
     private static RemoteClient instance;
 
