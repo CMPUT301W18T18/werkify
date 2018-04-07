@@ -105,6 +105,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         Intent intent = new Intent();
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
+
         launchActivity(intent);
     }
 
