@@ -166,6 +166,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void viewMap(){
-
+        Intent intent = new Intent(this.getContext(),MapsActivity.class);
+        startActivity(intent);
     }
 }
