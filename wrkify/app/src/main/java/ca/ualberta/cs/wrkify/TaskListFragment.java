@@ -34,42 +34,21 @@ import java.util.List;
 
 
 /**
+ * TODO: this is now wrong
  * Fragment that displays a list of tasks.
  * This is used as the pages of a TaskListFragmentPagerAdapter,
  * but can probably be used in other contexts as well.
  * Receives an ArrayList of Tasks as ARGUMENT_TASK_LIST,
  * and displays those tasks.
- *
- * TODO adapter is currently not implemented.
  */
-public class TaskListFragment extends Fragment {
-    public static final String ARGUMENT_TASK_LIST = "ca.ualberta.cs.wrkify.ARGUMENT_TASK_LIST";
-    
-    /**
-     * Creates a TaskListFragment for a list of tasks. This is a simplifying
-     * factory wrapper around TaskListFragment.
-     * @param tasks list of tasks
-     * @return TaskListFragment to display the list of tasks
-     */
-    public static TaskListFragment makeTaskList(ArrayList<Task> tasks) {
-        TaskListFragment fragment = new TaskListFragment();
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_TASK_LIST, tasks);
-        fragment.setArguments(arguments);
-        return fragment;
-    }
+public abstract class TaskListFragment extends Fragment {
 
-    private ArrayList<Task> tasks;
-
-    /**
-     * Requisite null constructor
-     */
-    public TaskListFragment() { }
+    private RemoteList<Task> tasks;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.tasks = (ArrayList<Task>) this.getArguments().getSerializable(ARGUMENT_TASK_LIST);
+        this.tasks = getTaskList();
     }
 
     @Nullable
@@ -93,9 +72,12 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        this.tasks.refresh();
         if (this.getView() != null) {
             this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
             this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
         }
     }
+
+    protected abstract RemoteList getTaskList();
 }

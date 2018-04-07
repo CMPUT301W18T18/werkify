@@ -17,6 +17,12 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,53 +35,44 @@ import java.util.List;
  * @see MainActivity
  */
 public class ProviderFragment extends TasksOverviewFragment {
-    @Override
-    protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawProvidedTasks = Session.getInstance(getContext()).getUserProvidedCache();
-        List<Task> rawBiddedTasks = Session.getInstance(getContext()).getUserBiddedCache();
 
-        // Filter tasks into assigned, completed
-        ArrayList<Task> assignedTasks = new ArrayList<>();
-        ArrayList<Task> completedTasks = new ArrayList<>();
-        for (Task t: rawProvidedTasks) {
-            switch (t.getStatus()) {
-                case ASSIGNED:
-                    assignedTasks.add(t);
-                    break;
-                case DONE:
-                    completedTasks.add(t);
-            }
-        }
-
-        // Only show bidded tasks (you can also be a bidder on an assigned task)
-        ArrayList<Task> biddedTasks = new ArrayList<>();
-        for (Task t: rawBiddedTasks) {
-            switch (t.getStatus()) {
-                case BIDDED:
-                    biddedTasks.add(t);
-            }
-        }
-
-        List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(assignedTasks);
-        pageTaskLists.add(biddedTasks);
-        pageTaskLists.add(completedTasks);
-
-        return pageTaskLists;
-    }
-
-    @Override
-    protected List<String> getTabTitles() {
-        return Arrays.asList("Assigned", "Bidded", "Completed");
-    }
-    
     @Override
     protected String getAppBarTitle() {
         return "My tasks";
     }
 
     @Override
+    protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
+        return new ProviderFragmentPagerAdapter(fragmentManager);
+    }
+
+    @Override
     protected boolean isAddButtonEnabled(int index) {
         return false;
+    }
+
+    static class ProviderFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public ProviderFragmentPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.i("-->", "got item " + position);
+            //TODO get specific TaskListFragment
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return (new CharSequence[]{"Assigned", "Bidded", "Completed"})[position];
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
     }
 }

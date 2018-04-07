@@ -18,6 +18,10 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 import android.view.View;
 
@@ -35,41 +39,6 @@ import java.util.List;
  */
 public class RequesterFragment extends TasksOverviewFragment {
     private static final int REQUEST_NEW_TASK = 13;
-
-    @Override
-    protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawTasks = Session.getInstance(getContext()).getUserRequestedCache();
-
-        // Filter tasks into requested, assigned, completed
-        ArrayList<Task> requestedTasks = new ArrayList<>();
-        ArrayList<Task> assignedTasks = new ArrayList<>();
-        ArrayList<Task> completedTasks = new ArrayList<>();
-        for (Task t: rawTasks) {
-            switch (t.getStatus()) {
-                case REQUESTED:
-                case BIDDED:
-                    requestedTasks.add(t);
-                    break;
-                case ASSIGNED:
-                    assignedTasks.add(t);
-                    break;
-                case DONE:
-                    completedTasks.add(t);
-            }
-        }
-
-        List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(requestedTasks);
-        pageTaskLists.add(assignedTasks);
-        pageTaskLists.add(completedTasks);
-
-        return pageTaskLists;
-    }
-
-    @Override
-    protected List<String> getTabTitles() {
-        return Arrays.asList("Requested", "Assigned", "Closed");
-    }
     
     @Override
     protected String getAppBarTitle() {
@@ -88,12 +57,108 @@ public class RequesterFragment extends TasksOverviewFragment {
     }
 
     @Override
+    protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
+        return new RequesterFragment.RequesterFragmentPagerAdapter(fragmentManager);
+    }
+
+    // TODO move to the taskFragment
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_NEW_TASK && resultCode == EditTaskActivity.RESULT_TASK_CREATED) {
-            // Append the new task to task list
-            TaskListFragmentPagerAdapter adapter = (TaskListFragmentPagerAdapter) getPager().getAdapter();
-            Task task = (Task) data.getSerializableExtra(EditTaskActivity.EXTRA_RETURNED_TASK);
-            adapter.appendTaskToList(0, task);
+
+        }
+    }
+
+    static class RequesterFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public RequesterFragmentPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.i("-->", "got item " + position);
+            switch (position) {
+                case 0:
+                    return new RequestedListFragment();
+                case 1:
+                    return new AssignedListFragment();
+                case 2:
+                    return new ClosedListFragment();
+                default:
+                    return null;
+            }
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return (new CharSequence[]{"Requested", "Assigned", "Closed"})[position];
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    }
+
+    public static class RequestedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByRequester(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.REQUESTED, TaskStatus.BIDDED
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
+    }
+
+    public static class AssignedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByRequester(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.ASSIGNED
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
+    }
+
+    public static class ClosedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByRequester(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.DONE
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
         }
     }
 }

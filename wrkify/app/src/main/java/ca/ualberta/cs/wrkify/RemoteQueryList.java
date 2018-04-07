@@ -25,11 +25,15 @@ public abstract class RemoteQueryList<T extends RemoteObject> extends RemoteList
     public RemoteQueryList(RemoteClient client, Class<T> type) {
         super(client, type);
         this.client = client;
+        refresh();
     }
 
     @Override
     public void refresh() {
-        this.setObjs(query(this.client));
+        List<T> objs = query(this.client);
+        if (objs != null) {
+            this.setObjs(objs);
+        }
     }
 
     public abstract List<T> query(RemoteClient client);
