@@ -116,6 +116,13 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        final TextView mapIcon = (TextView) rootView.findViewById(R.id.nearme);
+        mapIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewMap();
+            }
+        });
 
         return rootView;
     }
@@ -156,5 +163,9 @@ public class SearchFragment extends Fragment {
         this.taskList = newList;
         TaskListAdapter<Task> newAdapter = new TaskListAdapter<>(new AppCompatActivity(),this.taskList);
         this.recycler.setAdapter(newAdapter);
+    }
+
+    public void viewMap(){
+
     }
 }
