@@ -30,17 +30,21 @@ import static junit.framework.Assert.fail;
 public class TaskLocationTest {
     @Test
     public void testTaskLocation() {
-        User user = WrkifyClient.getInstance().create(User.class, "User", "a@a", "");
-        Task task = WrkifyClient.getInstance().create(Task.class, "LOCATION4", user, "");
+        try {
+            User user = (User) WrkifyClient.getInstance().create(User.class, "User", "a@a", "");
+            Task task = (Task) WrkifyClient.getInstance().create(Task.class, "LOCATION4", user, "");
 
-        task.setLocation(new TaskLocation(14.555, 29.192));
-        WrkifyClient.getInstance().upload(task);
+            task.setLocation(new TaskLocation(14.555, 29.192));
+            WrkifyClient.getInstance().upload(task);
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     @Test
     public void testSearchForTask() {
         try {
-            assertNotEmpty(Searcher.findTasksByKeywordsNear(WrkifyClient.getInstance(), "LOCATION4",
+            assertNotEmpty(WrkifyClient.getInstance().getSearcher().findTasksByKeywordsNear("LOCATION4",
                     new TaskLocation(14.555, 29.192)));
         } catch (IOException e) {
             fail("IO Exception");

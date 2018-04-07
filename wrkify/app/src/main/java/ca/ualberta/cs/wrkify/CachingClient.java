@@ -19,13 +19,17 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -44,15 +48,36 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private TClient client;
     private Cache cache;
 
+    private Set<String> transientIdSet;
+
     private CachingClientSearcher searcher = new CachingClientSearcher(this);
 
     public CachingClient(TClient client) {
         this.client = client;
         this.cache = new Cache();
+        this.transientIdSet = new HashSet<>();
     }
 
     public void discardCached(String id) {
         this.cache.discard(id);
+    }
+
+    public void updateCached(RemoteObject obj) {
+        cache.put(obj.getId(), obj);
+    }
+
+    public <T extends RemoteObject> T downloadFromRemote(String id, Class<T> type) throws IOException {
+        return client.download(id, type);
+    }
+
+    public <T extends RemoteObject> T createLocal(Class<T> type, Object... conArgs) {
+        try {
+            T object = (T) newInstance(type, conArgs);
+            object.setId(makeTransientId());
+            return object;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -76,9 +101,22 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     }
 
     @Override
-    public void upload(RemoteObject obj) {
+    public void upload(RemoteObject obj) throws IOException {
+        if (this.transientIdSet.contains(obj.getId())) {
+            throw new IOException("Refusing to upload transient RemoteObject");
+        }
+
         client.upload(obj);
         cache.put(obj.getId(), obj);
+    }
+
+    @Override
+    <T extends RemoteObject> T uploadNew(Class<T> type, T obj) throws IOException {
+        if (client.uploadNew(type, obj) == null) {
+            throw new IOException();
+        }
+        cache.put(obj.getId(), obj);
+        return obj;
     }
 
     @Override
@@ -105,7 +143,9 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
      */
     private String makeTransientId() {
         // TODO not sure if this is the best way to do this
-        return UUID.randomUUID().toString();
+        String transientId = UUID.randomUUID().toString();
+        transientIdSet.add(transientId);
+        return transientId;
     }
 
     public class CachingClientSearcher extends Searcher<CachingClient> {

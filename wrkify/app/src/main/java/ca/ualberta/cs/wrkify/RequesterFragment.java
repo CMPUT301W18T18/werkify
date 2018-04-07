@@ -38,32 +38,8 @@ public class RequesterFragment extends TasksOverviewFragment {
 
     @Override
     protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawTasks = Session.getInstance(getContext()).getUserRequestedCache();
-
-        // Filter tasks into requested, assigned, completed
-        ArrayList<Task> requestedTasks = new ArrayList<>();
-        ArrayList<Task> assignedTasks = new ArrayList<>();
-        ArrayList<Task> completedTasks = new ArrayList<>();
-        for (Task t: rawTasks) {
-            switch (t.getStatus()) {
-                case REQUESTED:
-                case BIDDED:
-                    requestedTasks.add(t);
-                    break;
-                case ASSIGNED:
-                    assignedTasks.add(t);
-                    break;
-                case DONE:
-                    completedTasks.add(t);
-            }
-        }
-
-        List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(requestedTasks);
-        pageTaskLists.add(assignedTasks);
-        pageTaskLists.add(completedTasks);
-
-        return pageTaskLists;
+        // TODO ??
+        return null;
     }
 
     @Override

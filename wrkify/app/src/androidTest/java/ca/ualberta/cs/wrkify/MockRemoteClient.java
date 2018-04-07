@@ -35,6 +35,8 @@ class MockRemoteClient extends RemoteClient {
     private HashMap<String, Object> hmap = new HashMap<>();
     private RemoteObject[] nextSearchResult;
 
+    private MockSearcher searcher = new MockSearcher(this);
+
     @Override
     public <T extends RemoteObject> T create(Class<T> type, Object ...conArgs) {
         T instance;
@@ -45,16 +47,21 @@ class MockRemoteClient extends RemoteClient {
             return null;
         }
         
-        String id = UUID.randomUUID().toString();
-        this.hmap.put(id, instance);
-        instance.setId(id);
-        
-        return instance;
+        return uploadNew(type, instance);
     }
 
     @Override
     public void upload(RemoteObject obj) {
         this.hmap.put(obj.getId(), obj);
+    }
+
+    @Override
+    <T extends RemoteObject> T uploadNew(Class<T> type, T instance) {
+        String id = UUID.randomUUID().toString();
+        this.hmap.put(id, instance);
+        instance.setId(id);
+
+        return instance;
     }
 
     @Override
@@ -67,8 +74,7 @@ class MockRemoteClient extends RemoteClient {
         return type.cast(this.hmap.get(id));
     }
 
-    @Override
-    <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+    private <T extends RemoteObject> List<T> mockSearch() {
         if (this.nextSearchResult != null) {
             List<RemoteObject> results = Arrays.asList(this.nextSearchResult);
             this.nextSearchResult = null;
@@ -78,6 +84,11 @@ class MockRemoteClient extends RemoteClient {
         }
     }
 
+    @Override
+    Searcher getSearcher() {
+        return searcher;
+    }
+
     /**
      * Sets the results for the next call to {@link #search(String, Class)} on the
      * MockRemoteClient.
@@ -85,5 +96,60 @@ class MockRemoteClient extends RemoteClient {
      */
     public void mockNextSearch(RemoteObject... objects) {
         this.nextSearchResult = objects;
+    }
+
+    public class MockSearcher extends Searcher<MockRemoteClient> {
+        public MockSearcher(MockRemoteClient client) {
+            super(client);
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(User bidder) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(User bidder, TaskStatus... statuses) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByKeywords(String keywords) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(User provider) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(User provider, TaskStatus... statuses) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(User requester) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(User requester, TaskStatus... statuses) {
+            return mockSearch();
+        }
+
+        @Override
+        public User getUser(String username) {
+            List<User> results = mockSearch();
+            if (results == null || results.size() == 0) {
+                return null;
+            }
+            return results.get(0);
+        }
     }
 }

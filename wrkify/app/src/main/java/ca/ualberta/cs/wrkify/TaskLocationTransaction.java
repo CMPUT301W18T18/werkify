@@ -23,10 +23,10 @@ import android.location.Location;
  * TaskLocationTransaction represents a Transaction for
  * Task.setLocation()
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
-public class TaskLocationTransaction extends Transaction<Task> {
+public class TaskLocationTransaction extends StateChangeTransaction<Task> {
     private TaskLocation location;
 
     /**

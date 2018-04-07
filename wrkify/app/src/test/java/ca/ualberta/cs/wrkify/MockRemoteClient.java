@@ -42,15 +42,21 @@ class MockRemoteClient extends RemoteClient {
             return null;
         }
         
-        String id = UUID.randomUUID().toString();
-        this.hmap.put(id, instance);
-        instance.setId(id);
-        
-        return instance;
+        return this.uploadNew(type, instance);
     }
     
     public void upload(RemoteObject obj) {
         this.hmap.put(obj.getId(), obj);
+    }
+
+    @Override
+    <T extends RemoteObject> T uploadNew(Class<T> type, T instance) {
+        String id = UUID.randomUUID().toString();
+
+        this.hmap.put(id, instance);
+        instance.setId(id);
+
+        return instance;
     }
     
     public void delete(RemoteObject obj) {

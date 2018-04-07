@@ -46,26 +46,30 @@ public class CachingClientSearcherTest {
 
     @BeforeClass
     public static void createData() {
-        MockRemoteClient innerClient = new MockRemoteClient();
-        rc = new CachingClient<>(innerClient);
-        searcher = rc.getLocalSearcher();
+        try {
+            MockRemoteClient innerClient = new MockRemoteClient();
+            rc = new CachingClient<>(innerClient);
+            searcher = rc.getLocalSearcher();
 
-        user1 = (User) rc.create(User.class, "peter", "peter@a.com", "1");
-        user2 = (User) rc.create(User.class, "taylor", "taylor@a.com", "2");
-        user3 = (User) rc.create(User.class, "john", "john@a.com", "3");
+            user1 = (User) rc.create(User.class, "peter", "peter@a.com", "1");
+            user2 = (User) rc.create(User.class, "taylor", "taylor@a.com", "2");
+            user3 = (User) rc.create(User.class, "john", "john@a.com", "3");
 
-        task1 = (Task) rc.create(Task.class, "task 1", user1, "do nothing");
-        task2 = (Task) rc.create(Task.class, "task 2", user1, "blah");
-        task3 = (Task) rc.create(Task.class, "task 3", user2, "blah blah");
-        task4 = (Task) rc.create(Task.class, "task 4", user2, "do something");
+            task1 = (Task) rc.create(Task.class, "task 1", user1, "do nothing");
+            task2 = (Task) rc.create(Task.class, "task 2", user1, "blah");
+            task3 = (Task) rc.create(Task.class, "task 3", user2, "blah blah");
+            task4 = (Task) rc.create(Task.class, "task 4", user2, "do something");
 
-        Bid bid = new Bid(new Price(1.0), user3);
-        task2.addBid(bid);
-        task2.acceptBid(bid);
-        rc.upload(task2);
+            Bid bid = new Bid(new Price(1.0), user3);
+            task2.addBid(bid);
+            task2.acceptBid(bid);
+            rc.upload(task2);
 
-        task4.addBid(new Bid(new Price(1.0), user3));
-        rc.upload(task4);
+            task4.addBid(new Bid(new Price(1.0), user3));
+            rc.upload(task4);
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     @AfterClass
@@ -130,7 +134,7 @@ public class CachingClientSearcherTest {
             return;
         }
 
-        assertEquals(1, res3.size());
+        assertEquals(2, res3.size());
         assertTrue(res3.contains(task4));
 
         List<Task> res1;

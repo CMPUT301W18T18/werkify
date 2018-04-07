@@ -50,35 +50,39 @@ public class SearcherTest {
 
     @BeforeClass
     public static void createData() {
-        rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
-        searcher = rc.getSearcher();
+        try {
+            rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
+            searcher = rc.getSearcher();
 
-        user1 = rc.create(User.class, "peter", "peter@a.com", "1");
-        user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
-        user3 = rc.create(User.class, "john", "john@a.com", "3");
+            user1 = rc.create(User.class, "peter", "peter@a.com", "1");
+            user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
+            user3 = rc.create(User.class, "john", "john@a.com", "3");
 
-        task1 = rc.create(Task.class, "task 1", user1, "do nothing");
-        task2 = rc.create(Task.class, "task 2", user1, "blah");
-        task3 = rc.create(Task.class, "task 3", user2, "blah blah");
-        task4 = rc.create(Task.class, "task 4", user2, "do something");
+            task1 = rc.create(Task.class, "task 1", user1, "do nothing");
+            task2 = rc.create(Task.class, "task 2", user1, "blah");
+            task3 = rc.create(Task.class, "task 3", user2, "blah blah");
+            task4 = rc.create(Task.class, "task 4", user2, "do something");
 
-        task2.acceptBid(new Bid(new Price(1.0), user3));
-        rc.upload(task2);
+            task2.acceptBid(new Bid(new Price(1.0), user3));
+            rc.upload(task2);
 
-        task4.addBid(new Bid(new Price(1.0), user3));
-        rc.upload(task4);
+            task4.addBid(new Bid(new Price(1.0), user3));
+            rc.upload(task4);
 
-        locationTask1 = rc.create(Task.class, "location task 1", user1, "");
-        locationTask2 = rc.create(Task.class, "location task 2", user2, "");
-        locationTask3 = rc.create(Task.class, "location task 3", user3, "");
+            locationTask1 = rc.create(Task.class, "location task 1", user1, "");
+            locationTask2 = rc.create(Task.class, "location task 2", user2, "");
+            locationTask3 = rc.create(Task.class, "location task 3", user3, "");
 
-        locationTask1.setLocation(new TaskLocation(38.9, -171.4));
-        locationTask2.setLocation(new TaskLocation(38.9001, -171.4001));
-        locationTask3.setLocation(new TaskLocation(38.8, -171.3));
+            locationTask1.setLocation(new TaskLocation(38.9, -171.4));
+            locationTask2.setLocation(new TaskLocation(38.9001, -171.4001));
+            locationTask3.setLocation(new TaskLocation(38.8, -171.3));
 
-        rc.upload(locationTask1);
-        rc.upload(locationTask2);
-        rc.upload(locationTask3);
+            rc.upload(locationTask1);
+            rc.upload(locationTask2);
+            rc.upload(locationTask3);
+        } catch (IOException e) {
+            fail();
+        }
 
         // give elasticsearch time to index
         try {

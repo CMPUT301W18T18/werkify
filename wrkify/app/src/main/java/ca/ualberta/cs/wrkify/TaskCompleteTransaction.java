@@ -21,11 +21,11 @@ package ca.ualberta.cs.wrkify;
  * TaskCompleteTransaction provides a Transaction for the
  * Task.complete() operation.
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
 
-public class TaskCompleteTransaction extends Transaction<Task> {
+public class TaskCompleteTransaction extends StateChangeTransaction<Task> {
 
     /**
      * create a transaction to complete task

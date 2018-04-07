@@ -21,8 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -34,19 +32,19 @@ import static junit.framework.Assert.fail;
  */
 
 public class TransactionTest {
-    private static RemoteClient rc;
+    private static CachingClient<MockRemoteClient> rc;
 
     @BeforeClass
     public static void setup() {
-        rc= new MockRemoteClient();
+        rc= new CachingClient<>(new MockRemoteClient());
     }
 
     @Test
     public void testTransaction() {
         SimpleRemoteObject sro = new SimpleRemoteObject(5);
         SimpleRemoteObject sro2 = new SimpleRemoteObject(6);
-        Transaction<SimpleRemoteObject> t = new SimpleTransaction1(sro);
-        Transaction<SimpleRemoteObject> t2 = new SimpleTransaction2(sro2);
+        StateChangeTransaction<SimpleRemoteObject> t = new SimpleTransaction1(sro);
+        StateChangeTransaction<SimpleRemoteObject> t2 = new SimpleTransaction2(sro2);
 
         Boolean status;
 

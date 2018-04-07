@@ -23,10 +23,10 @@ import android.graphics.Bitmap;
  * TaskDelImageTransaction models Task.delImage() as
  * a Transaction
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
-public class TaskDelImageTransaction extends Transaction<Task> {
+public class TaskDelImageTransaction extends StateChangeTransaction<Task> {
     private Bitmap image;
 
     /**

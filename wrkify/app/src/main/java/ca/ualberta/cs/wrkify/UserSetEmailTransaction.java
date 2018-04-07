@@ -18,18 +18,28 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * Created by peter on 03/04/18.
+ * Transaction to set a user's email address.
  */
+public class UserSetEmailTransaction extends StateChangeTransaction<User> {
+    private String email;
 
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
-
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
+    /**
+     * Creates a transaction to change the target user's email address.
+     * @param user Target user
+     * @param email New email address
+     */
+    public UserSetEmailTransaction(User user, String email) {
+        super(user, User.class);
+        this.email = email;
     }
 
     @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
-        return true;
+    protected Boolean apply(User user) {
+        try {
+            user.setEmail(email);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }
