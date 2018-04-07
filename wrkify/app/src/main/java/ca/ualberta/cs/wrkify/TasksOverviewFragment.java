@@ -107,17 +107,10 @@ abstract class TasksOverviewFragment extends Fragment {
                 popup.show();
             }
         });
-        
-        // Create tabs
-        for (String tabTitle: getTabTitles()) {
-            TabLayout.Tab tab = tabLayout.newTab();
-            tab.setText(tabTitle);
-            this.tabLayout.addTab(tab);
-        }
 
         // Bind adapter to pager
         // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
-        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
+        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists(), getTabTitles()));
 
         // Initialize add button
         addButtonVisible = isAddButtonEnabled(0);
@@ -129,39 +122,14 @@ abstract class TasksOverviewFragment extends Fragment {
             }
         });
 
-        // Switch pager pages on tab move
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Log.i("-->", "switching to tab " + tab.getPosition());
-                pager.setCurrentItem(tab.getPosition());
-                pager.forceLayout();
-                Log.i("-->", "now: " + pager.getCurrentItem());
-            }
+        // Bind tab layout to pager
+        tabLayout.setupWithViewPager(pager);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // ignored
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // ignored
-            }
-        });
-
-        // Switch tabs on pager page
+        // Show/hide add button on appropriate pages
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                /*Log.d("TasksOverview", "onPageSelected");
-                tabLayout.setScrollPosition(position, 0, true);
-
-                if (isAddButtonEnabled(position)) {
-                    showAddButton();
-                } else {
-                    hideAddButton();
-                }*/
+                // ignored
             }
 
             @Override
@@ -171,8 +139,6 @@ abstract class TasksOverviewFragment extends Fragment {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                tabLayout.setScrollPosition(position, positionOffset, true);
-
                 if (positionOffset != 0 && addButtonVisible) {
                     addButtonVisible = false;
                     hideAddButton();
@@ -229,7 +195,7 @@ abstract class TasksOverviewFragment extends Fragment {
      * correct behaviour.
      * @return list of tab titles
      */
-    protected abstract String[] getTabTitles();
+    protected abstract List<String> getTabTitles();
     
     /**
      * Determines the 'activity title' shown when viewing this Fragment.
