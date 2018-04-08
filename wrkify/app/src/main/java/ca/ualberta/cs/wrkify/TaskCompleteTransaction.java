@@ -17,15 +17,20 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+
 /**
  * TaskCompleteTransaction provides a Transaction for the
  * Task.complete() operation.
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
 
-public class TaskCompleteTransaction extends Transaction<Task> {
+public class TaskCompleteTransaction extends StateChangeTransaction<Task> {
 
     /**
      * create a transaction to complete task
@@ -48,5 +53,13 @@ public class TaskCompleteTransaction extends Transaction<Task> {
         } catch (UnsupportedOperationException e) {
             return false;
         }
+    }
+
+    @NonNull
+    @Override
+    protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
+        return new Signal[] {
+                new Signal(task.getRemoteProvider(client), Signal.SignalType.SIGNAL_CLOSED, task.getId(), task.getTitle())
+        };
     }
 }

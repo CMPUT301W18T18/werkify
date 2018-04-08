@@ -93,8 +93,8 @@ public class ViewProfileActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                ((CachingClient) WrkifyClient.getInstance()).discardCached(user.getId());
-                user = WrkifyClient.getInstance().download(user.getId(), user.getClass());
+                ((CachingClient) WrkifyClient.getInstance()).discardCached(this.user.getId());
+                user = (User) WrkifyClient.getInstance().download(this.user.getId(), this.user.getClass());
             } catch (IOException e) {
                 // TODO You are offline.
             }

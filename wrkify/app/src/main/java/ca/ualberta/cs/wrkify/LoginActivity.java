@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
             this.session = Session.getInstance(LoginActivity.this);
 
             try {
-                this.user = Searcher.getUser(WrkifyClient.getInstance(), username);
+                this.user = WrkifyClient.getInstance().getSearcher().getUser(username);
                 if (user != null) {
                     return LoginResult.SUCCESS;
                 } else {

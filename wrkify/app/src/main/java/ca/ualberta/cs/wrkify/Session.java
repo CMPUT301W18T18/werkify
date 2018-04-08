@@ -43,11 +43,14 @@ public class Session {
     private static Session instance;
 
     private User user;
-    private List<Task> userRequestedCache;
-    private List<Task> userProvidedCache;
-    private List<Task> userBiddedCache;
+    private NotificationCollector notificationCollector = new NotificationCollector();
+    private SignalManager signalManager;
 
-    protected Session() {}
+    private TransactionManager transactionManager = new TransactionManager();
+
+    protected Session(RemoteClient client) {
+        this.signalManager = new SignalManager(client);
+    }
 
     /**
      * Gets the global Session.
@@ -57,7 +60,7 @@ public class Session {
      */
     public static Session getInstance(Context context, RemoteClient client) {
         if (instance == null) {
-            instance = new Session();
+            instance = new Session(client);
         }
 
         if (instance.getUser() == null) {
@@ -99,7 +102,28 @@ public class Session {
      */
     public void setUser(User user, Context context) {
         this.user = user;
+
         save(context);
+    }
+
+    public NotificationCollector getNotificationCollector() {
+        return notificationCollector;
+    }
+
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public boolean downloadSignals(RemoteClient client) {
+        try {
+            signalManager.clear();
+            signalManager.addSignals(client.getSearcher().findSignalsByUser(user));
+            notificationCollector.clear();
+            notificationCollector.putNotifications(signalManager.getNotifications());
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**
@@ -108,42 +132,9 @@ public class Session {
      */
     public void logout(Context context) {
         this.user = null;
+        this.notificationCollector.clear();
+        this.signalManager.clear();
         context.deleteFile(FILENAME);
-    }
-
-    /**
-     * Refreshes user task caches.
-     * @param client RemoteClient to find user's tasks in
-     * @throws IOException if network is disconnected
-     */
-    public void refreshCaches(RemoteClient client) throws IOException {
-        this.userProvidedCache = Searcher.findTasksByProvider(client, getUser());
-        this.userRequestedCache = Searcher.findTasksByRequester(client, getUser());
-        this.userBiddedCache = Searcher.findTasksByBidder(client, getUser());
-    }
-
-    /**
-     * Gets the cache of the user's requested tasks.
-     * @return cached list of requested tasks
-     */
-    public List<Task> getUserRequestedCache() {
-        return userRequestedCache;
-    }
-
-    /**
-     * Gets the cache of the user's provided tasks.
-     * @return cached list of provided tasks
-     */
-    public List<Task> getUserProvidedCache() {
-        return userProvidedCache;
-    }
-
-    /**
-     * Gets the cache of the user's bidded tasks.
-     * @return cached list of bidded tasks
-     */
-    public List<Task> getUserBiddedCache() {
-        return userBiddedCache;
     }
 
     /**

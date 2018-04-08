@@ -22,10 +22,10 @@ package ca.ualberta.cs.wrkify;
  * that changes the title of a task.
  *
  * @see Task
- * @see Transaction
+ * @see StateChangeTransaction
  */
 
-public class TaskTitleTransaction extends Transaction<Task> {
+public class TaskTitleTransaction extends StateChangeTransaction<Task> {
     private String title;
 
     /**

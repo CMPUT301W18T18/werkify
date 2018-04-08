@@ -65,7 +65,14 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             @Override
                             public void onConfirm() {
                                 task.complete();
-                                WrkifyClient.getInstance().upload(task);
+
+                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+                                transactionManager.enqueue(new TaskCompleteTransaction(task));
+
+                                // TODO notify of offline status
+                                transactionManager.flush(WrkifyClient.getInstance());
+
+                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
                                 collapse();
                             }
@@ -83,7 +90,14 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             @Override
                             public void onConfirm() {
                                 task.unassign();
-                                WrkifyClient.getInstance().upload(task);
+
+                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+                                transactionManager.enqueue(new TaskUnassignTransaction(task));
+
+                                // TODO notify of offline status
+                                transactionManager.flush(WrkifyClient.getInstance());
+
+                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
                                 collapse();
                             }

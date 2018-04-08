@@ -21,7 +21,7 @@ package ca.ualberta.cs.wrkify;
  * Created by peter on 03/04/18.
  */
 
-public class SimpleTransaction2 extends Transaction<SimpleRemoteObject> {
+public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
 
     public SimpleTransaction2(SimpleRemoteObject sro) {
         super(sro, SimpleRemoteObject.class);

@@ -57,7 +57,7 @@ public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActiv
     }
 
     @Override
-    protected void createMockData(MockRemoteClient client) {
+    protected void createMockData(CachingClient<MockRemoteClient> client) {
         user1 = client.create(User.class, "User1", "user1@example.com", "1740382957");
         user2 = client.create(User.class, "User2", "user2@example.com", "5830275947");
     }

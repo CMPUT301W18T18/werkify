@@ -74,28 +74,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tryRefreshCaches();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         showFragment(new RequesterFragment());
-    }
-
-    /**
-     * Resumes MainActivity. This causes the user task caches to refresh.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        tryRefreshCaches();
-    }
-
-    /**
-     * Instruct the user task caches to refresh, so that the
-     * task lists can display updated content.
-     */
-    private void tryRefreshCaches() {
-        this.new RefreshCacheTask().execute();
     }
 
     /**
@@ -109,26 +91,4 @@ public class MainActivity extends AppCompatActivity {
         fragTransaction.replace(R.id.fragment_container, frag, null);
         fragTransaction.commit();
     }
-
-    /**
-     * RefreshCacheTask is an AsyncActivity that refreshes the
-     * session cache
-     */
-    private class RefreshCacheTask extends AsyncTask<Void, Void, Void> {
-        /**
-         * refresh the session cache
-         * @param voids unused
-         * @return unused
-         */
-        @Override
-        public Void doInBackground(Void... voids) {
-            try {
-                Session.getInstance(MainActivity.this).refreshCaches(WrkifyClient.getInstance());
-            } catch (IOException e) {
-                // TODO You are offline.
-            }
-            return null;
-        }
-    }
-
 }

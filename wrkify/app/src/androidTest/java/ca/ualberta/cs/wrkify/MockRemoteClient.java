@@ -27,13 +27,13 @@ import java.util.UUID;
 /**
  * Local remote client for running UI tests.
  * Most RemoteClient methods called on the MockRemoteClient
- * will work by operating locally on a HashMap. Searches will
- * return no results unless explicitly mocked by calling
- * {@link #mockNextSearch(RemoteObject...)}.
+ * will work by operating locally on a HashMap.
  */
 class MockRemoteClient extends RemoteClient {
-    private HashMap<String, Object> hmap = new HashMap<>();
+    private Cache cache = new Cache();
     private RemoteObject[] nextSearchResult;
+
+    private MockSearcher searcher = new MockSearcher(this);
 
     @Override
     public <T extends RemoteObject> T create(Class<T> type, Object ...conArgs) {
@@ -45,30 +45,43 @@ class MockRemoteClient extends RemoteClient {
             return null;
         }
         
-        String id = UUID.randomUUID().toString();
-        this.hmap.put(id, instance);
-        instance.setId(id);
-        
-        return instance;
+        return uploadNew(type, instance);
     }
 
     @Override
     public void upload(RemoteObject obj) {
-        this.hmap.put(obj.getId(), obj);
+        this.cache.put(obj.getId(), obj);
+    }
+
+    @Override
+    <T extends RemoteObject> T uploadNew(Class<T> type, T instance) {
+        String id = UUID.randomUUID().toString();
+        this.cache.put(id, instance);
+        instance.setId(id);
+
+        return instance;
     }
 
     @Override
     public void delete(RemoteObject obj) {
-        this.hmap.remove(obj.getId());
+        this.cache.discard(obj.getId());
     }
 
     @Override
     public <T extends RemoteObject> T download(String id, Class<T> type) throws IOException {
-        return type.cast(this.hmap.get(id));
+        return type.cast(this.cache.get(id));
     }
 
     @Override
-    <T extends RemoteObject> List<T> search(String query, Class<T> type) throws IOException {
+    Searcher getSearcher() {
+        return searcher;
+    }
+
+    public void mockNextKeywordSearch(RemoteObject... objects) {
+        this.nextSearchResult = objects;
+    }
+
+    private <T extends RemoteObject> List<T> mockSearch() {
         if (this.nextSearchResult != null) {
             List<RemoteObject> results = Arrays.asList(this.nextSearchResult);
             this.nextSearchResult = null;
@@ -78,12 +91,111 @@ class MockRemoteClient extends RemoteClient {
         }
     }
 
-    /**
-     * Sets the results for the next call to {@link #search(String, Class)} on the
-     * MockRemoteClient.
-     * @param objects search results of the next search
-     */
-    public void mockNextSearch(RemoteObject... objects) {
-        this.nextSearchResult = objects;
+    public class MockSearcher extends Searcher<MockRemoteClient> {
+        public MockSearcher(MockRemoteClient client) {
+            super(client);
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(final User bidder) {
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    return (task.getBidForUser(bidder) != null);
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(final User bidder, final TaskStatus... statuses) {
+            final List<TaskStatus> statusList = Arrays.asList(statuses);
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    return (task.getBidForUser(bidder) != null && statusList.contains(task.getStatus()));
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksNear(TaskLocation location) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByKeywords(String keywords) {
+            return mockSearch();
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(final User provider) {
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (provider.equals(task.getRemoteProvider(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(final User provider, final TaskStatus... statuses) {
+            final List<TaskStatus> statusList = Arrays.asList(statuses);
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (provider.equals(task.getRemoteProvider(client)) && statusList.contains(task.getStatus()));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(final User requester) {
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (requester.equals(task.getRemoteRequester(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(final User requester, TaskStatus... statuses) {
+            final List<TaskStatus> statusList = Arrays.asList(statuses);
+            return cache.findMatching(new CacheMatcher<Task>() {
+                @Override
+                public boolean isMatch(Task task) {
+                    try {
+                        return (requester.equals(task.getRemoteRequester(client)) && statusList.contains(task.getStatus()));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public User getUser(final String username) {
+            List<User> results = cache.findMatching(new CacheMatcher<User>() {
+                @Override
+                public boolean isMatch(User user) {
+                    return (username.equals(user.getUsername()));
+                }
+            });
+
+            if (results.size() == 0) { return null; }
+            else { return results.get(0); }
+        }
     }
 }

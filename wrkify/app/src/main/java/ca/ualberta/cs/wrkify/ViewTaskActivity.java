@@ -184,7 +184,15 @@ public class ViewTaskActivity extends AppCompatActivity {
                             @Override
                             public void onConfirm() {
                                 item.setStatus(!item.getStatus());
-                                WrkifyClient.getInstance().upload(ViewTaskActivity.this.task);
+
+                                TransactionManager transactionManager = Session.getInstance(ViewTaskActivity.this).getTransactionManager();
+                                transactionManager.enqueue(new TaskCheckListTransaction(ViewTaskActivity.this.task,
+                                        ViewTaskActivity.this.task.getCheckList()));
+
+                                // TODO notify of offline status
+                                transactionManager.flush(WrkifyClient.getInstance());
+
+                                WrkifyClient.getInstance().updateCached(ViewTaskActivity.this.task);
                                 checkListProviderView.notifyDataSetChanged();
                             }
                         }

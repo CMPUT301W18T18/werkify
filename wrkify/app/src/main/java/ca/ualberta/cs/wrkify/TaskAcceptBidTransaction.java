@@ -17,15 +17,20 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+
 /**
  * TaskAcceptBidTransaction models accepting a bid as
  * a Transaction
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
 
-public class TaskAcceptBidTransaction extends Transaction<Task> {
+public class TaskAcceptBidTransaction extends StateChangeTransaction<Task> {
     private Bid bid;
 
     /**
@@ -51,5 +56,13 @@ public class TaskAcceptBidTransaction extends Transaction<Task> {
         } catch (UnsupportedOperationException e) {
             return false;
         }
+    }
+
+    @NonNull
+    @Override
+    protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
+        return new Signal[]{
+                new Signal(bid.getRemoteBidder(client), Signal.SignalType.SIGNAL_ASSIGNED, task.getId(), task.getTitle())
+        };
     }
 }

@@ -16,6 +16,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Task extends RemoteObject {
     private String title;
     private String description;
     private ArrayList<Bitmap> imageList;
-    private Location location;
+    private TaskLocation location;
     private CheckList checkList;
     private ArrayList<Bid> bidList;
     private RemoteReference<User> requester;
@@ -125,7 +126,7 @@ public class Task extends RemoteObject {
      * gets the location of the task
      * @return the location or null
      */
-    public Location getLocation() {
+    public TaskLocation getLocation() {
         return location;
     }
 
@@ -213,7 +214,7 @@ public class Task extends RemoteObject {
      * sets the location
      * @param location the location
      */
-    public void setLocation(Location location) {
+    public void setLocation(TaskLocation location) {
         if (this.status == TaskStatus.REQUESTED) {
             this.location = location;
         } else {
@@ -256,6 +257,17 @@ public class Task extends RemoteObject {
         } else {
             throw new UnsupportedOperationException("cannot bid on assigned or done task");
         }
+    }
+
+    @Nullable
+    public Bid getBidForUser(User user) {
+        for (Bid bid: this.bidList) {
+            if (bid.getBidderReference().equals(user.<User>reference())) {
+                return bid;
+            }
+        }
+
+        return null;
     }
 
     /**

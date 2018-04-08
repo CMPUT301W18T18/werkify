@@ -167,7 +167,7 @@ public class SearchFragment extends Fragment {
 
             List<Task> tasks;
             try {
-                tasks = Searcher.findTasksByKeywords(WrkifyClient.getInstance(), query);
+                tasks = WrkifyClient.getInstance().getSearcher().findTasksByKeywords(query);
             } catch (IOException e){
                 tasks = new ArrayList<>();
             }

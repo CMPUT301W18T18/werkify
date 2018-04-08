@@ -17,24 +17,15 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Transaction models an atomic change to a RemoteObject
- * transactions subclasses define the apply() function
- * in order to implement the specific behavior.
- *
- * @see RemoteObject
- */
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
 
 public abstract class Transaction<T extends RemoteObject> {
-    private String id;
-    private Class<T> type;
+    protected String id;
+    protected Class<T> type;
 
-    /**
-     * sets up the id and the type
-     * @param remObj the object to extract the id from
-     * @param type the type of remote object.
-     */
-    public Transaction(T remObj, Class<T> type) {
+    Transaction(T remObj, Class<T> type) {
         this.id = remObj.getId();
         this.type = type;
     }
@@ -57,27 +48,5 @@ public abstract class Transaction<T extends RemoteObject> {
         return this.type;
     }
 
-    /**
-     * verifys that the object provided is correct,
-     * then deffers to the apply function.
-     *
-     * @param object the object to applyTo
-     * @return true if successful, false if failed.
-     */
-    public Boolean applyTo(T object) {
-        if (object.getId() != this.getId() && !object.getId().equals(this.getId())) {
-            return false;
-        }
-
-        return apply(object);
-    }
-
-    /**
-     * apply defines the internal behavior of the
-     * Transaction. THIS FUNCTION SHOULD NOT BE
-     * USED. USE applyTo INSTEAD.
-     * @param object
-     * @return
-     */
-    protected abstract Boolean apply(T object);
+    public abstract boolean applyInClient(CachingClient client) throws IOException;
 }

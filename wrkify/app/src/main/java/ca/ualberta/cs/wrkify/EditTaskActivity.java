@@ -31,6 +31,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
+
 /**
  * Activity for a task requester to edit a task that they own
  * or to create a new task. An existing task should be passed
@@ -56,6 +58,9 @@ public class EditTaskActivity extends AppCompatActivity {
 
     /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
+
+    /** The task was edited, but the changes were not synced successfully. */
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
 
 
     private Task task;
@@ -228,6 +233,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * of a task.
      */
     private class EditTaskTask extends AsyncTask<Void, Void, Void> {
+        private int resultCode;
         /**
          * change the task and upload it
          * to the client
@@ -236,18 +242,42 @@ public class EditTaskActivity extends AppCompatActivity {
          */
         @Override
         protected Void doInBackground(Void... voids) {
-            if (EditTaskActivity.this.taskIsNew) {
-                EditTaskActivity.this.task = WrkifyClient.getInstance()
-                        .create(Task.class,
-                                EditTaskActivity.this.titleField.getText().toString(),
-                                Session.getInstance(EditTaskActivity.this).getUser(),
-                                EditTaskActivity.this.descriptionField.getText().toString()
-                        );
-                task.setCheckList(EditTaskActivity.this.checkList);
+            String newTitle = titleField.getText().toString();
+            String newDescription = descriptionField.getText().toString();
+
+            if (taskIsNew) {
+                // TODO This will probably fail if offline
+                task = (Task) WrkifyClient.getInstance().createLocal(Task.class,
+                        titleField.getText().toString(),
+                        Session.getInstance(EditTaskActivity.this).getUser(),
+                        descriptionField.getText().toString()
+                );
+                task.setCheckList(checkList);
+
+                TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+                transactionManager.enqueue(new TaskCreateTransaction(task));
+                WrkifyClient.getInstance().updateCached(task);
+
+                transactionManager.flush(WrkifyClient.getInstance());
+
+                resultCode = RESULT_TASK_CREATED;
             } else {
-                task.setTitle(titleField.getText().toString());
-                task.setDescription(descriptionField.getText().toString());
-                WrkifyClient.getInstance().upload(EditTaskActivity.this.task);
+                TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+
+                transactionManager.enqueue(new TaskTitleTransaction(task, newTitle));
+                transactionManager.enqueue(new TaskDescriptionTransaction(task, newDescription));
+                transactionManager.enqueue(new TaskCheckListTransaction(task, checkList));
+
+                task.setTitle(newTitle);
+                task.setDescription(newDescription);
+                task.setCheckList(checkList);
+                WrkifyClient.getInstance().updateCached(task);
+
+                if (transactionManager.flush(WrkifyClient.getInstance())) {
+                    resultCode = RESULT_OK;
+                } else {
+                    resultCode = RESULT_UNSYNCED_CHANGES;
+                }
             }
             return null;
         }
@@ -259,18 +289,14 @@ public class EditTaskActivity extends AppCompatActivity {
          */
         @Override
         protected void onPostExecute(Void result) {
-            if (task == null) {
-                return;
-            }
+            View focus = getCurrentFocus();
+            if (focus != null) { focus.clearFocus(); }
+
+            if (task == null) return;
 
             Intent intent = getIntent();
-            intent.putExtra(EXTRA_RETURNED_TASK, EditTaskActivity.this.task);
-
-            if (taskIsNew) {
-                setResult(RESULT_TASK_CREATED, intent);
-            } else {
-                setResult(RESULT_OK, intent);
-            }
+            intent.putExtra(EXTRA_RETURNED_TASK, task);
+            setResult(resultCode, intent);
 
             finish();
         }
@@ -288,7 +314,13 @@ public class EditTaskActivity extends AppCompatActivity {
          */
         @Override
         protected Void doInBackground(Void... voids) {
-            WrkifyClient.getInstance().delete(task);
+            TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+            transactionManager.enqueue(new TaskDeleteTransaction(task));
+
+            WrkifyClient.getInstance().discardCached(task.getId());
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
             return null;
         }
 
@@ -299,6 +331,8 @@ public class EditTaskActivity extends AppCompatActivity {
          */
         @Override
         protected void onPostExecute(Void result) {
+
+
             setResult(RESULT_TASK_DELETED);
             View view = EditTaskActivity.this.getCurrentFocus();
             if (view != null) {

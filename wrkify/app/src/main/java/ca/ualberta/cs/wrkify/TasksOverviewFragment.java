@@ -36,10 +36,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * TasksOverviewFragment displays a set of tab pages, each containing a
@@ -55,7 +58,8 @@ abstract class TasksOverviewFragment extends Fragment {
     private FloatingActionButton addButton;
 
     private boolean addButtonVisible;
-    
+    private ViewGroup offlineIndicator;
+
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
     @Override
@@ -66,7 +70,8 @@ abstract class TasksOverviewFragment extends Fragment {
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
         this.addButton = view.findViewById(R.id.overviewAddButton);
-        
+        this.offlineIndicator = view.findViewById(R.id.overviewOfflineIndicator);
+
         UserView userView = view.findViewById(R.id.overviewSelfView);
         Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
         
@@ -154,6 +159,32 @@ abstract class TasksOverviewFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Session session = Session.getInstance(getActivity());
+        TransactionManager transactionManager = session.getTransactionManager();
+        if (transactionManager.hasPendingTransactions()) {
+            if (transactionManager.flush(WrkifyClient.getInstance())) {
+                hideOfflineIndicator();
+            } else {
+                showOfflineIndicator();
+            }
+
+            refreshTaskLists();
+        } else {
+            hideOfflineIndicator();
+        }
+
+        Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
+        updateNotificationDisplay(getView());
+    }
+
+    private void refreshTaskLists() {
+        // TODO not implemented
+    }
+
     /**
      * Hides the add button.
      * TODO add transition
@@ -170,6 +201,14 @@ abstract class TasksOverviewFragment extends Fragment {
     private void showAddButton() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOfflineIndicator() {
+        offlineIndicator.setVisibility(View.GONE);
+    }
+
+    private void showOfflineIndicator() {
+        offlineIndicator.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -201,5 +240,48 @@ abstract class TasksOverviewFragment extends Fragment {
      */
     protected void onAddButtonClick(View v) {
 
+    }
+
+
+    /**
+     * Updates the notification display.
+     * @param view root view of the fragment
+     */
+    private void updateNotificationDisplay(final View view) {
+        Log.i("-->", "und");
+        ViewGroup notificationContainer = view.findViewById(R.id.overviewNotificationContainer);
+        ViewGroup notificationTarget = view.findViewById(R.id.overviewNotificationTarget);
+        ViewGroup notificationOverflow = view.findViewById(R.id.overviewNotificationOverflowIndicator);
+        TextView notificationOverflowLabel = view.findViewById(R.id.overviewNotificationOverflowLabel);
+
+        NotificationCollector collector = Session.getInstance(getContext()).getNotificationCollector();
+        NotificationInfo notification = collector.getFirstNotification();
+
+        if (notification != null) {
+            notificationContainer.setVisibility(View.VISIBLE);
+
+            NotificationView notificationView = new NotificationView(getContext());
+            notificationView.setNotification(notification);
+            notificationView.setOnDismissListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateNotificationDisplay(view);
+                }
+            });
+
+            notificationTarget.addView(notificationView);
+
+            // Show overflow indicator if more than one notification
+            int extraNotificationCount = collector.getNotificationCount() - 1;
+            if (extraNotificationCount > 0) {
+                notificationOverflow.setVisibility(View.VISIBLE);
+                notificationOverflowLabel.setText(
+                        String.format(Locale.US, "%d more notifications", extraNotificationCount));
+            } else {
+                notificationOverflow.setVisibility(View.GONE);
+            }
+        } else {
+            notificationContainer.setVisibility(View.GONE);
+        }
     }
 }

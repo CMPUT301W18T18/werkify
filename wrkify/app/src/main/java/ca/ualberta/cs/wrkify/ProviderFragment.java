@@ -150,11 +150,10 @@ public class ProviderFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List query(RemoteClient client) {
+                public List<Task> query(CachingClient client) {
                     try {
-                        return Searcher.findTasksByProvider(
-                                client,
-                                Session.getInstance(getActivity(),client).getUser(),
+                        return client.getSearcher().findTasksByProvider(
+                                Session.getInstance(getActivity(), client).getUser(),
                                 TaskStatus.ASSIGNED
                         );
                     } catch (IOException e) {
@@ -176,10 +175,9 @@ public class ProviderFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List query(RemoteClient client) {
+                public List<Task> query(CachingClient client) {
                     try {
-                        return Searcher.findTasksByBidder(
-                                client,
+                        return client.getSearcher().findTasksByBidder(
                                 Session.getInstance(getActivity(),client).getUser(),
                                 TaskStatus.BIDDED
                         );
@@ -202,10 +200,9 @@ public class ProviderFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List query(RemoteClient client) {
+                public List<Task> query(CachingClient client) {
                     try {
-                        return Searcher.findTasksByProvider(
-                                client,
+                        return client.getSearcher().findTasksByProvider(
                                 Session.getInstance(getActivity(),client).getUser(),
                                 TaskStatus.DONE
                         );
