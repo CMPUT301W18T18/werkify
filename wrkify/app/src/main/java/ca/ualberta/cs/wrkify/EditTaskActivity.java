@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -181,6 +182,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TaskImageListAdapter adapter;
     private ImageManager imageManager;
+    private boolean selectionMode = false;
 
     private static final int REQUEST_IMAGE_CAMERA = 1;
     private static final int REQUEST_IMAGE_GALLERY = 2;
@@ -272,7 +274,19 @@ public class EditTaskActivity extends AppCompatActivity {
         adapter = new TaskImageListAdapter(thumbnails) {
             @Override
             public void buttonClicked(int position) {
-                showImage(position);
+                if (selectionMode) {
+                    toggleSelected(position);
+                } else {
+                    showImage(position);
+                }
+            }
+
+            @Override
+            public void buttonLongClicked(int position) {
+                if (!selectionMode) {
+                    setSelectionMode(true);
+                    toggleSelected(position);
+                }
             }
         };
 
@@ -282,6 +296,47 @@ public class EditTaskActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+    }
+
+    protected void setSelectionMode(boolean selecting) {
+        this.selectionMode = selecting;
+
+        if (selecting) {
+            ActionMode.Callback callback = new ActionMode.Callback() {
+                @Override
+                public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
+                    mode.getMenuInflater().inflate(R.menu.deletion_menu, menu);
+                    MenuItem deleteButton = menu.findItem(R.id.deleteImagesMenuButton);
+                    deleteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            setSelectionMode(false);
+                            mode.finish();
+                            return true;
+                        }
+                    });
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    return false;
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                    adapter.deselectAll();
+                    setSelectionMode(false);
+                }
+            };
+
+            startActionMode(callback);
+        }
     }
 
     @Override

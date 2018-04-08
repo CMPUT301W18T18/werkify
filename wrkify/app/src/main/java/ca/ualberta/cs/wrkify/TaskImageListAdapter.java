@@ -18,6 +18,8 @@
 package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +30,8 @@ import android.widget.ImageButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdapter.ImageViewHolder> {
     public static class ImageViewHolder extends RecyclerView.ViewHolder{ //do this later
@@ -43,15 +47,27 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
             //this.button.setImageBitmap(image);s
             this.button.setImageBitmap(Bitmap.createScaledBitmap(image, (int) (image.getWidth() * 3.0), (int) (image.getHeight() * 3.0), false));
         }
+
+        public void setSelectedTint(boolean selected) {
+            if (selected) {
+                button.setColorFilter(Color.argb(100, 0, 150, 200));
+            } else {
+                button.clearColorFilter();
+            }
+            button.refreshDrawableState();
+            button.invalidateDrawable(button.getDrawable());
+        }
     }
 
     protected ArrayList<CompressedBitmap> thumbnails;
     protected RecyclerView recyclerView;
+    protected TreeSet<Integer> selected;
 
     private static final int itemLayoutId = R.layout.task_image_list_item;
 
     public TaskImageListAdapter(ArrayList<CompressedBitmap> thumbnails) {
         this.thumbnails = thumbnails;
+        this.selected = new TreeSet<>();
 
     }
 
@@ -75,10 +91,18 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
         holder.setImage(thumbnails.get(position).getBitmap());
+
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buttonClicked(position);
+            }
+        });
+        holder.button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                buttonLongClicked(position);
+                return true;
             }
         });
 
@@ -88,7 +112,6 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
     @Override
     public void onViewRecycled(ImageViewHolder holder) {
         Log.i("Recycling", holder.toString());
-        //Nothing for now?
     }
 
     @Override
@@ -96,7 +119,52 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
         this.recyclerView = recyclerView;
     }
 
+    public void toggleSelected(int position) {
+        ImageViewHolder holder = (ImageViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
+
+        if (selected.contains(position)) {
+            selected.remove(position);
+            if (holder != null) {
+                holder.setSelectedTint(false);
+            }
+        } else {
+            selected.add(position);
+            if (holder != null) {
+                holder.setSelectedTint(true);
+            }
+
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(@NonNull ImageViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.setSelectedTint(false);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull ImageViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if (selected.contains(holder.getAdapterPosition())) {
+            holder.setSelectedTint(true);
+        }
+    }
+
+    public void deselectAll() {
+        for (int i : selected) {
+            ImageViewHolder holder = (ImageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+            if (holder != null) {
+                holder.setSelectedTint(false);
+            } else {
+                Log.i("IS NULL", "" + i);
+            }
+
+        }
+
+        selected.clear();
+    }
 
     public abstract void buttonClicked(int position);
+    public abstract void buttonLongClicked(int position);
 
 }
