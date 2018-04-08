@@ -24,7 +24,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +43,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -54,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
     private ArrayList<Task> tasksNearMe = new ArrayList<>();
+    private HashMap<Marker,Task> markerTaskHashMap;
 
 
     @Override
@@ -69,8 +75,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        User testUser = new User("Stefan","stefan@gmail.com","7809352501");
+        Task testTask = new Task("Mow my fucking lawn boss.",testUser,"memes");
+        TaskLocation testLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
+        testTask.setLocation(testLocation);
+        tasksNearMe.add(testTask);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, lastKnownLocation);
+            super.onSaveInstanceState(outState);
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -83,6 +102,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                CardView taskCardview = findViewById(R.id.taskCardView);
+                Task task = markerTaskHashMap.get(marker);
+                TextView taskTitle = taskCardview.findViewById(R.id.taskTitle);
+                taskTitle.setText(task.getTitle());
+                TextView taskDescription = taskCardview.findViewById(R.id.taskDescription);
+                taskDescription.setText(task.getDescription());
+                TextView taskUser = taskCardview.findViewById(R.id.taskUser);
+                try {
+                    taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+                } catch (IOException e){
+
+                }
+                StatusView taskStatus = taskCardview.findViewById(R.id.taskStatus);
+                taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
+                return taskCardview;
+            }
+        });
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
         getLocationPermission();
@@ -90,6 +134,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         updateLocationUI();
 
         getCurrentLocation();
+
+        addTaskMarkers();
     }
 
     /**
@@ -139,9 +185,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Location> task) {
-                        if (task.isSuccessful()) {
-                            // Set the map's camera position to the current location of the device.
-                            lastKnownLocation = task.getResult();
+                        lastKnownLocation = task.getResult();
+                        if (task.isSuccessful()&&lastKnownLocation!=null) {
+                            // Set the map's camera position to the current location of the devices
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
                                             lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
@@ -187,19 +233,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void searchTasksNearMe(){
        //Search for tasks by location
+
     }
 
     private void addTaskMarkers(){
         for(Task task : tasksNearMe){
-            Location location = task.getLocation();
-            LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-            Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
-            mMap.setOnMarkerClickListener(this);
+            markerTaskHashMap = new HashMap<>();
+            TaskLocation location = task.getLocation();
+            try {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+                mMap.setOnMarkerClickListener(this);
+                markerTaskHashMap.put(marker,task);
+            }
+            catch (NullPointerException e){
+                continue;
+            }
+
         }
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+//        Task task = markerTaskHashMap.get(marker);
+//        CardView taskCardView = findViewById(R.id.taskCardView);
+//        TextView taskTitle = new TextView(this);
+//        taskTitle = taskCardView.findViewById(R.id.taskTitle);
+//        taskTitle.setText(task.getTitle());
+//        TextView taskDescription = new TextView(this);
+//        taskDescription.setText(task.getDescription());
+//        StatusView taskStatus = new StatusView(this);
+//        taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
+
         return false;
     }
 }
