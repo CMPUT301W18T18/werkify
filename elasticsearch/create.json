@@ -28,6 +28,12 @@
                 },
                 "location": {"type": "geo_point"}
             }
+        },
+        "ca.ualberta.cs.wrkify.Signal": {
+			"properties": {
+				"user": {"type": "nested"},
+				"targetId": {"type": "string"}
+			}
         }
     }
 }

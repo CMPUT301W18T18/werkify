@@ -89,7 +89,11 @@ abstract class Searcher<TClient extends RemoteClient> {
      */
     public abstract List<Task> findTasksByKeywords(String keywords) throws IOException;
 
-    public abstract List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) throws IOException;
+    public abstract List<Task> findTasksNear(TaskLocation location) throws IOException;
+
+    public abstract List<Signal> findSignalsByUser(User user) throws IOException;
+
+    public abstract List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException;
 
     /**
      * gets a user by its username

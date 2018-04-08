@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.searchbox.core.Delete;
@@ -79,7 +81,7 @@ public class ElasticClient extends RemoteClient {
      */
     @Override
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
-        Log.i("elastic", "CREATE " + type.toString());
+        Log.i("elastic", "CREATE " + type.toString() + " :: " + Arrays.toString(conArgs));
 
         T instance;
         try {
@@ -93,6 +95,7 @@ public class ElasticClient extends RemoteClient {
 
     @Override
     public <T extends RemoteObject> T uploadNew(Class<T> type, T instance) {
+        Log.i("elastic", "NEW " + type);
         Index index = new Index.Builder(instance).index(this.index).type(type.getName()).build();
 
         String originalId = instance.getId();

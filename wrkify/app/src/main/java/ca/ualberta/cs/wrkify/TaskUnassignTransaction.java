@@ -17,6 +17,11 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+
 /**
  * Created by peter on 03/04/18.
  */
@@ -45,5 +50,13 @@ public class TaskUnassignTransaction extends StateChangeTransaction<Task> {
         } catch (UnsupportedOperationException e) {
             return false;
         }
+    }
+
+    @NonNull
+    @Override
+    protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
+        return new Signal[] {
+                new Signal(task.getRemoteProvider(client), Signal.SignalType.SIGNAL_DEASSIGNED, task.getId(), task.getTitle())
+        };
     }
 }
