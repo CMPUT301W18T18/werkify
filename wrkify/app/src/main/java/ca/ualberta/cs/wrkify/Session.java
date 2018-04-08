@@ -43,9 +43,6 @@ public class Session {
     private static Session instance;
 
     private User user;
-    private List<Task> userRequestedCache;
-    private List<Task> userProvidedCache;
-    private List<Task> userBiddedCache;
     private NotificationCollector notificationCollector = new NotificationCollector();
     private SignalManager signalManager;
 

@@ -48,6 +48,10 @@ public class RemoteReference<T extends RemoteObject> implements Serializable {
         return client.download(this.refId, tClass);
     }
 
+    public String getRefId() {
+        return refId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof RemoteReference) {
