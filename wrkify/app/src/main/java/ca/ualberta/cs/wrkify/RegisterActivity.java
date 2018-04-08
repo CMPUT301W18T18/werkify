@@ -115,10 +115,9 @@ public class RegisterActivity extends Activity {
             String email       = strings[1];
             String phoneNumber = strings[2];
 
-            this.session = Session.getInstance(RegisterActivity.this,
-                    WrkifyClient.getInstance());
-
-            return WrkifyClient.getInstance().create(User.class, username, email, phoneNumber);
+            RemoteClient rc = WrkifyClient.getInstance();
+            session = Session.getInstance(RegisterActivity.this, rc);
+            return rc.create(User.class, username, email, phoneNumber);
         }
 
         /**

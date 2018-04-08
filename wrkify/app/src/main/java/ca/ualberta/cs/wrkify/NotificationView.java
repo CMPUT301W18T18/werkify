@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.View;
@@ -162,11 +163,20 @@ public class NotificationView extends ConstraintLayout {
     }
 
     private void destroyAssociatedSignals() {
-        TransactionManager transactionManager = Session.getInstance(getContext()).getTransactionManager();
-        transactionManager.enqueue(new UserDeleteSignalsTransaction(
-                Session.getInstance(getContext()).getUser(), notification.getTargetId()));
+        this.new DestroySignalTask().execute();
+    }
 
-        // TODO notify of offline status
-        transactionManager.flush(WrkifyClient.getInstance());
+    private class DestroySignalTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            TransactionManager transactionManager = Session.getInstance(getContext()).getTransactionManager();
+            transactionManager.enqueue(new UserDeleteSignalsTransaction(
+                    Session.getInstance(getContext()).getUser(), notification.getTargetId()));
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
+
+            return null;
+        }
     }
 }

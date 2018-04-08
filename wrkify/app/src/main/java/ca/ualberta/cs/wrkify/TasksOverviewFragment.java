@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -163,22 +164,43 @@ abstract class TasksOverviewFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        Session session = Session.getInstance(getActivity());
-        TransactionManager transactionManager = session.getTransactionManager();
-        if (transactionManager.hasPendingTransactions()) {
-            if (transactionManager.flush(WrkifyClient.getInstance())) {
-                hideOfflineIndicator();
+        this.new NotificationFetchTask().execute();
+    }
+
+    private class NotificationFetchTask extends AsyncTask<Void, Void, Void> {
+
+        private boolean offLineIndicator;
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Session session = Session.getInstance(getActivity());
+            TransactionManager transactionManager = session.getTransactionManager();
+            if (transactionManager.hasPendingTransactions()) {
+                if (transactionManager.flush(WrkifyClient.getInstance())) {
+                    offLineIndicator = false;
+                } else {
+                    offLineIndicator = true;
+                }
+
+                refreshTaskLists();
             } else {
-                showOfflineIndicator();
+                offLineIndicator = false;
             }
 
-            refreshTaskLists();
-        } else {
-            hideOfflineIndicator();
+            Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
+            return null;
         }
 
-        Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
-        updateNotificationDisplay(getView());
+        @Override
+        protected void onPostExecute(Void result) {
+            if (offLineIndicator) {
+                showOfflineIndicator();
+            } else {
+                hideOfflineIndicator();
+            }
+
+            updateNotificationDisplay(getView());
+        }
     }
 
     private void refreshTaskLists() {
