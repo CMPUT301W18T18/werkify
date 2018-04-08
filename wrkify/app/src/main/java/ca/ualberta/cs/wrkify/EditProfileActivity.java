@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -109,19 +110,46 @@ public class EditProfileActivity extends AppCompatActivity {
             valid = false;
         }
 
-        if (!valid) { return; }
+        if (valid) {
+            this.new UploadProfileTask().execute();
+        }
+    }
 
-        WrkifyClient.getInstance().upload(user);
+    /**
+     * UploadProfileTask is an AsyncTask that uploads the User
+     * and then returns to the previous activity.
+     */
+    private class UploadProfileTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * upload the user and save it if it is the session user
+         * user should always be the session user
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            WrkifyClient.getInstance().upload(user);
 
-        Session session = Session.getInstance(this);
-        if (session.getUser().equals(user)) {
-            session.setUser(user, this);
+            Session session = Session.getInstance(EditProfileActivity.this);
+            if (session.getUser().equals(user)) {
+                session.setUser(user, EditProfileActivity.this);
+            }
+
+            return null;
         }
 
-        Intent intent = getIntent();
-        intent.putExtra(EXTRA_RETURNED_USER, user);
+        /**
+         * after we finish uploading the user,
+         * finish the activity.
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_RETURNED_USER, user);
 
-        setResult(RESULT_OK, intent);
-        finish();
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 }
