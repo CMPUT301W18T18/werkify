@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -136,7 +137,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             }
         });
 
-        holder.setData(data.get(position));
+        this.new SetHolderTask().execute(data.get(position), holder);
         restoreSelectionStatus(holder, position);
 
         holder.getReject().setOnClickListener(new View.OnClickListener() {
@@ -159,6 +160,47 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 acceptClicked(position);
             }
         });
+    }
+
+    /**
+     * SetHolderTask updates the holder to contain the provided
+     * bid.
+     */
+    private class SetHolderTask extends AsyncTask<Object, Void, Void> {
+
+        private BidViewHolder holder;
+        private Bid bid;
+        private User bidder;
+
+        /**
+         * downloads the provider of the bid.
+         * @param bidholder the user bid, the BidViewHolder
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Object... bidholder) {
+            this.bid = (Bid) bidholder[0];
+            this.holder = (BidViewHolder) bidholder[1];
+
+            try {
+                this.bidder = this.bid.getRemoteBidder(WrkifyClient.getInstance());
+            } catch (IOException e) {
+                this.bidder = null;
+            }
+
+            return null;
+        }
+
+        /**
+         * set the holder data after we have downloaded
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (bidder != null) {
+                this.holder.setData(this.bid, this.bidder);
+            }
+        }
     }
 
     /**

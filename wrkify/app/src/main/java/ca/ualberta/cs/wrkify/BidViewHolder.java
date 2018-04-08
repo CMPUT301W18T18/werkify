@@ -72,13 +72,14 @@ public class BidViewHolder extends RecyclerView.ViewHolder{
     /**
      * @param b Bid whose data is to be displayed in the View
      */
-    public void setData(Bid b) {
-        try {
-            taskCompleter.setText(b.getRemoteBidder(WrkifyClient.getInstance()).getUsername());
-        } catch (IOException e) {
-            // TODO handle this correctly
-            return;
-        }
+    public void setData(Bid b, User bidder) {
+//        try {
+//            taskCompleter.setText(b.getRemoteBidder(WrkifyClient.getInstance()).getUsername());
+//        } catch (IOException e) {
+//            // TODO handle this correctly
+//            return;
+//        }
+        taskCompleter.setText(bidder.getUsername());
         bidAmount.setText(b.getValue().toString());
     }
 
