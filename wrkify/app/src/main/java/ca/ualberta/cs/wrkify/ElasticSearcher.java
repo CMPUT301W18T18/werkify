@@ -46,7 +46,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                             j("nested",
                                 j("path", "requester"),
                                 j("query",
-                                    j("match",
+                                    j("term",
                                         j("requester.refId", requester.getId())
                                     )
                                 )
@@ -77,7 +77,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                             j("nested",
                                 j("path", "provider"),
                                 j("query",
-                                    j("match",
+                                    j("term",
                                         j("provider.refId", provider.getId())
                                     )
                                 )
@@ -108,7 +108,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                             j("nested",
                                 j("path", "bidList.bidder"),
                                 j("query",
-                                    j("match",
+                                    j("term",
                                         j("bidList.bidder.refId", bidder.getId())
                                     )
                                 )
@@ -181,7 +181,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                 j("nested",
                     j("path", "user"),
                     j("query",
-                        j("match",
+                        j("term",
                             j("user.refId", user.getId())
                         )
                     )
@@ -198,7 +198,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                 j("bool",
                     j("must", ja(
                         jo(
-                            j("match",
+                            j("term",
                                 j("targetId", targetId)
                             )
                         ),
@@ -206,7 +206,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                             j("nested",
                                 j("path", "user"),
                                 j("query",
-                                    j("match",
+                                    j("term",
                                         j("user.refId", userId)
                                     )
                                 )
@@ -223,7 +223,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
     public User getUser(String username) throws IOException {
         String query = makeJSONObject(
             j("query",
-                j("match",
+                j("term",
                     j("username", username)
                 )
             )
@@ -251,21 +251,16 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         ArrayList<JSONConstructor.JSONConstructorValue> values = new ArrayList<>();
         for (TaskStatus status: statuses) {
             values.add(jo(
-                j("match",
+                j("term",
                     j("status", status.toString())
                 )
             ));
-            //arr += String.format("{\"match\": {\"status\": %s}},", gson.toJson(status));
         }
-
-        //arr = arr.substring(0, arr.length()-1);
 
         return jo(
             j("bool",
                 j("should", ja(values.toArray(new JSONConstructor.JSONConstructorValue[]{}))),
                 j("minimum_number_should_match", 1)
             ));
-
-        //return String.format("\"bool\":{\"should\":[%s],\"minimum_number_should_match\":1}", arr);
     }
 }
