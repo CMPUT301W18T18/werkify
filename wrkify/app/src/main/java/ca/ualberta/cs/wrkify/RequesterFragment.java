@@ -103,7 +103,9 @@ public class RequesterFragment extends TasksOverviewFragment {
      */
     static class RequesterFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        private RequestedListFragment requested;
+        private static final int NUM_TABS = 3;
+
+        TaskListFragment[] tabs;
 
         /**
          * create a RequesterFragmentPagerAdapter
@@ -111,29 +113,38 @@ public class RequesterFragment extends TasksOverviewFragment {
          */
         public RequesterFragmentPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
+            tabs = new TaskListFragment[NUM_TABS];
         }
 
         @Override
         public Fragment getItem(int position) {
             Log.i("-->", "got item " + position);
+            if (this.tabs[position] != null) {
+                return this.tabs[position];
+            }
+
+            TaskListFragment newFrag = null;
             switch (position) {
                 case 0:
-                    this.requested = new RequestedListFragment();
-                    return this.requested;
+                    newFrag = new RequestedListFragment();
+                    break;
                 case 1:
-                    return new AssignedListFragment();
+                    newFrag = new AssignedListFragment();
+                    break;
                 case 2:
-                    return new ClosedListFragment();
-                default:
-                    return null;
+                    newFrag = new ClosedListFragment();
+                    break;
             }
+
+            this.tabs[position] = newFrag;
+            return newFrag;
         }
 
         /**
          * refreshed the requested TaskList
          */
         public void refreshRequested() {
-            this.requested.refresh();
+            this.tabs[0].refresh();
         }
 
         /**
@@ -153,7 +164,7 @@ public class RequesterFragment extends TasksOverviewFragment {
          */
         @Override
         public int getCount() {
-            return 3;
+            return NUM_TABS;
         }
     }
 

@@ -75,12 +75,17 @@ public class ProviderFragment extends TasksOverviewFragment {
      */
     static class ProviderFragmentPagerAdapter extends FragmentPagerAdapter {
 
+        private static final int NUM_TABS = 3;
+
+        TaskListFragment[] tabs;
+
         /**
          * create a ProviderFragmentPagerAdapter
          * @param fragmentManager the fragmentmanager
          */
         public ProviderFragmentPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
+            tabs = new TaskListFragment[NUM_TABS];
         }
 
         /**
@@ -92,16 +97,25 @@ public class ProviderFragment extends TasksOverviewFragment {
         @Override
         public Fragment getItem(int position) {
             Log.i("-->", "got item " + position);
+            if (this.tabs[position] != null) {
+                return this.tabs[position];
+            }
+
+            TaskListFragment newFrag = null;
             switch (position) {
                 case 0:
-                    return new AssignedListFragment();
+                    newFrag = new AssignedListFragment();
+                    break;
                 case 1:
-                    return new BiddedListFragment();
+                    newFrag = new BiddedListFragment();
+                    break;
                 case 2:
-                    return new CompletedListFragment();
-                default:
-                    return null;
+                    newFrag = new CompletedListFragment();
+                    break;
             }
+
+            this.tabs[position] = newFrag;
+            return newFrag;
         }
 
         /**
@@ -121,7 +135,7 @@ public class ProviderFragment extends TasksOverviewFragment {
          */
         @Override
         public int getCount() {
-            return 3;
+            return NUM_TABS;
         }
     }
 
