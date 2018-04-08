@@ -20,9 +20,9 @@ package ca.ualberta.cs.wrkify;
 import java.util.List;
 
 public abstract class RemoteQueryList<T extends RemoteObject> extends RemoteList<T> {
-    private RemoteClient client;
+    private CachingClient client;
 
-    public RemoteQueryList(RemoteClient client, Class<T> type) {
+    public RemoteQueryList(CachingClient client, Class<T> type) {
         super(client, type);
         this.client = client;
         refresh();
@@ -36,5 +36,5 @@ public abstract class RemoteQueryList<T extends RemoteObject> extends RemoteList
         }
     }
 
-    public abstract List<T> query(RemoteClient client);
+    public abstract List<T> query(CachingClient client);
 }
