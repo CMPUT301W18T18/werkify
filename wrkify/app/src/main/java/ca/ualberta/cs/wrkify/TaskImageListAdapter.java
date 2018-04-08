@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImageListAdapter.ImageViewHolder> {
@@ -68,7 +69,15 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
     public TaskImageListAdapter(ArrayList<CompressedBitmap> thumbnails) {
         this.thumbnails = thumbnails;
         this.selected = new TreeSet<>();
+    }
 
+    public ArrayList<Integer> getSelectedIds() {
+        return new ArrayList<>(selected);
+    }
+
+    public void animateDeletions() {
+        notifyItemRangeChanged(0, thumbnails.size());
+        notifyDataSetChanged();
     }
 
     @Override

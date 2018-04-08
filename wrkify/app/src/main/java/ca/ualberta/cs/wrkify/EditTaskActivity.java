@@ -45,9 +45,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Activity for a task requester to edit a task that they own
@@ -147,11 +149,28 @@ public class EditTaskActivity extends AppCompatActivity {
 
             task.setRemoteImages(remoteImages);
             task.setRemoteThumbnails(newRemoteThumbnails);
+        }
 
+        public void deleteFromIds(ArrayList<Integer> idList) {
+            Collections.sort(idList);
+
+            for (int i = idList.size() - 1; i >= 0; i--) {
+                int id = idList.get(i);
+
+                if (id < remoteImages.size()) {
+                    toDelete.add(remoteImages.get(id));
+                    remoteImages.remove(id);
+                    toDelete.add(thumbnails.get(id).<CompressedBitmap>reference());
+                    thumbnails.remove(id);
+                } else {
+                    thumbnails.remove(id);
+                    localImages.remove(id - remoteImages.size());
+                }
+            }
         }
 
         public void save(Task task) {
-            //flushDeletions();
+            flushDeletions();
             uploadLocalImages(task);
         }
     }
@@ -314,6 +333,8 @@ public class EditTaskActivity extends AppCompatActivity {
                     deleteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
+                            imageManager.deleteFromIds(adapter.getSelectedIds());
+                            adapter.animateDeletions();
                             setSelectionMode(false);
                             mode.finish();
                             return true;
@@ -424,6 +445,8 @@ public class EditTaskActivity extends AppCompatActivity {
         currentImagePath = imageFile.getAbsolutePath();
         return imageFile;
     }
+
+
 
     protected void openCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
