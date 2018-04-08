@@ -41,7 +41,8 @@ import static junit.framework.Assert.assertTrue;
  * @param <T> Class of the activity being tested by this intent test
  */
 abstract class AbstractIntentTest<T extends Activity> {
-    private MockRemoteClient client;
+    private MockRemoteClient innerClient;
+    private CachingClient<MockRemoteClient> client;
     private MockSession session;
 
     @Rule
@@ -59,7 +60,8 @@ abstract class AbstractIntentTest<T extends Activity> {
      */
     @Before
     public final void setup() {
-        this.client = new MockRemoteClient();
+        this.innerClient = new MockRemoteClient();
+        this.client = new CachingClient<>(innerClient);
 
         WrkifyClient.setInstance(new CachingClient<>(client));
         this.createMockData(client);
@@ -73,22 +75,21 @@ abstract class AbstractIntentTest<T extends Activity> {
     }
 
     /**
-     * Gets the active MockRemoteClient.
+     * Gets the active session client.
      * @return active client
      */
-    public final @NonNull MockRemoteClient getClient() {
+    @NonNull
+    public final CachingClient<MockRemoteClient> getClient() {
         return client;
     }
 
     /**
-     * Informs the MockRemoteClient to return the given RemoteObjects
-     * as the results of the next search. This should always be called
-     * before taking any action that will trigger a search, as MockRemoteClient
-     * cannot interpret real searches and will always return no results.
-     * @param results RemoteObjects to return as the results of the next search
+     * Gets the MockRemoteClient being wrapped by the active session client.
+     * @return wrapped client
      */
-    public final void mockNextSearch(RemoteObject... results) {
-        getClient().mockNextSearch(results);
+    @NonNull
+    public final MockRemoteClient getInnerClient() {
+        return innerClient;
     }
 
     /**
@@ -220,7 +221,7 @@ abstract class AbstractIntentTest<T extends Activity> {
      * each test.
      * @param client current MockRemoteClient
      */
-    protected void createMockData(MockRemoteClient client) {
+    protected void createMockData(CachingClient<MockRemoteClient> client) {
 
     }
 }

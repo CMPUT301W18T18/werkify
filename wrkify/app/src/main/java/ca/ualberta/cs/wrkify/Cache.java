@@ -40,6 +40,12 @@ public class Cache {
         this.map.put(id, object);
     }
 
+    public <T extends RemoteObject> void putAll(Collection<T> objects) {
+        for (RemoteObject object: objects) {
+            put(object.getId(), object);
+        }
+    }
+
     public void discard(String id) {
         this.map.remove(id);
     }

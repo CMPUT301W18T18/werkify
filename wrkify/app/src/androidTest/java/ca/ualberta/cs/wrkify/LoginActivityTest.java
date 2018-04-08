@@ -40,7 +40,7 @@ public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
     }
 
     @Override
-    protected void createMockData(MockRemoteClient client) {
+    protected void createMockData(CachingClient<MockRemoteClient> client) {
         this.user = client.create(User.class, "user4", "user4@example.com", "5018293749");
     }
 
@@ -51,8 +51,6 @@ public class LoginActivityTest extends AbstractIntentTest<LoginActivity> {
      */
     @Test
     public void testLoginActivity() {
-        mockNextSearch(user);
-
         onView(withId(R.id.loginField)).perform(typeText("user4"));
         onView(withId(R.id.loginButton)).perform(click());
 
