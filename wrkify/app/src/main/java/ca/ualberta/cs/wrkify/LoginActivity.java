@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
@@ -54,12 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
 
-        User sessionuser = Session.getInstance(this).getUser();
-
-        if (sessionuser != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
+        this.new LoginTask().execute();
 
         this.loginField = findViewById(R.id.loginField);
         Button loginButton = findViewById(R.id.loginButton);
@@ -133,9 +129,34 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REGISTER && resultCode == RESULT_OK) {
-            User sessionuser = Session.getInstance(this).getUser();
-            if (sessionuser != null) {
-                startActivity(new Intent(this, MainActivity.class));
+            this.new LoginTask().execute();
+        }
+    }
+
+    /**
+     * LoginTask is an AsyncTask to get the sessionUser and
+     * end the Activity.
+     */
+    private class LoginTask extends AsyncTask<Void, Void, User> {
+        /**
+         * runs in the background the get the session user
+         * @param voids unused
+         * @return the sessionUser
+         */
+        @Override
+        protected User doInBackground(Void... voids) {
+            User sessionUser = Session.getInstance(LoginActivity.this).getUser();
+            return sessionUser;
+        }
+
+        /**
+         * starts the MainActivity when we get our session
+         * @param sessionUser the user that is our result
+         */
+        @Override
+        protected void onPostExecute(User sessionUser) {
+            if (sessionUser != null) {
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 finish();
             }
         }
