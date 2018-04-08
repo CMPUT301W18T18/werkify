@@ -18,7 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.view.View;
@@ -140,6 +139,8 @@ public class NotificationView extends ConstraintLayout {
                 if (dismissListener != null) {
                     dismissListener.onClick(v);
                 }
+
+                destroyAssociatedSignals();
             }
         });
 
@@ -154,7 +155,18 @@ public class NotificationView extends ConstraintLayout {
                 if (afterActionListener != null) {
                     afterActionListener.onClick(v);
                 }
+
+                destroyAssociatedSignals();
             }
         });
+    }
+
+    private void destroyAssociatedSignals() {
+        TransactionManager transactionManager = Session.getInstance(getContext()).getTransactionManager();
+        transactionManager.enqueue(new UserDeleteSignalsTransaction(
+                Session.getInstance(getContext()).getUser(), notification.getTargetId()));
+
+        // TODO notify of offline status
+        transactionManager.flush(WrkifyClient.getInstance());
     }
 }

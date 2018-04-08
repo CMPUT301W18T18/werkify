@@ -249,13 +249,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
 
         @Override
-        public List<Signal> findSignalsByTarget(RemoteObject target) throws IOException {
+        public List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException {
             try {
-                List<Signal> results = getWrappedSearcher().findSignalsByTarget(target);
+                List<Signal> results = getWrappedSearcher().findSignalsByUserAndTargetIds(userId, targetId);
                 cache.putAll(results);
                 return results;
             } catch (IOException e) {
-                return getLocalSearcher().findSignalsByTarget(target);
+                return getLocalSearcher().findSignalsByUserAndTargetIds(userId, targetId);
             }
         }
 
@@ -381,11 +381,15 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
 
         @Override
-        public List<Signal> findSignalsByTarget(final RemoteObject target) {
+        public List<Signal> findSignalsByUserAndTargetIds(final String userId, final String targetId) {
             return cache.findMatching(new CacheMatcher<Signal>() {
                 @Override
                 public boolean isMatch(Signal signal) {
-                    return (target.getId().equals(signal.getTargetId()));
+                    try {
+                        return (targetId.equals(signal.getTargetId()) && userId.equals(signal.getRemoteUser(client).getId()));
+                    } catch (IOException e) {
+                        return false;
+                    }
                 }
             });
         }

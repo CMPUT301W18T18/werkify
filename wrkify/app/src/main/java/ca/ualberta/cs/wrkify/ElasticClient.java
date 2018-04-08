@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
@@ -96,6 +97,8 @@ public class ElasticClient extends RemoteClient {
     public <T extends RemoteObject> T uploadNew(Class<T> type, T instance) {
         Log.i("elastic", "NEW " + type);
         Index index = new Index.Builder(instance).index(this.index).type(type.getName()).build();
+
+        Log.d("elastic", index.getRestMethodName() + " " + index.getPathToResult() + " " + index.getData(new Gson()));
 
         String originalId = instance.getId();
         try {

@@ -32,7 +32,7 @@
         "ca.ualberta.cs.wrkify.Signal": {
 			"properties": {
 				"user": {"type": "nested"},
-				"targetId": {"type": "nested"}
+				"targetId": {"type": "string"}
 			}
         }
     }

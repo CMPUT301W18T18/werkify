@@ -93,7 +93,7 @@ abstract class Searcher<TClient extends RemoteClient> {
 
     public abstract List<Signal> findSignalsByUser(User user) throws IOException;
 
-    public abstract List<Signal> findSignalsByTarget(RemoteObject target) throws IOException;
+    public abstract List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException;
 
     /**
      * gets a user by its username

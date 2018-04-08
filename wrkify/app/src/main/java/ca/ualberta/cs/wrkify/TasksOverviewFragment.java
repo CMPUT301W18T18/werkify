@@ -177,17 +177,7 @@ abstract class TasksOverviewFragment extends Fragment {
             hideOfflineIndicator();
         }
 
-        NotificationCollector notificationCollector = Session.getInstance(getActivity())
-                .getNotificationCollector();
-        notificationCollector.clear();
-
-        try {
-            notificationCollector.putNotifications(WrkifyClient.getInstance().getSearcher()
-                    .findSignalsByUser(Session.getInstance(getActivity()).getUser()));
-        } catch (IOException e) {
-            // continue
-        }
-
+        Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
         updateNotificationDisplay(getView());
     }
 

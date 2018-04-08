@@ -109,12 +109,24 @@ public class Session {
         save(context);
     }
 
+    public NotificationCollector getNotificationCollector() {
+        return notificationCollector;
+    }
+
     public TransactionManager getTransactionManager() {
         return transactionManager;
     }
 
-    public NotificationCollector getNotificationCollector() {
-        return notificationCollector;
+    public boolean downloadSignals(RemoteClient client) {
+        try {
+            signalManager.clear();
+            signalManager.addSignals(client.getSearcher().findSignalsByUser(user));
+            notificationCollector.clear();
+            notificationCollector.putNotifications(signalManager.getNotifications());
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**
