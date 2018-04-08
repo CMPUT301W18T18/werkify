@@ -155,24 +155,10 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
     }
 
     @Override
-    public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) throws IOException {
+    public List<Task> findTasksNear(TaskLocation location) throws IOException {
         String query = makeJSONObject(
             j("query",
-                j("bool",
-                    j("should", ja(
-                        jo(
-                            j("match",
-                                j("title", keywords)
-                            )
-                        ),
-                        jo(
-                            j("match",
-                                j("description", keywords)
-                            )
-                        )
-                    )),
-                    j("minimum_should_match", 1)
-                )
+                j("match_all", jo())
             ),
             j("filter",
                 j("geo_distance",
