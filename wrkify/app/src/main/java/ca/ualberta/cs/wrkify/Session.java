@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -29,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,9 +45,11 @@ public class Session {
     private static Session instance;
 
     private User user;
-    private List<Task> userRequestedCache;
-    private List<Task> userProvidedCache;
-    private List<Task> userBiddedCache;
+    private List<RemoteReference<Task>> userRequestedCache;
+    private List<RemoteReference<Task>> userProvidedCache;
+    private List<RemoteReference<Task>> userBiddedCache;
+
+    private TransactionManager transactionManager = new TransactionManager();
 
     protected Session() {}
 
@@ -102,6 +106,10 @@ public class Session {
         save(context);
     }
 
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
     /**
      * Unsets the logged-in user.
      * @param context application context; used to clear saved Session
@@ -109,41 +117,6 @@ public class Session {
     public void logout(Context context) {
         this.user = null;
         context.deleteFile(FILENAME);
-    }
-
-    /**
-     * Refreshes user task caches.
-     * @param client RemoteClient to find user's tasks in
-     * @throws IOException if network is disconnected
-     */
-    public void refreshCaches(RemoteClient client) throws IOException {
-        this.userProvidedCache = Searcher.findTasksByProvider(client, getUser());
-        this.userRequestedCache = Searcher.findTasksByRequester(client, getUser());
-        this.userBiddedCache = Searcher.findTasksByBidder(client, getUser());
-    }
-
-    /**
-     * Gets the cache of the user's requested tasks.
-     * @return cached list of requested tasks
-     */
-    public List<Task> getUserRequestedCache() {
-        return userRequestedCache;
-    }
-
-    /**
-     * Gets the cache of the user's provided tasks.
-     * @return cached list of provided tasks
-     */
-    public List<Task> getUserProvidedCache() {
-        return userProvidedCache;
-    }
-
-    /**
-     * Gets the cache of the user's bidded tasks.
-     * @return cached list of bidded tasks
-     */
-    public List<Task> getUserBiddedCache() {
-        return userBiddedCache;
     }
 
     /**

@@ -21,11 +21,11 @@ package ca.ualberta.cs.wrkify;
  * TaskCheckListTransaction represents a Transaction for
  * Task.setCheckList()
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  * @see CheckList
  */
-public class TaskCheckListTransaction extends Transaction<Task> {
+public class TaskCheckListTransaction extends StateChangeTransaction<Task> {
     private CheckList checkList;
 
     /**

@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toolbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,8 @@ abstract class TasksOverviewFragment extends Fragment {
     private FloatingActionButton addButton;
 
     private boolean addButtonVisible;
-    
+    private ViewGroup offlineIndicator;
+
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
     @Override
@@ -66,7 +68,8 @@ abstract class TasksOverviewFragment extends Fragment {
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
         this.addButton = view.findViewById(R.id.overviewAddButton);
-        
+        this.offlineIndicator = view.findViewById(R.id.overviewOfflineIndicator);
+
         UserView userView = view.findViewById(R.id.overviewSelfView);
         Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
         
@@ -154,6 +157,30 @@ abstract class TasksOverviewFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Session session = Session.getInstance(getActivity());
+        TransactionManager transactionManager = session.getTransactionManager();
+        if (transactionManager.hasPendingTransactions()) {
+            if (transactionManager.flush(WrkifyClient.getInstance())) {
+                hideOfflineIndicator();
+                // TODO redownload here
+            } else {
+                showOfflineIndicator();
+            }
+
+            refreshTaskLists();
+        } else {
+            hideOfflineIndicator();
+        }
+    }
+
+    private void refreshTaskLists() {
+        // TODO not implemented
+    }
+
     /**
      * Hides the add button.
      * TODO add transition
@@ -170,6 +197,14 @@ abstract class TasksOverviewFragment extends Fragment {
     private void showAddButton() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOfflineIndicator() {
+        offlineIndicator.setVisibility(View.GONE);
+    }
+
+    private void showOfflineIndicator() {
+        offlineIndicator.setVisibility(View.VISIBLE);
     }
 
     /**

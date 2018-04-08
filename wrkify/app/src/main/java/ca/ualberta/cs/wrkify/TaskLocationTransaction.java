@@ -23,18 +23,18 @@ import android.location.Location;
  * TaskLocationTransaction represents a Transaction for
  * Task.setLocation()
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
-public class TaskLocationTransaction extends Transaction<Task> {
-    private Location location;
+public class TaskLocationTransaction extends StateChangeTransaction<Task> {
+    private TaskLocation location;
 
     /**
      * create a transaction from the Task and the location
      * @param task the task you want to update
      * @param location the location you want to set
      */
-    public TaskLocationTransaction(Task task, Location location) {
+    public TaskLocationTransaction(Task task, TaskLocation location) {
         super(task, Task.class);
         this.location = location;
     }

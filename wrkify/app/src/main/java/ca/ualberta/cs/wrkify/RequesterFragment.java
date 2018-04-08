@@ -180,10 +180,9 @@ public class RequesterFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List query(RemoteClient client) {
+                public List<Task> query(RemoteClient client) {
                     try {
-                        return Searcher.findTasksByRequester(
-                                client,
+                        return client.getSearcher().findTasksByRequester(
                                 Session.getInstance(getActivity(),client).getUser(),
                                 TaskStatus.REQUESTED, TaskStatus.BIDDED
                         );
@@ -207,10 +206,9 @@ public class RequesterFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List query(RemoteClient client) {
+                public List<Task> query(RemoteClient client) {
                     try {
-                        return Searcher.findTasksByRequester(
-                                client,
+                        return client.getSearcher().findTasksByRequester(
                                 Session.getInstance(getActivity(),client).getUser(),
                                 TaskStatus.ASSIGNED
                         );
@@ -236,8 +234,7 @@ public class RequesterFragment extends TasksOverviewFragment {
                 @Override
                 public List query(RemoteClient client) {
                     try {
-                        return Searcher.findTasksByRequester(
-                                client,
+                        return client.getSearcher().findTasksByRequester(
                                 Session.getInstance(getActivity(),client).getUser(),
                                 TaskStatus.DONE
                         );

@@ -18,31 +18,27 @@
 package ca.ualberta.cs.wrkify;
 
 /**
- * Created by peter on 03/04/18.
+ * Transaction to set a user's phone number.
  */
-
-public class TaskUnassignTransaction extends StateChangeTransaction<Task> {
+public class UserSetPhoneNumberTransaction extends StateChangeTransaction<User> {
+    private String phoneNumber;
 
     /**
-     * creates a transaction to unassign the assigned
-     * bid.
-     * @param task the task to change
+     * Creates a transaction to change the target user's phone number.
+     * @param user Target user
+     * @param phoneNumber New email address
      */
-    public TaskUnassignTransaction(Task task) {
-        super(task, Task.class);
+    public UserSetPhoneNumberTransaction(User user, String phoneNumber) {
+        super(user, User.class);
+        this.phoneNumber = phoneNumber;
     }
 
-    /**
-     * applys the unassigning of the task
-     * @param task the task to change.
-     * @return true if the task unassigned, false otherwise.
-     */
     @Override
-    protected Boolean apply(Task task) {
+    protected Boolean apply(User user) {
         try {
-          task.unassign();
-          return true;
-        } catch (UnsupportedOperationException e) {
+            user.setPhoneNumber(phoneNumber);
+            return true;
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }

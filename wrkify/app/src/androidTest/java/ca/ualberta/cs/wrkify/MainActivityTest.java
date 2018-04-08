@@ -88,14 +88,11 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
 
     private void launchAsRequester() {
         getSession().setUser(requester);
-        getSession().setMockUserRequestedCache(Arrays.asList(unbiddedTask, biddedTask, acceptedTask, closedTask));
         launchActivity();
     }
 
     private void launchAsProvider() {
         getSession().setUser(provider);
-        getSession().setMockUserBiddedCache(Collections.singletonList(biddedTask));
-        getSession().setMockUserProvidedCache(Arrays.asList(acceptedTask, closedTask));
         launchActivity();
     }
 
