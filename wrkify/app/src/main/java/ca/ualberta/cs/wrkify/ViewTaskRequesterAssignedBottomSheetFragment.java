@@ -67,7 +67,8 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             public void onConfirm() {
                                 task.complete();
 
-                                new transactionTask().execute(task, new TaskCompleteTransaction(task));
+                                new TransactionAsyncTask().execute(
+                                        task, new TaskCompleteTransaction(task), getContext());
 
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
 
@@ -88,7 +89,8 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             public void onConfirm() {
                                 task.unassign();
 
-                                new transactionTask().execute(task, new TaskUnassignTransaction(task));
+                                new TransactionAsyncTask().execute(
+                                        task, new TaskUnassignTransaction(task), getContext());
 
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
                                 collapse();
@@ -100,23 +102,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
         });
     }
 
-    private class transactionTask extends AsyncTask<Object, Void, Void> {
-        @Override
-        protected Void doInBackground(Object... objs) {
-            Task task = (Task) objs[0];
-            Transaction<Task> transaction = (Transaction<Task>) objs[1];
 
-            TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-            transactionManager.enqueue(transaction);
-
-            // TODO notify of offline status
-            transactionManager.flush(WrkifyClient.getInstance());
-
-            WrkifyClient.getInstance().updateCached(task);
-
-            return null;
-        }
-    }
 
     @Override
     protected String getStatusString() {
