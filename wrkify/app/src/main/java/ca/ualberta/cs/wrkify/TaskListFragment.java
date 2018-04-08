@@ -126,7 +126,7 @@ public abstract class TaskListFragment extends Fragment {
          */
         @Override
         protected void onPostExecute(Void result) {
-            if (taskListAdapter == null) {
+            if (taskListAdapter != null) {
                 taskListAdapter.notifyDataSetChanged();
                 if (getView() != null) {
                     getView().findViewById(R.id.taskListView).setVisibility(
