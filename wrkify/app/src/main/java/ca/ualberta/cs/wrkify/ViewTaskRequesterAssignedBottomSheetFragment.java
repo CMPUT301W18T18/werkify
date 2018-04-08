@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.FragmentManager;
@@ -66,14 +67,10 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             public void onConfirm() {
                                 task.complete();
 
-                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-                                transactionManager.enqueue(new TaskCompleteTransaction(task));
+                                new transactionTask().execute(task, new TaskCompleteTransaction(task));
 
-                                // TODO notify of offline status
-                                transactionManager.flush(WrkifyClient.getInstance());
-
-                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+
                                 collapse();
                             }
                         });
@@ -91,13 +88,8 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             public void onConfirm() {
                                 task.unassign();
 
-                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-                                transactionManager.enqueue(new TaskUnassignTransaction(task));
+                                new transactionTask().execute(task, new TaskUnassignTransaction(task));
 
-                                // TODO notify of offline status
-                                transactionManager.flush(WrkifyClient.getInstance());
-
-                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
                                 collapse();
                             }
@@ -106,6 +98,24 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                 dialog.show(fm, null);
             }
         });
+    }
+
+    private class transactionTask extends AsyncTask<Object, Void, Void> {
+        @Override
+        protected Void doInBackground(Object... objs) {
+            Task task = (Task) objs[0];
+            Transaction<Task> transaction = (Transaction<Task>) objs[1];
+
+            TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+            transactionManager.enqueue(transaction);
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
+
+            WrkifyClient.getInstance().updateCached(task);
+
+            return null;
+        }
     }
 
     @Override
