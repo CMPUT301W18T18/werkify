@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,19 +85,14 @@ public abstract class TaskListFragment extends Fragment {
         super.onResume();
 
         this.refresh();
-        this.taskListAdapter.notifyDataSetChanged();
-        if (this.getView() != null) {
-            this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
-            this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
-        }
+
     }
 
     /**
      * refresh the view
      */
     protected void refresh() {
-        this.tasks.refresh();
-        this.taskListAdapter.notifyDataSetChanged();
+        this.new RefreshTask().execute();
     }
 
     /**
@@ -104,4 +100,37 @@ public abstract class TaskListFragment extends Fragment {
      * @return
      */
     protected abstract RemoteList getTaskList();
+
+
+    /**
+     * RefreshTask is an AsyncTask that updates the list,
+     * then triggers the adapter to redraw
+     */
+    class RefreshTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * refresh the list in the background
+         * @param voids
+         * @return
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            tasks.refresh();
+            return null;
+        }
+
+        /**
+         * update the view after the list is refreshed
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            taskListAdapter.notifyDataSetChanged();
+            if (getView() != null) {
+                getView().findViewById(R.id.taskListView).setVisibility(
+                        tasks.size() == 0? View.GONE : View.VISIBLE);
+                getView().findViewById(R.id.taskListEmptyMessage).setVisibility(
+                        tasks.size() == 0? View.VISIBLE : View.GONE);
+            }
+        }
+    }
 }
