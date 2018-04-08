@@ -178,7 +178,7 @@ public class ProviderFragment extends TasksOverviewFragment {
                 @Override
                 public List query(RemoteClient client) {
                     try {
-                        return Searcher.findTasksByProvider(
+                        return Searcher.findTasksByBidder(
                                 client,
                                 Session.getInstance(getActivity(),client).getUser(),
                                 TaskStatus.BIDDED
