@@ -18,8 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.app.ActionBar;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,21 +26,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -166,7 +156,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void viewMap(){
-        Intent intent = new Intent(this.getContext(),MapsActivity.class);
+        Intent intent = new Intent(this.getContext(),TasksNearMeMap.class);
         startActivity(intent);
     }
 }
