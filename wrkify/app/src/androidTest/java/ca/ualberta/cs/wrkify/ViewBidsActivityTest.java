@@ -75,7 +75,7 @@ public class ViewBidsActivityTest extends AbstractIntentTest<ViewBidsActivity> {
     }
 
     @Override
-    protected void createMockData(MockRemoteClient client) {
+    protected void createMockData(CachingClient<MockRemoteClient> client) {
         user = client.create(User.class, "User", "user@example.com", "1958203971");
         task = client.create(Task.class, "Task with bids", user, "Description");
 
@@ -83,6 +83,12 @@ public class ViewBidsActivityTest extends AbstractIntentTest<ViewBidsActivity> {
         task.addBid(new Bid(new Price(11.00), makeBidUser()));
         task.addBid(new Bid(new Price(12.00), makeBidUser()));
         task.addBid(new Bid(new Price(10.00), makeBidUser()));
+
+        try {
+            client.upload(task);
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     private User makeBidUser() {
@@ -172,6 +178,7 @@ public class ViewBidsActivityTest extends AbstractIntentTest<ViewBidsActivity> {
         onView(bidView(1)).check(matches(withChild(withText("$12.00"))));
         onView(bidView(2)).check(matches(withChild(withText("$13.00"))));
 
+        onView(bidView(2)).perform(click());
         onView(allOf(withParent(bidView(2)), withId(R.id.bidListItem_reject))).perform(click());
 
         onView(withId(R.id.bidListActivity_bidCount)).check(matches(withText(containsString("2"))));

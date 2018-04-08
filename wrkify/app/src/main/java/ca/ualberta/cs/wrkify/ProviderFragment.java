@@ -150,10 +150,10 @@ public class ProviderFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List<Task> query(RemoteClient client) {
+                public List<Task> query(CachingClient client) {
                     try {
                         return client.getSearcher().findTasksByProvider(
-                                Session.getInstance(getActivity(),client).getUser(),
+                                Session.getInstance(getActivity(), client).getUser(),
                                 TaskStatus.ASSIGNED
                         );
                     } catch (IOException e) {
@@ -175,7 +175,7 @@ public class ProviderFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List<Task> query(RemoteClient client) {
+                public List<Task> query(CachingClient client) {
                     try {
                         return client.getSearcher().findTasksByBidder(
                                 Session.getInstance(getActivity(),client).getUser(),
@@ -200,7 +200,7 @@ public class ProviderFragment extends TasksOverviewFragment {
         protected RemoteList getTaskList() {
             return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
                 @Override
-                public List<Task> query(RemoteClient client) {
+                public List<Task> query(CachingClient client) {
                     try {
                         return client.getSearcher().findTasksByProvider(
                                 Session.getInstance(getActivity(),client).getUser(),

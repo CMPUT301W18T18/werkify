@@ -50,7 +50,8 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
 
     private Set<String> transientIdSet;
 
-    private CachingClientSearcher searcher = new CachingClientSearcher(this);
+    private CachingClientWrapperSearcher searcher = new CachingClientWrapperSearcher(this);
+    private CachingClientSearcher localSearcher = new CachingClientSearcher(this);
 
     public CachingClient(TClient client) {
         this.client = client;
@@ -130,11 +131,11 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
 
     @Override
     Searcher getSearcher() {
-        return client.getSearcher();
+        return searcher;
     }
 
     Searcher getLocalSearcher() {
-        return searcher;
+        return localSearcher;
     }
 
     /**
@@ -149,6 +150,104 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         String transientId = UUID.randomUUID().toString();
         transientIdSet.add(transientId);
         return transientId;
+    }
+
+    private Searcher getWrappedSearcher() {
+        return client.getSearcher();
+    }
+
+    public class CachingClientWrapperSearcher extends Searcher<CachingClient> {
+        public CachingClientWrapperSearcher(CachingClient client) {
+            super(client);
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(User bidder) throws IOException {
+            try {
+                List<Task> results = getWrappedSearcher().findTasksByBidder(bidder);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findTasksByBidder(bidder);
+            }
+        }
+
+        @Override
+        public List<Task> findTasksByBidder(User bidder, TaskStatus... statuses) throws IOException {
+            try {
+                List<Task> results = getWrappedSearcher().findTasksByBidder(bidder, statuses);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findTasksByBidder(bidder, statuses);
+            }
+        }
+
+        @Override
+        public List<Task> findTasksByKeywords(String keywords) throws IOException {
+            return getWrappedSearcher().findTasksByKeywords(keywords);
+        }
+
+        @Override
+        public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) throws IOException {
+            return getWrappedSearcher().findTasksByKeywordsNear(keywords, location);
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(User provider) throws IOException {
+            try {
+                List<Task> results = getWrappedSearcher().findTasksByProvider(provider);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findTasksByProvider(provider);
+            }
+        }
+
+        @Override
+        public List<Task> findTasksByProvider(User provider, TaskStatus... statuses) throws IOException {
+            try {
+                List<Task> results = getWrappedSearcher().findTasksByProvider(provider, statuses);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findTasksByProvider(provider, statuses);
+            }
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(User requester) throws IOException {
+            try {
+                List<Task> results = getWrappedSearcher().findTasksByRequester(requester);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findTasksByRequester(requester);
+            }
+        }
+
+        @Override
+        public List<Task> findTasksByRequester(User requester, TaskStatus... statuses) throws IOException {
+            try {
+                List<Task> results = getWrappedSearcher().findTasksByRequester(requester, statuses);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findTasksByRequester(requester, statuses);
+            }
+        }
+
+        @Override
+        public User getUser(String username) throws IOException {
+            try {
+                User result = getWrappedSearcher().getUser(username);
+                if (result == null) { return null; }
+                cache.put(result.getId(), result);
+                return result;
+            } catch (IOException e) {
+                return getLocalSearcher().getUser(username);
+            }
+        }
     }
 
     public class CachingClientSearcher extends Searcher<CachingClient> {
