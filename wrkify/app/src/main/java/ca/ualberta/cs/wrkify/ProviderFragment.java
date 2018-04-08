@@ -17,6 +17,12 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,55 +33,187 @@ import java.util.List;
  * this Fragment is displayed by MainActivity
  *
  * @see MainActivity
+ * @see TasksOverviewFragment
  */
 public class ProviderFragment extends TasksOverviewFragment {
-    @Override
-    protected List<ArrayList<Task>> getTaskLists() {
-        List<Task> rawProvidedTasks = Session.getInstance(getContext()).getUserProvidedCache();
-        List<Task> rawBiddedTasks = Session.getInstance(getContext()).getUserBiddedCache();
 
-        // Filter tasks into assigned, completed
-        ArrayList<Task> assignedTasks = new ArrayList<>();
-        ArrayList<Task> completedTasks = new ArrayList<>();
-        for (Task t: rawProvidedTasks) {
-            switch (t.getStatus()) {
-                case ASSIGNED:
-                    assignedTasks.add(t);
-                    break;
-                case DONE:
-                    completedTasks.add(t);
-            }
-        }
-
-        // Only show bidded tasks (you can also be a bidder on an assigned task)
-        ArrayList<Task> biddedTasks = new ArrayList<>();
-        for (Task t: rawBiddedTasks) {
-            switch (t.getStatus()) {
-                case BIDDED:
-                    biddedTasks.add(t);
-            }
-        }
-
-        List<ArrayList<Task>> pageTaskLists = new ArrayList<>();
-        pageTaskLists.add(assignedTasks);
-        pageTaskLists.add(biddedTasks);
-        pageTaskLists.add(completedTasks);
-
-        return pageTaskLists;
-    }
-
-    @Override
-    protected List<String> getTabTitles() {
-        return Arrays.asList("Assigned", "Bidded", "Completed");
-    }
-    
+    /**
+     * get the title of the fragment
+     * so TasksOverview fragment can display it
+     * @return the fragment title
+     */
     @Override
     protected String getAppBarTitle() {
         return "My tasks";
     }
 
+    /**
+     * return the FragmentPagerAdapter that this Fragment uses
+     * @param fragmentManager the fragmentmanger needed FragmentPagerAdapter
+     * @return the FragmentPagerAdapter
+     */
+    @Override
+    protected FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager) {
+        return new ProviderFragmentPagerAdapter(fragmentManager);
+    }
+
+    /**
+     * indicates whether we dispaly the add button for the
+     * TaskListFragment at index
+     * @param index Index of the current tab
+     * @return always false, because we dont need that as a provider
+     */
     @Override
     protected boolean isAddButtonEnabled(int index) {
         return false;
+    }
+
+    /**
+     * ProviderFragmentAdapter is a FragmentPagerAdapter that
+     * switches between the Assigned, Bidded, and Complete views
+     * that a task provider will see.
+     */
+    static class ProviderFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        private static final int NUM_TABS = 3;
+
+        TaskListFragment[] tabs;
+
+        /**
+         * create a ProviderFragmentPagerAdapter
+         * @param fragmentManager the fragmentmanager
+         */
+        public ProviderFragmentPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+            tabs = new TaskListFragment[NUM_TABS];
+        }
+
+        /**
+         * gets the TaskListFragment at position
+         *
+         * @param position the position of the fragment in the tasklist
+         * @return the TaskListFragment
+         */
+        @Override
+        public Fragment getItem(int position) {
+            Log.i("-->", "got item " + position);
+            if (this.tabs[position] != null) {
+                return this.tabs[position];
+            }
+
+            TaskListFragment newFrag = null;
+            switch (position) {
+                case 0:
+                    newFrag = new AssignedListFragment();
+                    break;
+                case 1:
+                    newFrag = new BiddedListFragment();
+                    break;
+                case 2:
+                    newFrag = new CompletedListFragment();
+                    break;
+            }
+
+            this.tabs[position] = newFrag;
+            return newFrag;
+        }
+
+        /**
+         * gets the title of a page given the postion
+         * @param position the postion of the tab
+         * @return the title of the tab
+         */
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return (new CharSequence[]{"Assigned", "Bidded", "Completed"})[position];
+        }
+
+        /**
+         * gets the number of tabs
+         * @return the number of tabs
+         */
+        @Override
+        public int getCount() {
+            return NUM_TABS;
+        }
+    }
+
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are assigned to the session user
+     *
+     * @see TaskListFragment
+     */
+    public static class AssignedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByProvider(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.ASSIGNED
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
+    }
+
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are bidded on by the session error
+     *
+     * @see TaskListFragment
+     */
+    public static class BiddedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByBidder(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.BIDDED
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
+    }
+
+    /**
+     * AssignedListFragment is a TaskListFragment based off of
+     * tasks that are completed by the session user
+     *
+     * @see TaskListFragment
+     */
+    public static class CompletedListFragment extends TaskListFragment {
+        @Override
+        protected RemoteList getTaskList() {
+            return new RemoteQueryList<Task>(WrkifyClient.getInstance(), Task.class) {
+                @Override
+                public List query(RemoteClient client) {
+                    try {
+                        return Searcher.findTasksByProvider(
+                                client,
+                                Session.getInstance(getActivity(),client).getUser(),
+                                TaskStatus.DONE
+                        );
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+            };
+        }
     }
 }
