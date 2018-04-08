@@ -42,7 +42,6 @@
             android:name=".EditTaskActivity"
             android:parentActivityName=".ViewTaskActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".TestActivity"></activity>
 
         <!--Provider taken from https://developer.android.com/training/camera/photobasics.html -->
         <provider
