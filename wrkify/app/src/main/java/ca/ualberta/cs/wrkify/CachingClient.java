@@ -241,6 +241,7 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         public User getUser(String username) throws IOException {
             try {
                 User result = getWrappedSearcher().getUser(username);
+                if (result == null) { return null; }
                 cache.put(result.getId(), result);
                 return result;
             } catch (IOException e) {

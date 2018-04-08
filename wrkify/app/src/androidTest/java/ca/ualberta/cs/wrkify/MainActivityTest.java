@@ -17,13 +17,14 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.v7.widget.CardView;
 import android.view.View;
 
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.closeSoftKeyboard;
 import static android.support.test.espresso.Espresso.onView;
@@ -34,6 +35,7 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCom
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 import static org.hamcrest.CoreMatchers.*;
 
 /**
@@ -62,7 +64,7 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
     }
 
     @Override
-    protected void createMockData(MockRemoteClient client) {
+    protected void createMockData(CachingClient<MockRemoteClient> client) {
         requester = client.create(User.class, "TaskRequester", "task-requester@example.com", "0000000000");
         provider = client.create(User.class, "TaskProvider", "task-provider@example.com", "0000000000");
         otherBidder = client.create(User.class, "TaskBidder", "task-bidder@example.com", "0000000000");
@@ -84,6 +86,15 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
         closedTask.acceptBid(acceptedTask.getBidList().get(0));
 
         closedTask.complete();
+
+        try {
+            client.upload(unbiddedTask);
+            client.upload(biddedTask);
+            client.upload(acceptedTask);
+            client.upload(closedTask);
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     private void launchAsRequester() {
@@ -122,28 +133,31 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
         onView(tabWithText("Assigned")).perform(click());
         onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
 
-        onView(taskView(0)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("Assigned")),
                 hasDescendant(withText("TaskRequester")),
-                hasDescendant(withText("Accepted task")))));
+                hasDescendant(withText("Accepted task")))).check(matches(isDisplayed()));
 
         onView(tabWithText("Bidded")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(1)))));
         onView(tabWithText("Bidded")).perform(click());
         onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
 
-        onView(taskView(0)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("$10.00")),
                 hasDescendant(withText("TaskRequester")),
-                hasDescendant(withText("Bidded task")))));
+                hasDescendant(withText("Bidded task")))).check(matches(isDisplayed()));
 
         onView(tabWithText("Completed")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(2)))));
         onView(tabWithText("Completed")).perform(click());
         onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
 
-        onView(taskView(0)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("Done")),
                 hasDescendant(withText("TaskRequester")),
-                hasDescendant(withText("Closed task")))));
+                hasDescendant(withText("Closed task")))).check(matches(isDisplayed()));
 
         onView(taskView(0)).perform(click());
         intended(allOf(
@@ -169,31 +183,35 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
         onView(tabWithText("Requested")).perform(click());
         onView(withId(R.id.overviewAddButton)).check(matches(isDisplayed()));
 
-        onView(taskView(0)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("Requested")),
-                hasDescendant(withText("Unbidded task")))));
+                hasDescendant(withText("Unbidded task")))).check(matches(isDisplayed()));
 
-        onView(taskView(1)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("$10.00")),
-                hasDescendant(withText("Bidded task")))));
+                hasDescendant(withText("Bidded task")))).check(matches(isDisplayed()));
 
         onView(tabWithText("Assigned")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(1)))));
         onView(tabWithText("Assigned")).perform(click());
         onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
 
-        onView(taskView(0)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("Assigned")),
                 hasDescendant(withText("TaskProvider")),
-                hasDescendant(withText("Accepted task")))));
+                hasDescendant(withText("Accepted task")))).check(matches(isDisplayed()));
 
         onView(tabWithText("Closed")).check(matches(allOf(isDisplayed(), withParent(withParentIndex(2)))));
         onView(tabWithText("Closed")).perform(click());
         onView(withId(R.id.overviewAddButton)).check(matches(not(isDisplayed())));
 
-        onView(taskView(0)).check(matches(allOf(
+        onView(allOf(
+                CoreMatchers.<View>instanceOf(CardView.class),
                 hasDescendant(withText("Done")),
                 hasDescendant(withText("TaskProvider")),
-                hasDescendant(withText("Closed task")))));
+                hasDescendant(withText("Closed task")))).check(matches(isDisplayed()));
 
         onView(taskView(0)).perform(click());
         intended(allOf(
@@ -259,7 +277,8 @@ public class MainActivityTest extends AbstractIntentTest<MainActivity> {
         launchAsProvider();
         onView(withId(R.id.navigation_search)).perform(click());
 
-        mockNextSearch(unbiddedTask, biddedTask, acceptedTask, closedTask);
+        getInnerClient().mockNextKeywordSearch(unbiddedTask, biddedTask, acceptedTask, closedTask);
+
         onView(withId(R.id.searchBar)).perform(typeText("Search"), pressImeActionButton());
         closeSoftKeyboard();
 
