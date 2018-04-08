@@ -106,7 +106,7 @@ public abstract class TaskListFragment extends Fragment {
      * RefreshTask is an AsyncTask that updates the list,
      * then triggers the adapter to redraw
      */
-    class RefreshTask extends AsyncTask<Void, Void, Void> {
+    private class RefreshTask extends AsyncTask<Void, Void, Void> {
         /**
          * refresh the list in the background
          * @param voids

@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -94,11 +95,7 @@ public class MainActivity extends AppCompatActivity {
      * task lists can display updated content.
      */
     private void tryRefreshCaches() {
-        try {
-            Session.getInstance(this).refreshCaches(WrkifyClient.getInstance());
-        } catch (IOException e) {
-            // TODO You are offline.
-        }
+        this.new RefreshCacheTask().execute();
     }
 
     /**
@@ -111,6 +108,27 @@ public class MainActivity extends AppCompatActivity {
 
         fragTransaction.replace(R.id.fragment_container, frag, null);
         fragTransaction.commit();
+    }
+
+    /**
+     * RefreshCacheTask is an AsyncActivity that refreshes the
+     * session cache
+     */
+    private class RefreshCacheTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * refresh the session cache
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        public Void doInBackground(Void... voids) {
+            try {
+                Session.getInstance(MainActivity.this).refreshCaches(WrkifyClient.getInstance());
+            } catch (IOException e) {
+                // TODO You are offline.
+            }
+            return null;
+        }
     }
 
 }
