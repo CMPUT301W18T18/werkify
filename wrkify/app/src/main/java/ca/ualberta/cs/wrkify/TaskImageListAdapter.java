@@ -20,6 +20,10 @@ package ca.ualberta.cs.wrkify;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.transition.AutoTransition;
+import android.support.transition.Fade;
+import android.support.transition.Transition;
+import android.support.transition.TransitionManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -76,9 +80,57 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
     }
 
     public void animateDeletions() {
+        Transition transition = makeDeleteTransition();
+        attachScrollDisableListener(transition);
+        TransitionManager.beginDelayedTransition(recyclerView, transition);
         notifyItemRangeChanged(0, thumbnails.size());
         notifyDataSetChanged();
     }
+
+    private Transition makeDeleteTransition() {
+        Fade at = new Fade();
+        at.setDuration(500);
+        attachScrollDisableListener(at);
+        return at;
+    }
+
+    private void attachScrollDisableListener(Transition transition) {
+        final RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+
+        transition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(@NonNull Transition transition) {
+                if (manager instanceof ScrollDisableable) {
+                    ((ScrollDisableable) manager).setScrollEnabled(false);
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(@NonNull Transition transition) {
+                if (manager instanceof ScrollDisableable) {
+                    ((ScrollDisableable) manager).setScrollEnabled(true);
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(@NonNull Transition transition) {
+                if (manager instanceof ScrollDisableable) {
+                    ((ScrollDisableable) manager).setScrollEnabled(true);
+                }
+            }
+
+            @Override
+            public void onTransitionPause(@NonNull Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(@NonNull Transition transition) {
+
+            }
+        });
+    }
+
 
     @Override
     public int getItemCount() {

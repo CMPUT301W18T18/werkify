@@ -314,7 +314,7 @@ public class EditTaskActivity extends AppCompatActivity {
         };
 
         recyclerView = findViewById(R.id.editTaskImageRecyclerView);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
+        ScrollDisableableLinearLayoutManager manager = new ScrollDisableableLinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
