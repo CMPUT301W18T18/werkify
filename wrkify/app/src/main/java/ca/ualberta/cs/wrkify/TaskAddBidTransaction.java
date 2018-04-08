@@ -22,10 +22,10 @@ package ca.ualberta.cs.wrkify;
  * a task.
  *
  * @see Task
- * @see Transaction
+ * @see StateChangeTransaction
  */
 
-public class TaskAddBidTransaction extends Transaction<Task> {
+public class TaskAddBidTransaction extends StateChangeTransaction<Task> {
     private Bid bid;
 
     /**

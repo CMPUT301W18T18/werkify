@@ -17,19 +17,26 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Created by peter on 03/04/18.
- */
+import android.util.Log;
 
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
+import java.io.IOException;
 
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
+public class TaskCreateTransaction extends Transaction<Task> {
+    private Task localTask;
+
+    public TaskCreateTransaction(Task localTask) {
+        super(localTask, Task.class);
+        this.localTask = localTask;
     }
 
     @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
+    public boolean applyInClient(CachingClient client) throws IOException {
+        // TODO images etc. will have to be uploaded and canonicalized before uploadNew
+        String tid = localTask.getId();
+
+        Log.i("-->", "id before: " + localTask.getId());
+        client.uploadNew(Task.class, localTask);
+        Log.i("-->", "id after: " +localTask.getId());
         return true;
     }
 }

@@ -22,8 +22,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -116,7 +114,7 @@ public class TaskTransactionsTest {
     @Test
     public void testCheckList() {
         CheckList cl = new CheckList();
-        Transaction t = new TaskCheckListTransaction(this.t1, cl);
+        StateChangeTransaction t = new TaskCheckListTransaction(this.t1, cl);
 
         Boolean status = t.apply(this.t1);
         assertTrue(status);
@@ -157,7 +155,7 @@ public class TaskTransactionsTest {
 
     @Test
     public void testAddImage() {
-        Transaction t = new TaskAddImageTransaction(this.t1, null);
+        StateChangeTransaction t = new TaskAddImageTransaction(this.t1, null);
 
         Boolean status = t.applyTo(this.t1);
         assertTrue(status);
@@ -173,7 +171,7 @@ public class TaskTransactionsTest {
     @Test
     public void testDelImage() {
         this.t1.addImage(null);
-        Transaction t = new TaskDelImageTransaction(this.t1, null);
+        StateChangeTransaction t = new TaskDelImageTransaction(this.t1, null);
 
         assertEquals(1, this.t1.getImageList().size());
         Boolean status = t.applyTo(this.t1);

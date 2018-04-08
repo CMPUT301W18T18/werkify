@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -35,23 +37,33 @@ public class TransactionManager {
         queue.add(tr);
     }
 
-    public Boolean flush(RemoteClient client) {
+    public Boolean flush(CachingClient client) {
         while (queue.size() > 0) {
             try {
                 Transaction tr = queue.get(0);
-
-                RemoteObject obj = client.download(tr.getId(), tr.getType());
-
-                tr.applyTo(obj);
-
-                client.upload(obj);
+                tr.applyInClient(client);
                 queue.remove(0);
             } catch (IOException e) {
+                Log.w("transaction", "Halting flush due to IOException:");
+                e.printStackTrace();
                 return false;
             }
-
         }
         return true;
+    }
+
+    public boolean hasPendingTransactions() {
+        return !queue.isEmpty();
+    }
+
+    public boolean hasPendingTransactionsFor(RemoteObject object) {
+        // TODO this seems inefficient
+        for (Transaction transaction: queue) {
+            if (transaction.getId().equals(object.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Transaction pop() {

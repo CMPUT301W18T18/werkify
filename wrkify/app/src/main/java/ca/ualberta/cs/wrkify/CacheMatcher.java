@@ -17,19 +17,6 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Created by peter on 03/04/18.
- */
-
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
-
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
-    }
-
-    @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
-        return true;
-    }
+public abstract class CacheMatcher<RemoteT extends RemoteObject> {
+    public abstract boolean isMatch(RemoteT object);
 }

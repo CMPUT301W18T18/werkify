@@ -22,10 +22,10 @@ package ca.ualberta.cs.wrkify;
  * that changes the description of a task.
  *
  * @see Task
- * @see Transaction
+ * @see StateChangeTransaction
  */
 
-public class TaskDescriptionTransaction extends Transaction<Task> {
+public class TaskDescriptionTransaction extends StateChangeTransaction<Task> {
     private String description;
 
     /**

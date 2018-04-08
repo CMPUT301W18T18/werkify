@@ -17,19 +17,16 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Created by peter on 03/04/18.
- */
+import android.location.Location;
+import android.location.LocationManager;
 
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
+import org.junit.Test;
 
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
-    }
+import java.io.IOException;
 
-    @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
-        return true;
-    }
+import static android.test.MoreAsserts.assertNotEmpty;
+import static junit.framework.Assert.fail;
+
+public class TaskLocationTest {
+    // TODO
 }

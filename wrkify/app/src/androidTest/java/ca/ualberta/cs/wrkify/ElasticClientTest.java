@@ -95,7 +95,7 @@ public class ElasticClientTest {
 
     @Test
     public void testSearch() {
-        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
+        ElasticClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         ConcreteTestObject co = rc.create(ConcreteTestObject.class,"t1", "t1", 0);
         ConcreteTestObject co2 = rc.create(ConcreteTestObject.class,"t2", "t1", 0);
@@ -110,7 +110,7 @@ public class ElasticClientTest {
         try {
             // give elasticsearch time to index
             Thread.sleep(1000);
-            arr = rc.search(
+            arr = rc.executeQuery(
                     "{\"query\": {\"match\": {\"param1\": \"t2\"}}}",
                     ConcreteTestObject.class
             );

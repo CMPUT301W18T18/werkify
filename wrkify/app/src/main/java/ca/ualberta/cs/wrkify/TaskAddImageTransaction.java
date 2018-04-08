@@ -23,10 +23,10 @@ import android.graphics.Bitmap;
  * TaskAddImageTransaction models Task.addImage() as
  * a Transaction
  *
- * @see Transaction
+ * @see StateChangeTransaction
  * @see Task
  */
-public class TaskAddImageTransaction extends Transaction<Task> {
+public class TaskAddImageTransaction extends StateChangeTransaction<Task> {
     private Bitmap image;
 
     /**

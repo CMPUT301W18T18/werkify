@@ -34,6 +34,8 @@ import android.widget.TextView;
  * cancelled, EXTRA_RETURNED_USER will not be set.
  */
 public class EditProfileActivity extends AppCompatActivity {
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
+
     /** User being passed in to EditProfileActivity */
     public static final String EXTRA_TARGET_USER = "ca.ualberta.cs.wrkify.EXTRA_TARGET_USER";
 
@@ -95,15 +97,18 @@ public class EditProfileActivity extends AppCompatActivity {
     private void saveAndFinish() {
         boolean valid = true;
 
+        String newEmail = emailField.getText().toString();
+        String newPhoneNumber = phoneField.getText().toString();
+
         try {
-            user.setEmail(emailField.getText().toString());
+            user.setEmail(newEmail);
         } catch (IllegalArgumentException e) {
             emailField.setError("Not a valid email address");
             valid = false;
         }
 
         try {
-            user.setPhoneNumber(phoneField.getText().toString());
+            user.setPhoneNumber(newPhoneNumber);
         } catch (IllegalArgumentException e) {
             phoneField.setError("Not a valid phone number");
             valid = false;
@@ -111,9 +116,22 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (!valid) { return; }
 
-        WrkifyClient.getInstance().upload(user);
+        int resultCode;
 
         Session session = Session.getInstance(this);
+
+        TransactionManager transactionManager = session.getTransactionManager();
+        transactionManager.enqueue(new UserSetEmailTransaction(user, newEmail));
+        transactionManager.enqueue(new UserSetPhoneNumberTransaction(user, newPhoneNumber));
+
+        if (transactionManager.flush(WrkifyClient.getInstance())) {
+            resultCode = RESULT_OK;
+        } else {
+            resultCode = RESULT_UNSYNCED_CHANGES;
+        }
+
+        WrkifyClient.getInstance().updateCached(user);
+
         if (session.getUser().equals(user)) {
             session.setUser(user, this);
         }
@@ -121,7 +139,7 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_USER, user);
 
-        setResult(RESULT_OK, intent);
+        setResult(resultCode, intent);
         finish();
     }
 }

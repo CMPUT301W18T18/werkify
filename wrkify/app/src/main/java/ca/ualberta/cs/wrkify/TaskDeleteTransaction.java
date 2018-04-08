@@ -17,19 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Created by peter on 03/04/18.
- */
+import java.io.IOException;
 
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
-
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
+public class TaskDeleteTransaction extends Transaction<Task> {
+    public TaskDeleteTransaction(Task task) {
+        super(task, Task.class);
     }
 
     @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
+    public boolean applyInClient(CachingClient client) throws IOException {
+        Task task = (Task) client.downloadFromRemote(getId(), getType());
+        if (task == null) { return false; }
+        client.delete(task);
+
         return true;
     }
 }

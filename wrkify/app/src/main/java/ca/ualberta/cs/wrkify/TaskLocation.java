@@ -17,19 +17,29 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Created by peter on 03/04/18.
- */
+import android.location.Location;
 
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
+public class TaskLocation {
+    // NOTE These variables probably need to be named exactly
+    // "lat" and "lon" in order to be searchable
+    private double lat;
+    private double lon;
 
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
+    public TaskLocation(Location location) {
+        this.lat = location.getLatitude();
+        this.lon = location.getLongitude();
     }
 
-    @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
-        return true;
+    public TaskLocation(Double latitude, double longitude) {
+        this.lat = latitude;
+        this.lon = longitude;
+    }
+
+    public double getLatitude() {
+        return lat;
+    }
+
+    public double getLongitude() {
+        return lon;
     }
 }

@@ -17,19 +17,24 @@
 
 package ca.ualberta.cs.wrkify;
 
-/**
- * Created by peter on 03/04/18.
- */
+import java.util.List;
 
-public class SimpleTransaction2 extends StateChangeTransaction<SimpleRemoteObject> {
+public abstract class RemoteQueryList<T extends RemoteObject> extends RemoteList<T> {
+    private RemoteClient client;
 
-    public SimpleTransaction2(SimpleRemoteObject sro) {
-        super(sro, SimpleRemoteObject.class);
+    public RemoteQueryList(RemoteClient client, Class<T> type) {
+        super(client, type);
+        this.client = client;
+        refresh();
     }
 
     @Override
-    public Boolean apply(SimpleRemoteObject object) {
-        object.setFieldTo2();
-        return true;
+    public void refresh() {
+        List<T> objs = query(this.client);
+        if (objs != null) {
+            this.setObjs(objs);
+        }
     }
+
+    public abstract List<T> query(RemoteClient client);
 }
