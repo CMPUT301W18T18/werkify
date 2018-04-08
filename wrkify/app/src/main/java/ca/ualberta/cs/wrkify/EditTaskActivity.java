@@ -49,7 +49,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Activity for a task requester to edit a task that they own
@@ -207,6 +206,8 @@ public class EditTaskActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAMERA = 1;
     private static final int REQUEST_IMAGE_GALLERY = 2;
+
+    private boolean saveEnabled = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -589,7 +590,10 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
-
+        if (!saveEnabled) {
+            return;
+        }
+        saveEnabled = false;
 
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
@@ -611,7 +615,10 @@ public class EditTaskActivity extends AppCompatActivity {
             WrkifyClient.getInstance().upload(this.task);
         }
 
-        if (task == null) return;
+        if (task == null){
+            saveEnabled = true;
+            return;
+        }
 
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_TASK, this.task);
