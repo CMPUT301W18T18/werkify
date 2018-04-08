@@ -141,7 +141,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
         getCurrentLocation();
 
-//        searchTasksNearMe();
+        searchTasksNearMe();
         addTaskMarkers();
     }
 
@@ -247,7 +247,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
        //Search for tasks by location
         try{
             TaskLocation taskLocation = new TaskLocation(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
-            tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksByKeywordsNear("",taskLocation);
+            tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksNear(taskLocation);
         }
         catch (IOException e){
             return;
@@ -255,7 +255,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         catch (NullPointerException e){
             TaskLocation taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
             try {
-              tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksByKeywordsNear("", taskLocation);
+              tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksNear(taskLocation);
             }
             catch (IOException b){
                 return;
