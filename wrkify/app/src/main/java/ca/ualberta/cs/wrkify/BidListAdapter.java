@@ -418,16 +418,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 if (isScrollDisableable) {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
-                Bid bid = data.get(position);
-
-                TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
-                transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
-
-                // TODO notify of offline status
-                transactionManager.flush(WrkifyClient.getInstance());
+                BidListAdapter.this.new RejectBidTask().execute(data.get(position));
 
                 adapter.deleteItem(holder, position);
-                WrkifyClient.getInstance().updateCached(task);
             }
 
             @Override
@@ -436,16 +429,9 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
                 if (isScrollDisableable) {
                     ((ScrollDisableable) manager).setScrollEnabled(true);
                 }
-                Bid bid = data.get(position);
-
-                TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
-                transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
-
-                // TODO notify of offline status
-                transactionManager.flush(WrkifyClient.getInstance());
+                BidListAdapter.this.new RejectBidTask().execute(data.get(position));
 
                 adapter.deleteItem(holder, position);
-                WrkifyClient.getInstance().updateCached(task);
             }
 
             @Override
@@ -458,6 +444,23 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         });
         TransitionManager.beginDelayedTransition(recyclerView, cb);
         holder.totalCollapse();
+    }
+
+    private class RejectBidTask extends AsyncTask<Bid, Void, Void> {
+        @Override
+        protected Void doInBackground(Bid... bids) {
+            Bid bid = bids[0];
+
+            TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
+            transactionManager.enqueue(new TaskCancelBidTransaction(task, bid));
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
+
+            WrkifyClient.getInstance().updateCached(task);
+
+            return null;
+        }
     }
 
     /**
@@ -483,23 +486,39 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
      * @param position List position of accepted item
      */
     protected void acceptClicked(int position) {
-        task.acceptBid(data.get(position));
+        this.new AcceptBidTask().execute(position);
+    }
 
-        int resultCode;
-        TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
-        transactionManager.enqueue(new TaskAcceptBidTransaction(task, data.get(position)));
+    private class AcceptBidTask extends AsyncTask<Integer, Void, Void> {
 
-        if (transactionManager.flush(WrkifyClient.getInstance())) {
-            resultCode = RESULT_OK;
-        } else {
-            resultCode = RESULT_UNSYNCED_CHANGES;
+        private int resultCode;
+        @Override
+        protected Void doInBackground(Integer... positions) {
+            int position = positions[0];
+
+            task.acceptBid(data.get(position));
+
+            int resultCode;
+            TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
+            transactionManager.enqueue(new TaskAcceptBidTransaction(task, data.get(position)));
+
+            if (transactionManager.flush(WrkifyClient.getInstance())) {
+                resultCode = RESULT_OK;
+            } else {
+                resultCode = RESULT_UNSYNCED_CHANGES;
+            }
+
+            WrkifyClient.getInstance().updateCached(task);
+
+            return null;
         }
 
-        WrkifyClient.getInstance().updateCached(task);
-
-        Intent resultIntent = context.getIntent();
-        resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
-        context.setResult(resultCode, resultIntent);
-        context.finish();
+        @Override
+        protected void onPostExecute(Void result) {
+            Intent resultIntent = context.getIntent();
+            resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
+            context.setResult(resultCode, resultIntent);
+            context.finish();
+        }
     }
 }
