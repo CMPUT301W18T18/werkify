@@ -117,8 +117,10 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                 CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
                 Task task = markerTaskHashMap.get(marker);
                 TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
+//                taskTitle.setText("TestTask");
                 taskTitle.setText(task.getTitle());
                 TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
+//                taskDescription.setText("Test");
                 taskDescription.setText(task.getDescription());
                 TextView taskUser = taskCardView.findViewById(R.id.taskUser);
                 taskUser.setText("User");
@@ -139,7 +141,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
         getCurrentLocation();
 
-        searchTasksNearMe();
+//        searchTasksNearMe();
         addTaskMarkers();
     }
 
@@ -232,8 +234,8 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                lastKnownLocation.setLatitude(defaultLocation.latitude);
-                lastKnownLocation.setLongitude(defaultLocation.longitude);
+//                lastKnownLocation.setLatitude(defaultLocation.latitude);
+//                lastKnownLocation.setLongitude(defaultLocation.longitude);
                 getLocationPermission();
             }
         } catch (SecurityException e)  {
