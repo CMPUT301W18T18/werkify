@@ -23,6 +23,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -103,6 +104,19 @@ public class SearchFragment extends Fragment {
                 return handled;
             }
         });
+
+        // Make search results dodge search bar
+        searchBar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) v.getLayoutParams();
+                int marginTotal = params.topMargin + params.bottomMargin;
+
+                recycler.setPadding(0, bottom - top + marginTotal, 0, 0);
+            }
+        });
+
+
         return rootView;
     }
 
@@ -117,7 +131,7 @@ public class SearchFragment extends Fragment {
     public boolean searchTasks(String query){
         List<Task> tasks;
         try {
-            tasks = Searcher.findTasksByKeywords(WrkifyClient.getInstance(), query);
+            tasks = WrkifyClient.getInstance().getSearcher().findTasksByKeywords(query);
         } catch (IOException e){
             tasks = new ArrayList<>();
             return false;

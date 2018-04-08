@@ -17,10 +17,18 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.transition.SidePropagation;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import java.util.Locale;
 
@@ -33,18 +41,26 @@ import static ca.ualberta.cs.wrkify.ViewTaskActivity.REQUEST_VIEW_BIDS;
  * but will be bound to open a view of the current BidList on click.
  */
 public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragment {
+    @Nullable
     @Override
-    protected void initializeWithTask(ViewGroup container, final Task task) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        // Force the up arrow to be visible
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.findViewById(R.id.taskViewBottomSheetIcon).setVisibility(View.VISIBLE);
+        return view;
+    }
+
+    @Override
+    protected void initializeWithTask(final ViewGroup container, final Task task) {
         Bid lowestBid = task.getBidList().get(0);
 
         setDetailString(container,
                 String.format(Locale.US, "%d bids so far", task.getBidList().size()));
         if (lowestBid != null) {
-            setRightStatusString(container,
-                    String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+            setRightStatusString(container, lowestBid.getValue().toString());
         }
 
-        container.setOnClickListener(new View.OnClickListener() {
+        getHeaderView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), ViewBidsActivity.class);

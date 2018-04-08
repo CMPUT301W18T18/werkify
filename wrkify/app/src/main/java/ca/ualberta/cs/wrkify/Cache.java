@@ -17,7 +17,10 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Cache for RemoteObjects.
@@ -37,7 +40,31 @@ public class Cache {
         this.map.put(id, object);
     }
 
+    public <T extends RemoteObject> void putAll(Collection<T> objects) {
+        for (RemoteObject object: objects) {
+            put(object.getId(), object);
+        }
+    }
+
     public void discard(String id) {
         this.map.remove(id);
+    }
+
+    public <T extends RemoteObject> List<T> findMatching(CacheMatcher<T> matcher) {
+        List<T> results = new ArrayList<>();
+        Collection<String> keys = map.keySet();
+        for (String key: keys) {
+            RemoteObject object = map.get(key);
+            try {
+                T castObject = (T) object;
+                if (matcher.isMatch(castObject)) {
+                    results.add(castObject);
+                }
+            } catch (ClassCastException e) {
+                // continue
+            }
+        }
+
+        return results;
     }
 }

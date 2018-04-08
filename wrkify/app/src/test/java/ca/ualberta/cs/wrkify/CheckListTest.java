@@ -18,12 +18,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * CheckListTest provides unit tests for CheckList
+ * Unit tests for CheckList and CheckListItem.
  *
- * @author Peter Elliott
  * @see CheckList
+ * @see CheckList.CheckListItem
  */
 public class CheckListTest {
     @Test
@@ -37,30 +38,45 @@ public class CheckListTest {
 
         CheckList check = new CheckList(items);
 
-        assertEquals(check.getItem(0), "zero");
-        assertEquals(check.getItem(1), "one");
-        assertEquals(check.getItem(2), "two");
-        assertEquals(check.getItem(3), "three");
+        assertEquals("zero", check.getItem(0).getDescription());
+        assertEquals("one", check.getItem(1).getDescription());
+        assertEquals("two", check.getItem(2).getDescription());
+        assertEquals("three", check.getItem(3).getDescription());
     }
 
     @Test
-    public void testSetItem() {
-        ArrayList<String> items = new ArrayList<String>();
+    public void testSetDescription() {
+        CheckList checkList = new CheckList();
 
-        items.add("zero");
-        items.add("one");
-        items.add("two");
-        items.add("three");
+        checkList.addItem("initial");
+        checkList.getItem(0).setDescription("edited");
 
-        CheckList check = new CheckList(items);
+        assertEquals("edited", checkList.getItem(0).getDescription());
+    }
 
-        check.setItem(0, "not zero");
-        check.setItem(1, "not one");
+    @Test
+    public void testListFunctionality() {
+        CheckList checkList = new CheckList();
 
-        assertEquals(check.getItem(0), "not zero");
-        assertEquals(check.getItem(1), "not one");
-        assertEquals(check.getItem(2), "two");
-        assertEquals(check.getItem(3), "three");
+        assertEquals(0, checkList.itemCount());
+
+        checkList.addItem("item");
+        assertEquals(1, checkList.itemCount());
+
+        checkList.addItem("item2");
+        assertEquals(2, checkList.itemCount());
+
+        checkList.removeItem(checkList.getItem(1));
+        assertEquals(1, checkList.itemCount());
+
+        checkList.addItem("item3", true);
+
+        List<CheckList.CheckListItem> items = checkList.getItems();
+        assertEquals(2, items.size());
+        assertEquals("item", items.get(0).getDescription());
+        assertEquals(false, items.get(0).getStatus());
+        assertEquals("item3", items.get(1).getDescription());
+        assertEquals(true, items.get(1).getStatus());
     }
 
     @Test
@@ -74,17 +90,17 @@ public class CheckListTest {
 
         CheckList check = new CheckList(items);
 
-        check.setStatus(0, true);
-        check.setStatus(1, false);
-        check.setStatus(2, true);
-        check.setStatus(2, false);
-        check.setStatus(3, false);
-        check.setStatus(3, true);
+        check.getItem(0).setStatus(true);
+        check.getItem(1).setStatus(false);
+        check.getItem(2).setStatus(true);
+        check.getItem(3).setStatus(false);
+        check.getItem(3).setStatus(false);
+        check.getItem(3).setStatus(true);
 
-        assertTrue(check.getStatus(0));
-        assertFalse(check.getStatus(1));
-        assertFalse(check.getStatus(2));
-        assertTrue(check.getStatus(3));
+        assertTrue(check.getItem(0).getStatus());
+        assertFalse(check.getItem(1).getStatus());
+        assertTrue(check.getItem(2).getStatus());
+        assertTrue(check.getItem(3).getStatus());
     }
 
     @Test
@@ -102,9 +118,9 @@ public class CheckListTest {
         check.addItem("five", true);
         check.addItem("six", false);
 
-        assertFalse(check.getStatus(4));
-        assertTrue(check.getStatus(5));
-        assertFalse(check.getStatus(6));
+        assertFalse(check.getItem(4).getStatus());
+        assertTrue(check.getItem(5).getStatus());
+        assertFalse(check.getItem(6).getStatus());
     }
 
     @Test
@@ -114,18 +130,10 @@ public class CheckListTest {
         check.addItem("zero");
         check.addItem("one");
 
-        check.removeItem(0);
-        assertEquals(check.getItem(0), "one");
+        check.removeItem(check.getItem(0));
+        assertEquals("one", check.getItem(0).getDescription());
 
-        boolean remove = false;
-        try {
-            check.removeItem(1);
-        } catch (IndexOutOfBoundsException e) {
-            remove = true;
-        }
-
-        assertTrue(remove);
-        check.removeItem(0);
+        check.removeItem(check.getItem(0));
 
         boolean get = false;
         try {

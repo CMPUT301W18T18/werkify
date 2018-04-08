@@ -50,8 +50,7 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
             setDetailString(container,
                     String.format(Locale.US,"to %s", assignee.getUsername()));
         }
-        setRightStatusString(container,
-                String.format(Locale.US, "$%.2f", task.getPrice()));
+        setRightStatusString(container, task.getPrice().toString());
 
         Button closeTaskButton = container.findViewById(R.id.taskViewBottomSheetButtonMarkDone);
         Button deassignButton = container.findViewById(R.id.taskViewBottomSheetButtonDeassign);
@@ -66,8 +65,16 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             @Override
                             public void onConfirm() {
                                 task.complete();
-                                WrkifyClient.getInstance().upload(task);
+
+                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+                                transactionManager.enqueue(new TaskCompleteTransaction(task));
+
+                                // TODO notify of offline status
+                                transactionManager.flush(WrkifyClient.getInstance());
+
+                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+                                collapse();
                             }
                         });
                 dialog.show(fm, null);
@@ -83,8 +90,16 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             @Override
                             public void onConfirm() {
                                 task.unassign();
-                                WrkifyClient.getInstance().upload(task);
+
+                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+                                transactionManager.enqueue(new TaskUnassignTransaction(task));
+
+                                // TODO notify of offline status
+                                transactionManager.flush(WrkifyClient.getInstance());
+
+                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+                                collapse();
                             }
                         }
                 );

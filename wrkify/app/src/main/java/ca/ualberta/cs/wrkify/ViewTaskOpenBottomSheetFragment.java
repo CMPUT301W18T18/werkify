@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,8 +32,8 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
-        Button button = view.findViewById(R.id.taskViewBottomSheetButtonBid);
+        EditText bidField = getContentView().findViewById(R.id.taskViewBottomSheetBidField);
+        Button button = getContentView().findViewById(R.id.taskViewBottomSheetButtonBid);
 
         // Confirm and submit bid on button press or text field submit
         button.setOnClickListener(new View.OnClickListener() {
@@ -69,11 +70,19 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
                     new ConfirmationDialogFragment.OnConfirmListener() {
                         @Override
                         public void onConfirm() {
-                            tsk.addBid(new Bid(
-                                    Double.parseDouble(bidField.getText().toString()),
-                                    Session.getInstance(ctx).getUser()
-                            ));
-                            WrkifyClient.getInstance().upload(tsk);
+                            Bid bid = new Bid(
+                                    new Price(bidField.getText().toString()),
+                                    Session.getInstance(ctx).getUser());
+                            tsk.addBid(bid);
+
+                            TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+                            transactionManager.enqueue(new TaskAddBidTransaction(tsk, bid));
+
+                            // TODO notify of offline status
+                            transactionManager.flush(WrkifyClient.getInstance());
+
+                            WrkifyClient.getInstance().updateCached(tsk);
+                            collapse();
                         }
                     }
         );
@@ -92,8 +101,7 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             setDetailString(container,
                     String.format(Locale.US, "%d bids so far", bidCount));
             Bid lowestBid = task.getBidList().get(0);
-            setRightStatusString(container,
-                    String.format(Locale.US, "$%.2f", lowestBid.getValue()));
+            setRightStatusString(container, lowestBid.getValue().toString());
         }
     }
 
@@ -110,5 +118,14 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
     @Override
     protected View getContentLayout(ViewGroup root) {
         return inflate(getActivity(), R.layout.activity_view_task_bottom_sheet_bid, null);
+    }
+
+    @Override
+    public void collapse() {
+        if (getView().findViewById(R.id.taskViewBottomSheetBidField).isFocused()) {
+            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+        }
+        super.collapse();
     }
 }

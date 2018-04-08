@@ -94,11 +94,7 @@ public class MainActivity extends AppCompatActivity {
      * task lists can display updated content.
      */
     private void tryRefreshCaches() {
-        try {
-            Session.getInstance(this).refreshCaches(WrkifyClient.getInstance());
-        } catch (IOException e) {
-            // TODO You are offline.
-        }
+        //TODO ??
     }
 
     /**

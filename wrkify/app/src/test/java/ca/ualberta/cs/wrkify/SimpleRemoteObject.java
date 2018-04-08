@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.util.UUID;
+
 /**
  * Mock remote object for testing.
  */
@@ -29,6 +31,7 @@ class SimpleRemoteObject extends RemoteObject {
      */
     public SimpleRemoteObject(Integer field) {
         this.field = field;
+        this.setId(UUID.randomUUID().toString());
     }
 
     /**
@@ -40,5 +43,17 @@ class SimpleRemoteObject extends RemoteObject {
     public SimpleRemoteObject(String id, Integer field) {
         this(field);
         this.setId(id);
+    }
+
+    public void setFieldTo1() {
+        this.field = 1;
+    }
+
+    public void setFieldTo2() {
+        this.field = 2;
+    }
+
+    public void setFieldTo3() {
+        this.field = 3;
     }
 }

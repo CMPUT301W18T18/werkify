@@ -19,9 +19,9 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.Locale;
 
 /**
  * ViewTaskActivity displays an expanded view of a Task.
@@ -104,11 +105,10 @@ public class ViewTaskActivity extends AppCompatActivity {
      * changes will not be reflected in the UI.
      * @param task task to display
      */
-     private void initializeFromTask(Task task) {
+    private void initializeFromTask(Task task) {
         this.task = task;
 
         // Determine if the session user owns this task
-        // TODO? this comparison seems like it should be encapsulable as User.equals
         Boolean sessionUserIsRequester;
 
         try {
@@ -123,6 +123,21 @@ public class ViewTaskActivity extends AppCompatActivity {
             return;
         }
 
+        // Determine if the task is assigned to the session user
+        Boolean sessionUserIsProvider;
+
+        try {
+            User remoteProvider = task.getRemoteProvider(WrkifyClient.getInstance());
+            if (remoteProvider == null) {
+                sessionUserIsProvider = false;
+            } else {
+                sessionUserIsProvider = remoteProvider.equals(Session.getInstance(this).getUser());
+            }
+        } catch (IOException e) {
+            // TODO handle this correctly
+            return;
+        }
+
         // Set the task title
         TextView titleView = findViewById(R.id.taskViewTitle);
         titleView.setText(task.getTitle());
@@ -130,9 +145,18 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Set the task user view
         UserView userView = findViewById(R.id.taskViewUser);
         try {
-            User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+            final User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
             if (remoteRequester != null) {
                 userView.setUserName(remoteRequester.getUsername());
+                userView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // View user profile from the user view
+                        Intent viewUserIntent = new Intent(ViewTaskActivity.this, ViewProfileActivity.class);
+                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, remoteRequester);
+                        startActivity(viewUserIntent);
+                    }
+                });
             }
         } catch (IOException e) {
             // TODO handle this correctly
@@ -142,6 +166,41 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Set the task description
         TextView descriptionView = findViewById(R.id.taskViewDescription);
         descriptionView.setText(task.getDescription());
+
+        // Initialize the checklist view
+        final CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
+        checkListProviderView.setEditingEnabled(sessionUserIsProvider);
+        checkListProviderView.setCheckList(task.getCheckList());
+        checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
+
+        checkListProviderView.setOnItemToggledListener(new CheckListProviderView.OnItemToggledListener() {
+            @Override
+            public void onItemToggled(final @NonNull CheckList.CheckListItem item) {
+                String confirmationActionString = item.getStatus()? "not completed": "completed";
+                ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
+                        String.format(Locale.US, "Mark \"%s\" as %s?", item.getDescription(), confirmationActionString),
+                        "Cancel",
+                        String.format(Locale.US, "Mark %s", confirmationActionString),
+                        new ConfirmationDialogFragment.OnConfirmListener() {
+                            @Override
+                            public void onConfirm() {
+                                item.setStatus(!item.getStatus());
+
+                                TransactionManager transactionManager = Session.getInstance(ViewTaskActivity.this).getTransactionManager();
+                                transactionManager.enqueue(new TaskCheckListTransaction(ViewTaskActivity.this.task,
+                                        ViewTaskActivity.this.task.getCheckList()));
+
+                                // TODO notify of offline status
+                                transactionManager.flush(WrkifyClient.getInstance());
+
+                                WrkifyClient.getInstance().updateCached(ViewTaskActivity.this.task);
+                                checkListProviderView.notifyDataSetChanged();
+                            }
+                        }
+                );
+                dialog.show(getFragmentManager(), null);
+            }
+        });
 
         // Add the bottom sheet if it doesn't exist already from a previous initialization
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -171,7 +230,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                     // Edit the task
                     Intent editIntent = new Intent(ViewTaskActivity.this,
                             EditTaskActivity.class);
-                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);                    
+                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
                     startActivityForResult(editIntent, REQUEST_EDIT_TASK);
                 }
             });

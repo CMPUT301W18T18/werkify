@@ -20,16 +20,12 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +42,6 @@ import java.util.List;
 public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskViewHolder> {
     private static int taskLayoutID = R.layout.taskcardview;
     protected List<T> taskList;
-    public Context context;
     private RecyclerView recyclerView;
 
     /*
@@ -58,7 +53,6 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
      */
     public TaskListAdapter(Context context, List<T> taskList){
         this.taskList = taskList;
-        this.context = context;
     }
 
 
@@ -97,7 +91,7 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
             return;
         }
 
-        final User sessionUser = Session.getInstance(context).getUser();
+        final User sessionUser = Session.getInstance(recyclerView.getContext()).getUser();
 
         if(sessionUser.equals(requester)) {
             try {
@@ -118,12 +112,18 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
         if(task.getBidList()!=null) {
             if(task.getStatus()!=null) {
                 if(task.getBidList().size()==0){
-                    holder.getTaskStatus().setStatus(TaskStatus.REQUESTED,0d);
+                    holder.getTaskStatus().setStatus(TaskStatus.REQUESTED, new Price(0.0));
                 }
                 else {
                     holder.getTaskStatus().setStatus(task.getStatus(), task.getBidList().get(0).getValue());
                 }
             }
+        }
+
+        if (Session.getInstance(recyclerView.getContext()).getTransactionManager().hasPendingTransactionsFor(task)) {
+            holder.getTaskView().setBackgroundColor(recyclerView.getContext().getResources().getColor(R.color.colorOfflineBackground));
+        } else {
+            holder.getTaskView().setBackgroundColor(recyclerView.getContext().getResources().getColor(R.color.cardview_light_background));
         }
 
         holder.setTask(task);

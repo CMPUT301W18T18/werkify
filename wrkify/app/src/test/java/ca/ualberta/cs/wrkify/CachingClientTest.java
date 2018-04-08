@@ -74,7 +74,11 @@ public class CachingClientTest {
         }
 
         // Uploads should also immediately fall through.
-        cachingClient.upload(newObject);
+        try {
+            cachingClient.upload(newObject);
+        } catch (IOException e) {
+            fail("IO Exception");
+        }
 
         try {
             assertEquals(newObject, remoteClient.download(newObject.getId(), SimpleRemoteObject.class));

@@ -8,6 +8,9 @@
     <color name="colorStatusDone">#9E9E9E</color>
     <color name="colorStatusRequested">#4CAF50</color>
 
+    <color name="colorOfflineHighlight">#26c6da</color>
+    <color name="colorOfflineBackground">#b2dfdb</color>
+
     <color name="bidListItem_defaultBackground">#FFFFFFFF</color>
     <color name="bidListItem_selectedBackground">#FFEFEFEF</color>
 </resources>

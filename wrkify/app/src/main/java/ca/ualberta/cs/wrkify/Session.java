@@ -49,7 +49,9 @@ public class Session {
     private NotificationCollector notificationCollector = new NotificationCollector();
     private SignalManager signalManager;
 
-    private Session(RemoteClient client) {
+    private TransactionManager transactionManager = new TransactionManager();
+
+    protected Session(RemoteClient client) {
         this.signalManager = new SignalManager(client);
     }
 
@@ -64,7 +66,7 @@ public class Session {
             instance = new Session(client);
         }
 
-        if (instance.user == null) {
+        if (instance.getUser() == null) {
             instance.load(context, client);
         }
 
@@ -78,6 +80,14 @@ public class Session {
      */
     public static Session getInstance(Context context) {
         return getInstance(context, WrkifyClient.getInstance());
+    }
+
+    /**
+     * Override the Session instance.
+     * @param instance new Session instance
+     */
+    public static void setInstance(Session instance) {
+        Session.instance = instance;
     }
 
     /**
@@ -99,6 +109,14 @@ public class Session {
         save(context);
     }
 
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public NotificationCollector getNotificationCollector() {
+        return notificationCollector;
+    }
+
     /**
      * Unsets the logged-in user.
      * @param context application context; used to clear saved Session
@@ -108,54 +126,6 @@ public class Session {
         this.notificationCollector.clear();
         this.signalManager.clear();
         context.deleteFile(FILENAME);
-    }
-
-    /**
-     * Refreshes user task caches.
-     * @param client RemoteClient to find user's tasks in
-     * @throws IOException if network is disconnected
-     */
-    public void refreshCaches(RemoteClient client) throws IOException {
-        this.userProvidedCache = Searcher.findTasksByProvider(client, this.user);
-        this.userRequestedCache = Searcher.findTasksByRequester(client, this.user);
-        this.userBiddedCache = Searcher.findTasksByBidder(client, this.user);
-
-        this.signalManager.clear();
-        this.notificationCollector.clear();
-        this.signalManager.addSignals(Searcher.findSignalsByUser(client, this.user));
-        this.notificationCollector.putNotifications(this.signalManager.getNotifications());
-    }
-
-    /**
-     * Gets the cache of the user's requested tasks.
-     * @return cached list of requested tasks
-     */
-    public List<Task> getUserRequestedCache() {
-        return userRequestedCache;
-    }
-
-    /**
-     * Gets the cache of the user's provided tasks.
-     * @return cached list of provided tasks
-     */
-    public List<Task> getUserProvidedCache() {
-        return userProvidedCache;
-    }
-
-    /**
-     * Gets the cache of the user's bidded tasks.
-     * @return cached list of bidded tasks
-     */
-    public List<Task> getUserBiddedCache() {
-        return userBiddedCache;
-    }
-
-    /**
-     * Gets the session NotificationCollector.
-     * @return NotificationCollector
-     */
-    public NotificationCollector getNotificationCollector() {
-        return notificationCollector;
     }
 
     /**

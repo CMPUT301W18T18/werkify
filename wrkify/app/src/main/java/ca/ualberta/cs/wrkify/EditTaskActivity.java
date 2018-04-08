@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,7 +27,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+
+import java.io.IOException;
 
 /**
  * Activity for a task requester to edit a task that they own
@@ -54,12 +58,19 @@ public class EditTaskActivity extends AppCompatActivity {
     /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
 
+    /** The task was edited, but the changes were not synced successfully. */
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
+
 
     private Task task;
+    private CheckList checkList;
     private boolean taskIsNew = false;
 
     private EditText titleField;
     private EditText descriptionField;
+    private CheckListEditorView checkListEditorView;
+    private Button checkListNewButton;
+    private Button checkListAddButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +81,9 @@ public class EditTaskActivity extends AppCompatActivity {
 
         this.titleField = findViewById(R.id.editTaskTitleField);
         this.descriptionField = findViewById(R.id.editTaskDescriptionField);
+        this.checkListEditorView = findViewById(R.id.editTaskChecklist);
+        this.checkListNewButton = findViewById(R.id.editTaskButtonChecklistNew);
+        this.checkListAddButton = findViewById(R.id.editTaskButtonChecklistAdd);
 
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
 
@@ -78,11 +92,13 @@ public class EditTaskActivity extends AppCompatActivity {
             // TODO change the new user thing later
 
             this.taskIsNew = true;
+            this.checkList = new CheckList();
             if (actionBar != null) {
                 actionBar.setTitle("New task");
             }
         } else {
             this.taskIsNew = false;
+            this.checkList = task.getCheckList();
             if (actionBar != null) {
                 actionBar.setTitle("Editing task");
                 actionBar.setSubtitle(task.getTitle());
@@ -91,7 +107,38 @@ public class EditTaskActivity extends AppCompatActivity {
             // populate fields
             titleField.setText(task.getTitle());
             descriptionField.setText(task.getDescription());
+
+            if (task.getCheckList().itemCount() > 0) {
+                showChecklistEditor();
+            }
         }
+
+        checkListNewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkList.addItem("");
+                checkListEditorView.notifyDataSetChanged();
+                showChecklistEditor();
+            }
+        });
+
+        checkListAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkList.addItem("");
+                checkListEditorView.notifyDataSetChanged();
+            }
+        });
+
+        checkListEditorView.setCheckList(checkList);
+        checkListEditorView.setOnDataSetChangedListener(new CheckListView.OnDataSetChangedListener() {
+            @Override
+            public void onDataSetChanged(@Nullable CheckList data) {
+                if (data == null || data.itemCount() == 0) {
+                    hideChecklistEditor();
+                }
+            }
+        });
     }
 
     @Override
@@ -150,7 +197,14 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
-        WrkifyClient.getInstance().delete(this.task);
+        TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
+        transactionManager.enqueue(new TaskDeleteTransaction(task));
+
+        WrkifyClient.getInstance().discardCached(task.getId());
+
+        // TODO notify of offline status
+        transactionManager.flush(WrkifyClient.getInstance());
+
         setResult(RESULT_TASK_DELETED);
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -167,28 +221,68 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
+        View focus = getCurrentFocus();
+        if (focus != null) { focus.clearFocus(); }
+
+        String newTitle = titleField.getText().toString();
+        String newDescription = descriptionField.getText().toString();
+
+        int resultCode;
+
         if (this.taskIsNew) {
-            this.task = WrkifyClient.getInstance()
-                    .create(Task.class,
+            // TODO This will probably fail if offline
+            this.task = (Task) WrkifyClient.getInstance().createLocal(Task.class,
                             this.titleField.getText().toString(),
                             Session.getInstance(this).getUser(),
                             this.descriptionField.getText().toString()
                     );
+            task.setCheckList(this.checkList);
+
+            TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
+            transactionManager.enqueue(new TaskCreateTransaction(task));
+            WrkifyClient.getInstance().updateCached(task);
+
+            transactionManager.flush(WrkifyClient.getInstance());
+
+            resultCode = RESULT_TASK_CREATED;
         } else {
-            task.setTitle(titleField.getText().toString());
-            task.setDescription(descriptionField.getText().toString());
-            WrkifyClient.getInstance().upload(this.task);
+            TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
+
+            transactionManager.enqueue(new TaskTitleTransaction(this.task, newTitle));
+            transactionManager.enqueue(new TaskDescriptionTransaction(this.task, newDescription));
+            transactionManager.enqueue(new TaskCheckListTransaction(this.task, this.checkList));
+
+            this.task.setTitle(newTitle);
+            this.task.setDescription(newDescription);
+            this.task.setCheckList(this.checkList);
+            WrkifyClient.getInstance().updateCached(this.task);
+
+            if (transactionManager.flush(WrkifyClient.getInstance())) {
+                resultCode = RESULT_OK;
+            } else {
+                resultCode = RESULT_UNSYNCED_CHANGES;
+            }
         }
 
         if (task == null) return;
 
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_TASK, this.task);
-
-        if (taskIsNew) setResult(RESULT_TASK_CREATED, intent);
-        else setResult(RESULT_OK, intent);
+        setResult(resultCode, intent);
 
         finish();
+    }
+
+    private void showChecklistEditor() {
+        checkListEditorView.setVisibility(View.VISIBLE);
+        checkListAddButton.setVisibility(View.VISIBLE);
+        checkListNewButton.setVisibility(View.GONE);
+    }
+
+    private void hideChecklistEditor() {
+        checkListEditorView.setVisibility(View.GONE);
+        checkListAddButton.setVisibility(View.GONE);
+        checkListNewButton.setVisibility(View.VISIBLE);
     }
 
     @Override

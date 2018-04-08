@@ -30,4 +30,10 @@
     <string name="overview_view_profile">View profile</string>
     <string name="overview_logout">Logout</string>
     <string name="task_list_empty">Nothing here</string>
+    <string name="edit_task_checklist_label">Checklist</string>
+    <string name="checklist_editor_item_label">Item</string>
+    <string name="checklist_editor_delete_description">Delete item</string>
+    <string name="login_fail">Account not found.</string>
+    <string name="no_internet">Cannot connect to server.</string>
+    <string name="bad_user_info">Invalid name, email, or phone number</string>
 </resources>

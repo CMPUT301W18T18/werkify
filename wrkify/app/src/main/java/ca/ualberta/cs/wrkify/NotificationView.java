@@ -25,6 +25,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 
 /**
  * View displaying a NotificationInfo object.
@@ -85,7 +87,7 @@ public class NotificationView extends ConstraintLayout {
         this.middleField.setText(notification.getTargetText());
         this.lowerField.setText(notification.getPostText());
 
-        if (notification.getActionIntent() != null) {
+        if (notification.getTargetID() != null) {
             actionButton.setVisibility(VISIBLE);
         }
     }
@@ -142,13 +144,18 @@ public class NotificationView extends ConstraintLayout {
         });
 
         // Launch notification intent on action, and then fire attached listener
+        // TODO this is temporary
         this.actionButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent notificationIntent = notification.getActionIntent();
-
-                if (notificationIntent != null) {
-                    getContext().startActivity(notificationIntent);
+                if (notification.getTargetID() != null) {
+                    try {
+                        Intent intent = new Intent(getContext(), ViewTaskActivity.class);
+                        intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, WrkifyClient.getInstance().download(notification.getTargetID(), Task.class));
+                        getContext().startActivity(intent);
+                    } catch (IOException e) {
+                        // continue
+                    }
                 }
 
                 if (afterActionListener != null) {

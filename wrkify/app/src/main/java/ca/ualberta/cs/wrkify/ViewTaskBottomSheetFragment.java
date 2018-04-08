@@ -23,14 +23,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.transition.ChangeBounds;
+import android.transition.ChangeClipBounds;
 import android.transition.SidePropagation;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -44,6 +50,9 @@ import android.widget.TextView;
 public abstract class ViewTaskBottomSheetFragment extends Fragment {
     public static String ARGUMENT_TARGET_TASK = "ca.ualberta.cs.wrkify.ARGUMENT_TARGET_TASK";
 
+    private ViewGroup headerView;
+    private ViewGroup contentView;
+
     private Boolean expandable = true;
     private Boolean expanded = false;
 
@@ -51,6 +60,14 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
      * Requisite null constructor
      */
     public ViewTaskBottomSheetFragment() { }
+
+    public ViewGroup getContentView() {
+        return contentView;
+    }
+
+    public ViewGroup getHeaderView() {
+        return headerView;
+    }
 
     /**
      * Initializes the bottom sheet contents from a task object. This will set the
@@ -100,13 +117,21 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
         View view = this.getView();
         if (view == null) throw new IllegalStateException();
 
+        // Avoid starting the transition while already in a transition
+        if (contentView.getParent() != null) { return; }
+
         // Show the content
-        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
-        getView().findViewById(R.id.taskViewBottomSheetContent).setVisibility(View.VISIBLE);
+        TransitionManager.beginDelayedTransition((ViewGroup) getView().getRootView(),
+                new ChangeBounds());
+        ((ViewGroup) view).addView(contentView);
 
         // Elevate the sheet
         // TODO This doesn't actually work
         getView().setTranslationZ(8);
+
+        // Flip the arrow icon
+        ((ImageView) getView().findViewById(R.id.taskViewBottomSheetIcon)).setImageDrawable(
+                getResources().getDrawable(R.drawable.ic_expand_more_black_24dp));
 
         this.expanded = true;
     }
@@ -115,14 +140,22 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
      * Collapses the bottom sheet, if it isn't already collapsed.
      */
     public void collapse() {
-        View view = this.getView();
+        ViewGroup view = (ViewGroup) this.getView();
         if (view == null) throw new IllegalStateException();
 
-        Slide slide = new Slide(Gravity.BOTTOM);
-        slide.setPropagation(new SidePropagation());
-        TransitionManager.beginDelayedTransition((ViewGroup) getView(), slide);
-        view.findViewById(R.id.taskViewBottomSheetContent).setVisibility(View.GONE);
+        // Hide the content
+        TransitionManager.beginDelayedTransition((ViewGroup) getView().getRootView(),
+                new ChangeBounds());
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
+        view.removeView(view.findViewById(R.id.taskViewBottomSheetContent));
+
+        // De-elevate the sheet
         view.setTranslationZ(0);
+
+        // Flip the arrow icon
+        ((ImageView) getView().findViewById(R.id.taskViewBottomSheetIcon)).setImageDrawable(
+                getResources().getDrawable(R.drawable.ic_expand_less_black_24dp));
+
         this.expanded = false;
     }
 
@@ -143,6 +176,9 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_view_task_bottom_sheet, container, false);
 
+        headerView = view.findViewById(R.id.taskViewBottomSheetHeader);
+        contentView = view.findViewById(R.id.taskViewBottomSheetContent);
+
         // Set background
         int color = getResources().getColor(this.getBackgroundColor());
         view.findViewById(R.id.taskViewBottomSheetHeader).setBackground(new ColorDrawable(color));
@@ -155,33 +191,32 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
 
         // Set content view
         View content = this.getContentLayout((ViewGroup) view);
-        FrameLayout frame = view.findViewById(R.id.taskViewBottomSheetContent);
 
         if (content != null) {
-            frame.addView(content);
+            contentView.addView(content);
             this.expandable = true;
+            view.findViewById(R.id.taskViewBottomSheetIcon).setVisibility(View.VISIBLE);
         }
         else {
             this.expandable = false;
-        }
-
-        // Hide/show content frame
-        if (this.expanded) {
-            frame.setVisibility(View.VISIBLE);
-        } else {
-            frame.setVisibility(View.GONE);
+            view.findViewById(R.id.taskViewBottomSheetIcon).setVisibility(View.GONE);
         }
 
         // Set click listener
-        view.setOnClickListener(new View.OnClickListener() {
+        headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                expand();
+                if (isExpanded()) { collapse(); } else { expand(); }
             }
         });
 
         // Fill in detail fields
         this.initializeWithTask((ViewGroup) view, (Task) getArguments().getSerializable(ARGUMENT_TARGET_TASK));
+
+        // Hide/show content frame
+        if (!this.expanded) {
+            ((ViewGroup) view).removeView(contentView);
+        }
 
         return view;
     }

@@ -41,26 +41,48 @@ public class SearcherTest {
     private static Task task3;
     private static Task task4;
 
+    private static Task locationTask1;
+    private static Task locationTask2;
+    private static Task locationTask3;
+
     private static RemoteClient rc;
+    private static Searcher<RemoteClient> searcher;
 
     @BeforeClass
     public static void createData() {
-        rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
+        try {
+            rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
+            searcher = rc.getSearcher();
 
-        user1 = rc.create(User.class, "peter", "peter@a.com", "1");
-        user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
-        user3 = rc.create(User.class, "john", "john@a.com", "3");
+            user1 = rc.create(User.class, "peter", "peter@a.com", "1");
+            user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
+            user3 = rc.create(User.class, "john", "john@a.com", "3");
 
-        task1 = rc.create(Task.class, "task 1", user1, "do nothing");
-        task2 = rc.create(Task.class, "task 2", user1, "blah");
-        task3 = rc.create(Task.class, "task 3", user2, "blah blah");
-        task4 = rc.create(Task.class, "task 4", user2, "do something");
+            task1 = rc.create(Task.class, "task 1", user1, "do nothing");
+            task2 = rc.create(Task.class, "task 2", user1, "blah");
+            task3 = rc.create(Task.class, "task 3", user2, "blah blah");
+            task4 = rc.create(Task.class, "task 4", user2, "do something");
 
-        task2.acceptBid(new Bid(1.0, user3));
-        rc.upload(task2);
+            task2.acceptBid(new Bid(new Price(1.0), user3));
+            rc.upload(task2);
 
-        task4.addBid(new Bid(1.0, user3));
-        rc.upload(task4);
+            task4.addBid(new Bid(new Price(1.0), user3));
+            rc.upload(task4);
+
+            locationTask1 = rc.create(Task.class, "location task 1", user1, "");
+            locationTask2 = rc.create(Task.class, "location task 2", user2, "");
+            locationTask3 = rc.create(Task.class, "location task 3", user2, "");
+
+            locationTask1.setLocation(new TaskLocation(38.9, -171.4));
+            locationTask2.setLocation(new TaskLocation(38.9001, -171.4001));
+            locationTask3.setLocation(new TaskLocation(38.8, -171.3));
+
+            rc.upload(locationTask1);
+            rc.upload(locationTask2);
+            rc.upload(locationTask3);
+        } catch (IOException e) {
+            fail();
+        }
 
         // give elasticsearch time to index
         try {
@@ -80,6 +102,10 @@ public class SearcherTest {
         rc.delete(task2);
         rc.delete(task3);
         rc.delete(task4);
+
+        rc.delete(locationTask1);
+        rc.delete(locationTask2);
+        rc.delete(locationTask3);
     }
 
     @Test
@@ -87,19 +113,20 @@ public class SearcherTest {
 
         List<Task> res1;
         try {
-            res1 = Searcher.findTasksByRequester(rc, user1);
+            res1 = searcher.findTasksByRequester(user1);
         } catch (IOException e) {
             fail();
             return;
         }
 
-        assertEquals(2, res1.size());
+        assertEquals(3, res1.size());
         assertTrue(res1.contains(task1));
         assertTrue(res1.contains(task2));
+        assertTrue(res1.contains(locationTask1));
 
         List<Task> res3;
         try {
-            res3 = Searcher.findTasksByRequester(rc, user3);
+            res3 = searcher.findTasksByRequester(user3);
         } catch (IOException e) {
             fail();
             return;
@@ -112,7 +139,7 @@ public class SearcherTest {
     public void testfindTasksByProvider() {
         List<Task> res2;
         try {
-            res2 = Searcher.findTasksByProvider(rc, user3);
+            res2 = searcher.findTasksByProvider(user3);
         } catch (IOException e) {
             fail();
             return;
@@ -126,7 +153,7 @@ public class SearcherTest {
     public void testFindTasksByBidder() {
         List<Task> res3;
         try {
-            res3 = Searcher.findTasksByBidder(rc, user3);
+            res3 = searcher.findTasksByBidder(user3);
         } catch (IOException e) {
             fail();
             return;
@@ -137,7 +164,7 @@ public class SearcherTest {
 
         List<Task> res1;
         try {
-            res1 = Searcher.findTasksByBidder(rc, user1);
+            res1 = searcher.findTasksByBidder(user1);
         } catch (IOException e) {
             fail();
             return;
@@ -150,7 +177,7 @@ public class SearcherTest {
     public void testFindTasksByKeywords() {
         List<Task> results;
         try {
-            results = Searcher.findTasksByKeywords(rc, "blah rah");
+            results = searcher.findTasksByKeywords("blah rah");
         } catch (IOException e) {
             fail();
             return;
@@ -161,20 +188,20 @@ public class SearcherTest {
         assertTrue(results.contains(task3));
 
         try {
-            results = Searcher.findTasksByKeywords(rc, "task");
+            results = searcher.findTasksByKeywords("task");
         } catch (IOException e) {
             fail();
             return;
         }
 
-        assertEquals(4, results.size());
+        assertEquals(7, results.size());
         assertTrue(results.contains(task1));
         assertTrue(results.contains(task2));
         assertTrue(results.contains(task3));
         assertTrue(results.contains(task4));
 
         try {
-            results = Searcher.findTasksByKeywords(rc, "kjdsfla");
+            results = searcher.findTasksByKeywords("kjdsfla");
         } catch (IOException e) {
             fail();
             return;
@@ -189,9 +216,9 @@ public class SearcherTest {
         User taylor;
         User john;
         try {
-            peter = Searcher.getUser(rc, "peter");
-            taylor = Searcher.getUser(rc, "taylor");
-            john = Searcher.getUser(rc, "john");
+            peter = searcher.getUser("peter");
+            taylor = searcher.getUser("taylor");
+            john = searcher.getUser("john");
         } catch (IOException e) {
             fail();
             return;
@@ -200,5 +227,20 @@ public class SearcherTest {
         assertEquals(user1, peter);
         assertEquals(user2, taylor);
         assertEquals(user3, john);
+    }
+
+    @Test
+    public void testFindByLocation() {
+        List<Task> results;
+        try {
+            results = searcher.findTasksByKeywordsNear("location task", new TaskLocation(38.9, -171.4));
+        } catch (IOException e) {
+            fail();
+            return;
+        }
+
+        assertTrue(results.contains(locationTask1));
+        assertTrue(results.contains(locationTask2));
+        assertFalse(results.contains(locationTask3));
     }
 }
