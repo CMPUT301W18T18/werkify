@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -209,32 +210,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
-        View focus = getCurrentFocus();
-        if (focus != null) { focus.clearFocus(); }
-
-        if (this.taskIsNew) {
-            this.task = WrkifyClient.getInstance()
-                    .create(Task.class,
-                            this.titleField.getText().toString(),
-                            Session.getInstance(this).getUser(),
-                            this.descriptionField.getText().toString()
-                    );
-            task.setCheckList(this.checkList);
-        } else {
-            task.setTitle(titleField.getText().toString());
-            task.setDescription(descriptionField.getText().toString());
-            WrkifyClient.getInstance().upload(this.task);
-        }
-
-        if (task == null) return;
-
-        Intent intent = getIntent();
-        intent.putExtra(EXTRA_RETURNED_TASK, this.task);
-
-        if (taskIsNew) setResult(RESULT_TASK_CREATED, intent);
-        else setResult(RESULT_OK, intent);
-
-        finish();
+        this.new EditTaskTask().execute();
     }
 
     private void showChecklistEditor() {
@@ -253,5 +229,58 @@ public class EditTaskActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    /**
+     * EditTaskTask is an AsyncTask for completing the editing
+     * of a task.
+     */
+    private class EditTaskTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * change the task and upload it
+         * to the client
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (EditTaskActivity.this.taskIsNew) {
+                EditTaskActivity.this.task = WrkifyClient.getInstance()
+                        .create(Task.class,
+                                EditTaskActivity.this.titleField.getText().toString(),
+                                Session.getInstance(EditTaskActivity.this).getUser(),
+                                EditTaskActivity.this.descriptionField.getText().toString()
+                        );
+                task.setCheckList(EditTaskActivity.this.checkList);
+            } else {
+                task.setTitle(titleField.getText().toString());
+                task.setDescription(descriptionField.getText().toString());
+                WrkifyClient.getInstance().upload(EditTaskActivity.this.task);
+            }
+            return null;
+        }
+
+        /**
+         * when the task has been uploaded, if it was sucessful,
+         * finish the activity properly
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (task == null) {
+                return;
+            }
+
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_RETURNED_TASK, EditTaskActivity.this.task);
+
+            if (taskIsNew) {
+                setResult(RESULT_TASK_CREATED, intent);
+            } else {
+                setResult(RESULT_OK, intent);
+            }
+
+            finish();
+        }
     }
 }
