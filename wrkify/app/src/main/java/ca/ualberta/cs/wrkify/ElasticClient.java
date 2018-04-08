@@ -58,6 +58,7 @@ public class ElasticClient extends RemoteClient {
      */
     public ElasticClient(String url, String index) {
         DroidClientConfig.Builder builder = new DroidClientConfig.Builder(url);
+        builder.multiThreaded(true);
         DroidClientConfig config = builder.build();
 
         JestClientFactory factory = new JestClientFactory();

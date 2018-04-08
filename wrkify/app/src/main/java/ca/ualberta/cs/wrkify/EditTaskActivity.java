@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -197,22 +198,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
-        TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
-        transactionManager.enqueue(new TaskDeleteTransaction(task));
-
-        WrkifyClient.getInstance().discardCached(task.getId());
-
-        // TODO notify of offline status
-        transactionManager.flush(WrkifyClient.getInstance());
-
-        setResult(RESULT_TASK_DELETED);
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-
-        finish();
+        this.new DeleteTaskTask().execute();
     }
 
     /**
@@ -223,54 +209,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private void saveAndFinish() {
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
-
-        String newTitle = titleField.getText().toString();
-        String newDescription = descriptionField.getText().toString();
-
-        int resultCode;
-
-        if (this.taskIsNew) {
-            // TODO This will probably fail if offline
-            this.task = (Task) WrkifyClient.getInstance().createLocal(Task.class,
-                            this.titleField.getText().toString(),
-                            Session.getInstance(this).getUser(),
-                            this.descriptionField.getText().toString()
-                    );
-            task.setCheckList(this.checkList);
-
-            TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
-            transactionManager.enqueue(new TaskCreateTransaction(task));
-            WrkifyClient.getInstance().updateCached(task);
-
-            transactionManager.flush(WrkifyClient.getInstance());
-
-            resultCode = RESULT_TASK_CREATED;
-        } else {
-            TransactionManager transactionManager = Session.getInstance(this).getTransactionManager();
-
-            transactionManager.enqueue(new TaskTitleTransaction(this.task, newTitle));
-            transactionManager.enqueue(new TaskDescriptionTransaction(this.task, newDescription));
-            transactionManager.enqueue(new TaskCheckListTransaction(this.task, this.checkList));
-
-            this.task.setTitle(newTitle);
-            this.task.setDescription(newDescription);
-            this.task.setCheckList(this.checkList);
-            WrkifyClient.getInstance().updateCached(this.task);
-
-            if (transactionManager.flush(WrkifyClient.getInstance())) {
-                resultCode = RESULT_OK;
-            } else {
-                resultCode = RESULT_UNSYNCED_CHANGES;
-            }
-        }
-
-        if (task == null) return;
-
-        Intent intent = getIntent();
-        intent.putExtra(EXTRA_RETURNED_TASK, this.task);
-        setResult(resultCode, intent);
-
-        finish();
+        this.new EditTaskTask().execute();
     }
 
     private void showChecklistEditor() {
@@ -289,5 +228,118 @@ public class EditTaskActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    /**
+     * EditTaskTask is an AsyncTask for completing the editing
+     * of a task.
+     */
+    private class EditTaskTask extends AsyncTask<Void, Void, Void> {
+        private int resultCode;
+        /**
+         * change the task and upload it
+         * to the client
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String newTitle = titleField.getText().toString();
+            String newDescription = descriptionField.getText().toString();
+
+            if (taskIsNew) {
+                // TODO This will probably fail if offline
+                task = (Task) WrkifyClient.getInstance().createLocal(Task.class,
+                        titleField.getText().toString(),
+                        Session.getInstance(EditTaskActivity.this).getUser(),
+                        descriptionField.getText().toString()
+                );
+                task.setCheckList(checkList);
+
+                TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+                transactionManager.enqueue(new TaskCreateTransaction(task));
+                WrkifyClient.getInstance().updateCached(task);
+
+                transactionManager.flush(WrkifyClient.getInstance());
+
+                resultCode = RESULT_TASK_CREATED;
+            } else {
+                TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+
+                transactionManager.enqueue(new TaskTitleTransaction(task, newTitle));
+                transactionManager.enqueue(new TaskDescriptionTransaction(task, newDescription));
+                transactionManager.enqueue(new TaskCheckListTransaction(task, checkList));
+
+                task.setTitle(newTitle);
+                task.setDescription(newDescription);
+                task.setCheckList(checkList);
+                WrkifyClient.getInstance().updateCached(task);
+
+                if (transactionManager.flush(WrkifyClient.getInstance())) {
+                    resultCode = RESULT_OK;
+                } else {
+                    resultCode = RESULT_UNSYNCED_CHANGES;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * when the task has been uploaded, if it was sucessful,
+         * finish the activity properly
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (task == null) return;
+
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_RETURNED_TASK, task);
+            setResult(resultCode, intent);
+
+            finish();
+        }
+    }
+
+    /**
+     * DeleteTaskTask is an AsyncTask that deletes the given task
+     * and returns.
+     */
+    public class DeleteTaskTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * delete the task from the server
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+            transactionManager.enqueue(new TaskDeleteTransaction(task));
+
+            WrkifyClient.getInstance().discardCached(task.getId());
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
+            return null;
+        }
+
+        /**
+         * after the task has been delete from the server,
+         * return to the correct activity.
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+
+
+            setResult(RESULT_TASK_DELETED);
+            View view = EditTaskActivity.this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+            finish();
+        }
     }
 }

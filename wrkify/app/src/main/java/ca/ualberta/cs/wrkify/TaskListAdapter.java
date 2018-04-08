@@ -19,6 +19,7 @@ package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -79,61 +80,99 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
      */
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        final T task = taskList.get(position);
+        this.new TaskDisplayTask().execute(position, holder);
+    }
 
-        holder.getTaskTitle().setText(task.getTitle());
-        holder.getTaskDescription().setText(task.getDescription());
+    private class TaskDisplayTask extends AsyncTask<Object, Void, Void> {
+        private TaskViewHolder holder;
 
-        User requester;
-        try {
-            requester = task.getRemoteRequester(WrkifyClient.getInstance());
-        } catch (IOException e) {
-            return;
-        }
+        private String title;
+        private String description;
+        private String username;
+        private T task;
+        private TaskStatus status;
+        private Price price;
+        private int color;
 
-        final User sessionUser = Session.getInstance(recyclerView.getContext()).getUser();
+        private User sessionUser;
 
-        if(sessionUser.equals(requester)) {
+        @Override
+        protected Void doInBackground(Object... posholder) {
+            int position = (Integer) posholder[0];
+            this.holder = (TaskViewHolder) posholder[1];
+
+            task = taskList.get(position);
+
+            this.title = task.getTitle();
+            this.description = task.getDescription();
+
+            User requester;
             try {
-                User provider = task.getRemoteProvider(WrkifyClient.getInstance());
-                if(provider!=null) {
-                    holder.getTaskUser().setText(provider.getUsername());
+                requester = task.getRemoteRequester(WrkifyClient.getInstance());
+            } catch (IOException e) {
+                return null;
+            }
+
+            sessionUser = Session.getInstance(recyclerView.getContext()).getUser();
+
+            if(sessionUser.equals(requester)) {
+                try {
+                    User provider = task.getRemoteProvider(WrkifyClient.getInstance());
+                    if(provider!=null) {
+                        this.username = provider.getUsername();
+                    }
+                }
+                catch (IOException e) {
+                    this.username = "";
+                }
+            } else {
+                if (requester != null) {
+                    this.username = requester.getUsername();
                 }
             }
-            catch (IOException e) {
-                holder.getTaskUser().setText("");
-            }
-        } else {
-            if (requester != null) {
-                holder.getTaskUser().setText(requester.getUsername());
-            }
-        }
 
-        if(task.getBidList()!=null) {
-            if(task.getStatus()!=null) {
-                if(task.getBidList().size()==0){
-                    holder.getTaskStatus().setStatus(TaskStatus.REQUESTED, new Price(0.0));
-                }
-                else {
-                    holder.getTaskStatus().setStatus(task.getStatus(), task.getBidList().get(0).getValue());
+            if(task.getBidList()!=null) {
+                if(task.getStatus()!=null) {
+                    if(task.getBidList().size()==0){
+                        this.status = TaskStatus.REQUESTED;
+                        this.price = new Price(0.0);
+
+                    }
+                    else {
+                        this.status = task.getStatus();
+                        this.price = task.getBidList().get(0).getValue();
+                    }
                 }
             }
-        }
 
-        if (Session.getInstance(recyclerView.getContext()).getTransactionManager().hasPendingTransactionsFor(task)) {
-            holder.getTaskView().setBackgroundColor(recyclerView.getContext().getResources().getColor(R.color.colorOfflineBackground));
-        } else {
-            holder.getTaskView().setBackgroundColor(recyclerView.getContext().getResources().getColor(R.color.cardview_light_background));
-        }
-
-        holder.setTask(task);
-
-        holder.getTaskView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewTask(sessionUser, task);
+            if (Session.getInstance(recyclerView.getContext()).getTransactionManager().hasPendingTransactionsFor(task)) {
+                this.color = R.color.colorOfflineBackground;
+            } else {
+                this.color = R.color.cardview_light_background;
             }
-        });
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            holder.getTaskTitle().setText(title);
+            holder.getTaskDescription().setText(description);
+            holder.getTaskUser().setText(username);
+            holder.getTaskStatus().setStatus(status, price);
+            holder.getTaskView().setBackgroundColor(
+                    recyclerView.getContext().getResources().getColor(color));
+
+            holder.setTask(task);
+
+            holder.getTaskView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewTask(sessionUser, task);
+                }
+            });
+        }
     }
 
     /*

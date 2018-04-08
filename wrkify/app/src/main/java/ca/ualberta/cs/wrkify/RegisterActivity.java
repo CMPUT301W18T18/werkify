@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
@@ -45,7 +46,6 @@ public class RegisterActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppTheme_TransparentActionBar);
         setContentView(R.layout.activity_register);
@@ -90,20 +90,53 @@ public class RegisterActivity extends Activity {
      * Attempts to register the given username. If successful, finishes
      * the activity; otherwise sets an error message and does not finish.
      * @param username username to register
+     * @param email the email to register with
+     * @param phoneNumber the phone number to register with
      */
     private void tryRegisterAndFinish(String username, String email, String phoneNumber) {
-        RemoteClient rc = WrkifyClient.getInstance();
-        Session session = Session.getInstance(this, rc);
-        User newUser = rc.create(User.class, username, email, phoneNumber);
-        if (newUser != null) {
-            session.setUser(newUser, this);
-            setResult(RESULT_OK);
-            finish();
-        } else {
-            Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
-                    R.string.bad_user_info, Snackbar.LENGTH_LONG);
-            snack.setAction("Action", null);
-            snack.show();
+        this.new RegisterTask().execute(username, email, phoneNumber);
+    }
+
+    /**
+     * RegisterTask is an AsyncTask for registering a user
+     * and dispatching the necessary handlers on completion.
+     */
+    private class RegisterTask extends AsyncTask<String, Void, User> {
+        private Session session;
+
+        /**
+         * gets the session and creates a new user with the given parameters
+         * @param strings username, email, phonenumber
+         * @return the new user
+         */
+        @Override
+        protected User doInBackground(String... strings) {
+            String username    = strings[0];
+            String email       = strings[1];
+            String phoneNumber = strings[2];
+
+            RemoteClient rc = WrkifyClient.getInstance();
+            session = Session.getInstance(RegisterActivity.this, rc);
+            return rc.create(User.class, username, email, phoneNumber);
+        }
+
+        /**
+         * depending on the result of doInBackground, either
+         * start the main activity or notify the user that it has failed.
+         * @param user the newly created user (or null if failed)
+         */
+        @Override
+        protected void onPostExecute(User user) {
+            if (user != null) {
+                this.session.setUser(user, RegisterActivity.this);
+                setResult(RESULT_OK);
+                finish();
+            } else {
+                Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                        R.string.bad_user_info, Snackbar.LENGTH_LONG);
+                snack.setAction("Action", null);
+                snack.show();
+            }
         }
     }
 }

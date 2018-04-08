@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -73,28 +74,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tryRefreshCaches();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         showFragment(new RequesterFragment());
-    }
-
-    /**
-     * Resumes MainActivity. This causes the user task caches to refresh.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        tryRefreshCaches();
-    }
-
-    /**
-     * Instruct the user task caches to refresh, so that the
-     * task lists can display updated content.
-     */
-    private void tryRefreshCaches() {
-        //TODO ??
     }
 
     /**
@@ -108,5 +91,4 @@ public class MainActivity extends AppCompatActivity {
         fragTransaction.replace(R.id.fragment_container, frag, null);
         fragTransaction.commit();
     }
-
 }
