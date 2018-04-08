@@ -17,6 +17,11 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+
 /**
  * TaskAcceptBidTransaction models accepting a bid as
  * a Transaction
@@ -51,5 +56,13 @@ public class TaskAcceptBidTransaction extends StateChangeTransaction<Task> {
         } catch (UnsupportedOperationException e) {
             return false;
         }
+    }
+
+    @NonNull
+    @Override
+    protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
+        return new Signal[]{
+                new Signal(bid.getRemoteBidder(client), Signal.SignalType.SIGNAL_ASSIGNED, task.getId(), task.getTitle())
+        };
     }
 }

@@ -47,9 +47,9 @@ public class SignalManager {
     }
 
     public void addSignal(Signal signal) {
-        String targetID = signal.getTargetID();
+        String targetID = signal.getTargetId();
         if (!targetMap.containsKey(targetID)) {
-            targetMap.put(signal.getTargetID(), new ArrayList<Signal>());
+            targetMap.put(signal.getTargetId(), new ArrayList<Signal>());
         }
 
         targetMap.get(targetID).add(signal);
@@ -95,15 +95,15 @@ public class SignalManager {
         for (Signal signal: targetSignals) {
             switch (signal.getType()) {
                 case SIGNAL_CLOSED: return makeTaskStatusNI(NI_GENERIC_TOP, signal.getTargetName(), NI_CLOSED_BOTTOM,
-                        signal.getTargetID());
+                        signal.getTargetId());
                 case SIGNAL_DEASSIGNED: return makeTaskStatusNI(NI_DEASSIGNED_TOP, signal.getTargetName(), "",
-                        signal.getTargetID());
+                        signal.getTargetId());
                 case SIGNAL_REJECTED: return makeTaskStatusNI(NI_GENERIC_BID_TOP, signal.getTargetName(), NI_REJECTED_BOTTOM,
-                        signal.getTargetID());
+                        signal.getTargetId());
                 case SIGNAL_ASSIGNED: return makeTaskStatusNI(NI_GENERIC_TOP, signal.getTargetName(), NI_ASSIGNED_BOTTOM,
-                        signal.getTargetID());
+                        signal.getTargetId());
                 case SIGNAL_OUTBID: return makeTaskStatusNI(NI_GENERIC_BID_TOP, signal.getTargetName(), NI_OUTBID_BOTTOM,
-                        signal.getTargetID());
+                        signal.getTargetId());
                 case SIGNAL_NEW_BID:
                     newBidCount += 1;
                     if (firstNewBidSignal == null) { firstNewBidSignal = signal; }
@@ -112,7 +112,7 @@ public class SignalManager {
             }
         }
 
-        if (newBidCount > 0) { return makeNewBidsNI(firstNewBidSignal.getTargetName(), firstNewBidSignal.getTargetID(), newBidCount); }
+        if (newBidCount > 0) { return makeNewBidsNI(firstNewBidSignal.getTargetName(), firstNewBidSignal.getTargetId(), newBidCount); }
 
         return null;
     }
@@ -120,11 +120,11 @@ public class SignalManager {
     protected NotificationInfo makeTaskStatusNI(String preText, String taskTitle, String postText, String taskID) {
         NotificationInfo notification = new NotificationInfo(preText, taskTitle, postText);
         notification.setIsImportant(true);
-        notification.setViewTarget(taskID, ViewTaskActivity.class);
+        notification.setViewTarget(taskID, new ViewTaskNotificationAction(taskID));
         notification.setOnNotificationAcknowledgedListener(new NotificationInfo.OnNotificationAcknowledgedListener() {
             @Override
             public void onNotificationAcknowledged(NotificationInfo notification) {
-                deleteSignalsForID(notification.getTargetID());
+                deleteSignalsForID(notification.getTargetId());
             }
         });
         return notification;
@@ -134,11 +134,11 @@ public class SignalManager {
         String taskCountString = String.format(Locale.US, NI_NEW_BIDS_BOTTOM_F, bidCount);
         NotificationInfo notification = new NotificationInfo(NI_GENERIC_POST_TOP, taskTitle, taskCountString);
         notification.setIsImportant(false);
-        notification.setViewTarget(taskID, ViewTaskActivity.class);
+        notification.setViewTarget(taskID, new ViewTaskNotificationAction(taskID));
         notification.setOnNotificationAcknowledgedListener(new NotificationInfo.OnNotificationAcknowledgedListener() {
             @Override
             public void onNotificationAcknowledged(NotificationInfo notification) {
-                deleteSignalsForID(notification.getTargetID());
+                deleteSignalsForID(notification.getTargetId());
             }
         });
         return notification;

@@ -18,6 +18,8 @@
 package ca.ualberta.cs.wrkify;
 
 
+import java.io.IOException;
+
 public class Signal extends RemoteObject {
     public enum SignalType {
         SIGNAL_NEW_BID,
@@ -31,13 +33,13 @@ public class Signal extends RemoteObject {
     private final RemoteReference<User> user;
 
     private final SignalType type;
-    private final String targetID;
+    private final String targetId;
     private final String targetName;
 
-    public Signal(User user, SignalType type, String targetID, String targetName) {
+    public Signal(User user, SignalType type, String targetId, String targetName) {
         this.user = user.reference();
         this.type = type;
-        this.targetID = targetID;
+        this.targetId = targetId;
         this.targetName = targetName;
     }
 
@@ -45,11 +47,15 @@ public class Signal extends RemoteObject {
         return type;
     }
 
-    public String getTargetID() {
-        return targetID;
+    public String getTargetId() {
+        return targetId;
     }
 
     public String getTargetName() {
         return targetName;
+    }
+
+    public User getRemoteUser(RemoteClient client) throws IOException {
+        return user.getRemote(client, User.class);
     }
 }

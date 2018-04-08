@@ -238,6 +238,28 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
 
         @Override
+        public List<Signal> findSignalsByUser(User user) throws IOException {
+            try {
+                List<Signal> results = getWrappedSearcher().findSignalsByUser(user);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findSignalsByUser(user);
+            }
+        }
+
+        @Override
+        public List<Signal> findSignalsByTarget(RemoteObject target) throws IOException {
+            try {
+                List<Signal> results = getWrappedSearcher().findSignalsByTarget(target);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findSignalsByTarget(target);
+            }
+        }
+
+        @Override
         public User getUser(String username) throws IOException {
             try {
                 User result = getWrappedSearcher().getUser(username);
@@ -340,6 +362,30 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
                     } catch (IOException e) {
                         return false;
                     }
+                }
+            });
+        }
+
+        @Override
+        public List<Signal> findSignalsByUser(final User user) {
+            return cache.findMatching(new CacheMatcher<Signal>() {
+                @Override
+                public boolean isMatch(Signal signal) {
+                    try {
+                        return (user.equals(signal.getRemoteUser(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Signal> findSignalsByTarget(final RemoteObject target) {
+            return cache.findMatching(new CacheMatcher<Signal>() {
+                @Override
+                public boolean isMatch(Signal signal) {
+                    return (target.getId().equals(signal.getTargetId()));
                 }
             });
         }

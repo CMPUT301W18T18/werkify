@@ -168,7 +168,6 @@ abstract class TasksOverviewFragment extends Fragment {
         if (transactionManager.hasPendingTransactions()) {
             if (transactionManager.flush(WrkifyClient.getInstance())) {
                 hideOfflineIndicator();
-                // TODO redownload here
             } else {
                 showOfflineIndicator();
             }
@@ -176,6 +175,17 @@ abstract class TasksOverviewFragment extends Fragment {
             refreshTaskLists();
         } else {
             hideOfflineIndicator();
+        }
+
+        NotificationCollector notificationCollector = Session.getInstance(getActivity())
+                .getNotificationCollector();
+        notificationCollector.clear();
+
+        try {
+            notificationCollector.putNotifications(WrkifyClient.getInstance().getSearcher()
+                    .findSignalsByUser(Session.getInstance(getActivity()).getUser()));
+        } catch (IOException e) {
+            // continue
         }
 
         updateNotificationDisplay(getView());

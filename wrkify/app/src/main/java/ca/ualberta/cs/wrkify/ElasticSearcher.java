@@ -189,6 +189,30 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
     }
 
     @Override
+    public List<Signal> findSignalsByUser(User user) throws IOException {
+        String query = makeJSONObject(
+            j("query",
+                j("match",
+                    j("user", user.getId())
+                )
+            )
+        );
+        return client.executeQuery(query, Signal.class);
+    }
+
+    @Override
+    public List<Signal> findSignalsByTarget(RemoteObject target) throws IOException {
+        String query = makeJSONObject(
+            j("query",
+                j("match",
+                    j("targetId", target.getId())
+                )
+            )
+        );
+        return client.executeQuery(query, Signal.class);
+    }
+
+    @Override
     public User getUser(String username) throws IOException {
         String query = makeJSONObject(
             j("query",

@@ -87,7 +87,7 @@ public class NotificationView extends ConstraintLayout {
         this.middleField.setText(notification.getTargetText());
         this.lowerField.setText(notification.getPostText());
 
-        if (notification.getTargetID() != null) {
+        if (notification.getTargetId() != null) {
             actionButton.setVisibility(VISIBLE);
         }
     }
@@ -144,18 +144,11 @@ public class NotificationView extends ConstraintLayout {
         });
 
         // Launch notification intent on action, and then fire attached listener
-        // TODO this is temporary
         this.actionButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (notification.getTargetID() != null) {
-                    try {
-                        Intent intent = new Intent(getContext(), ViewTaskActivity.class);
-                        intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, WrkifyClient.getInstance().download(notification.getTargetID(), Task.class));
-                        getContext().startActivity(intent);
-                    } catch (IOException e) {
-                        // continue
-                    }
+                if (notification.getNotificationAction() != null) {
+                    notification.launchNotificationAction(getContext());
                 }
 
                 if (afterActionListener != null) {
