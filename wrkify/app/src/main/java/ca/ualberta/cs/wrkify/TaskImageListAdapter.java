@@ -50,7 +50,7 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
 
         public void setSelectedTint(boolean selected) {
             if (selected) {
-                button.setColorFilter(Color.argb(100, 0, 150, 200));
+                button.setColorFilter(Color.argb(140, 0, 75, 200));
             } else {
                 button.clearColorFilter();
             }
@@ -105,8 +105,6 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
                 return true;
             }
         });
-
-        //Nothing for now?
     }
 
     @Override
@@ -119,6 +117,8 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
         this.recyclerView = recyclerView;
     }
 
+
+    //Returns true if empty
     public void toggleSelected(int position) {
         ImageViewHolder holder = (ImageViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
 
@@ -132,8 +132,11 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
             if (holder != null) {
                 holder.setSelectedTint(true);
             }
-
         }
+    }
+
+    public int numberSelected() {
+        return selected.size();
     }
 
     @Override

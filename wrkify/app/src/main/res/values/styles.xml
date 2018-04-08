@@ -8,7 +8,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorPrimary">?attr/colorPrimary</item>
-        <item name="actionModeBackground">@color/colorStatusRequested</item>
+        <item name="actionModeBackground">@color/colorDeletionModeBar</item>
     </style>
 
     <style name="AppTheme.TransparentActionBar" parent="android:Theme.Material.Light">

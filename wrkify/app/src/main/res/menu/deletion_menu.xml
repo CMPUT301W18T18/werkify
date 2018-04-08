@@ -16,11 +16,13 @@
   ~
   -->
 
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/deleteImagesMenuButton"
         android:icon="@drawable/ic_delete_black_24dp"
+        android:iconTint="#ffffff"
         app:showAsAction="always" />
 </menu>

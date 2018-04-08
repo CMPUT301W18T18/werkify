@@ -184,6 +184,8 @@ public class EditTaskActivity extends AppCompatActivity {
     private ImageManager imageManager;
     private boolean selectionMode = false;
 
+    private ActionMode currentAction = null;
+
     private static final int REQUEST_IMAGE_CAMERA = 1;
     private static final int REQUEST_IMAGE_GALLERY = 2;
 
@@ -276,6 +278,7 @@ public class EditTaskActivity extends AppCompatActivity {
             public void buttonClicked(int position) {
                 if (selectionMode) {
                     toggleSelected(position);
+                    updateSelectionCount();
                 } else {
                     showImage(position);
                 }
@@ -286,6 +289,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 if (!selectionMode) {
                     setSelectionMode(true);
                     toggleSelected(position);
+                    updateSelectionCount();
                 }
             }
         };
@@ -332,10 +336,21 @@ public class EditTaskActivity extends AppCompatActivity {
                 public void onDestroyActionMode(ActionMode mode) {
                     adapter.deselectAll();
                     setSelectionMode(false);
+                    currentAction = null;
                 }
             };
 
-            startActionMode(callback);
+            currentAction = startActionMode(callback);
+        }
+    }
+
+    private void updateSelectionCount() {
+        if (currentAction != null) {
+            if (adapter.numberSelected() == 0) {
+                currentAction.finish();
+                return;
+            }
+            currentAction.setTitle(adapter.numberSelected() + " selected");
         }
     }
 
