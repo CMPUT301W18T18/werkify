@@ -189,6 +189,51 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
     }
 
     @Override
+    public List<Signal> findSignalsByUser(User user) throws IOException {
+        String query = makeJSONObject(
+            j("query",
+                j("nested",
+                    j("path", "user"),
+                    j("query",
+                        j("match",
+                            j("user.refId", user.getId())
+                        )
+                    )
+                )
+            )
+        );
+        return client.executeQuery(query, Signal.class);
+    }
+
+    @Override
+    public List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException {
+        String query = makeJSONObject(
+            j("query",
+                j("bool",
+                    j("must", ja(
+                        jo(
+                            j("match",
+                                j("targetId", targetId)
+                            )
+                        ),
+                        jo(
+                            j("nested",
+                                j("path", "user"),
+                                j("query",
+                                    j("match",
+                                        j("user.refId", userId)
+                                    )
+                                )
+                            )
+                        )
+                    ))
+                )
+            )
+        );
+        return client.executeQuery(query, Signal.class);
+    }
+
+    @Override
     public User getUser(String username) throws IOException {
         String query = makeJSONObject(
             j("query",

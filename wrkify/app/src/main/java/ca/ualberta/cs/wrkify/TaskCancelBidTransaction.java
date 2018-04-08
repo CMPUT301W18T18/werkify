@@ -17,6 +17,11 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+
 /**
  * TaskCancelBidTransaction is the transaction
  * that models canceling a bid.
@@ -47,5 +52,13 @@ public class TaskCancelBidTransaction extends StateChangeTransaction<Task> {
     protected Boolean apply(Task task) {
         task.cancelBid(this.bid);
         return true;
+    }
+
+    @NonNull
+    @Override
+    protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
+        return new Signal[] {
+                new Signal(bid.getRemoteBidder(client), Signal.SignalType.SIGNAL_REJECTED, task.getId(), task.getTitle())
+        };
     }
 }

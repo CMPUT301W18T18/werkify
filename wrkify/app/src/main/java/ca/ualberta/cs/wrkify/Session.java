@@ -18,7 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -30,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,13 +43,14 @@ public class Session {
     private static Session instance;
 
     private User user;
-    private List<RemoteReference<Task>> userRequestedCache;
-    private List<RemoteReference<Task>> userProvidedCache;
-    private List<RemoteReference<Task>> userBiddedCache;
+    private NotificationCollector notificationCollector = new NotificationCollector();
+    private SignalManager signalManager;
 
     private TransactionManager transactionManager = new TransactionManager();
 
-    protected Session() {}
+    protected Session(RemoteClient client) {
+        this.signalManager = new SignalManager(client);
+    }
 
     /**
      * Gets the global Session.
@@ -61,7 +60,7 @@ public class Session {
      */
     public static Session getInstance(Context context, RemoteClient client) {
         if (instance == null) {
-            instance = new Session();
+            instance = new Session(client);
         }
 
         if (instance.getUser() == null) {
@@ -103,11 +102,28 @@ public class Session {
      */
     public void setUser(User user, Context context) {
         this.user = user;
+
         save(context);
+    }
+
+    public NotificationCollector getNotificationCollector() {
+        return notificationCollector;
     }
 
     public TransactionManager getTransactionManager() {
         return transactionManager;
+    }
+
+    public boolean downloadSignals(RemoteClient client) {
+        try {
+            signalManager.clear();
+            signalManager.addSignals(client.getSearcher().findSignalsByUser(user));
+            notificationCollector.clear();
+            notificationCollector.putNotifications(signalManager.getNotifications());
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**
@@ -116,6 +132,8 @@ public class Session {
      */
     public void logout(Context context) {
         this.user = null;
+        this.notificationCollector.clear();
+        this.signalManager.clear();
         context.deleteFile(FILENAME);
     }
 

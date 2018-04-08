@@ -17,6 +17,13 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * TaskAddBidTransaction models adding a bid to
  * a task.
@@ -50,5 +57,17 @@ public class TaskAddBidTransaction extends StateChangeTransaction<Task> {
         } catch (UnsupportedOperationException e) {
             return false;
         }
+    }
+
+    @NonNull
+    @Override
+    protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
+        ArrayList<Signal> signalList = new ArrayList<>();
+        signalList.add(new Signal(task.getRemoteRequester(client), Signal.SignalType.SIGNAL_NEW_BID, task.getId(), task.getTitle()));
+        if (task.getBidList().size() > 0) {
+            signalList.add(new Signal(task.getBidList().get(0).getRemoteBidder(client), Signal.SignalType.SIGNAL_OUTBID, task.getId(), task.getTitle()));
+        }
+
+        return signalList.toArray(new Signal[]{});
     }
 }

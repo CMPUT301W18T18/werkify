@@ -36,11 +36,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * TasksOverviewFragment displays a set of tab pages, each containing a
@@ -166,7 +168,6 @@ abstract class TasksOverviewFragment extends Fragment {
         if (transactionManager.hasPendingTransactions()) {
             if (transactionManager.flush(WrkifyClient.getInstance())) {
                 hideOfflineIndicator();
-                // TODO redownload here
             } else {
                 showOfflineIndicator();
             }
@@ -175,6 +176,9 @@ abstract class TasksOverviewFragment extends Fragment {
         } else {
             hideOfflineIndicator();
         }
+
+        Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
+        updateNotificationDisplay(getView());
     }
 
     private void refreshTaskLists() {
@@ -236,5 +240,48 @@ abstract class TasksOverviewFragment extends Fragment {
      */
     protected void onAddButtonClick(View v) {
 
+    }
+
+
+    /**
+     * Updates the notification display.
+     * @param view root view of the fragment
+     */
+    private void updateNotificationDisplay(final View view) {
+        Log.i("-->", "und");
+        ViewGroup notificationContainer = view.findViewById(R.id.overviewNotificationContainer);
+        ViewGroup notificationTarget = view.findViewById(R.id.overviewNotificationTarget);
+        ViewGroup notificationOverflow = view.findViewById(R.id.overviewNotificationOverflowIndicator);
+        TextView notificationOverflowLabel = view.findViewById(R.id.overviewNotificationOverflowLabel);
+
+        NotificationCollector collector = Session.getInstance(getContext()).getNotificationCollector();
+        NotificationInfo notification = collector.getFirstNotification();
+
+        if (notification != null) {
+            notificationContainer.setVisibility(View.VISIBLE);
+
+            NotificationView notificationView = new NotificationView(getContext());
+            notificationView.setNotification(notification);
+            notificationView.setOnDismissListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateNotificationDisplay(view);
+                }
+            });
+
+            notificationTarget.addView(notificationView);
+
+            // Show overflow indicator if more than one notification
+            int extraNotificationCount = collector.getNotificationCount() - 1;
+            if (extraNotificationCount > 0) {
+                notificationOverflow.setVisibility(View.VISIBLE);
+                notificationOverflowLabel.setText(
+                        String.format(Locale.US, "%d more notifications", extraNotificationCount));
+            } else {
+                notificationOverflow.setVisibility(View.GONE);
+            }
+        } else {
+            notificationContainer.setVisibility(View.GONE);
+        }
     }
 }

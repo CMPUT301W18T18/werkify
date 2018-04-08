@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 
 public abstract class Transaction<T extends RemoteObject> {

@@ -17,9 +17,13 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,8 +41,7 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
     private RemoteClient client;
     private Class<T> type;
 
-    private ArrayList<RemoteReference<T>> refs;
-    private ArrayList<T> objs;
+    private ArrayList<RemoteListItem<T>> items;
 
     /**
      * creates a RemoteList from the client and the type
@@ -49,8 +52,7 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
         this.client = client;
         this.type = type;
 
-        this.refs = new ArrayList<>();
-        this.objs = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
     /**
@@ -62,15 +64,15 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
      */
     @Override
     public T get(int index) {
-        T obj = this.objs.get(index);
+        T obj = this.items.get(index).object;
         if (obj != null) {
             // if we already have the object, return it
             return obj;
             // I didn't know you could do this
         } else try {
             // if we don't have the object, get it from the remote, and return it.
-            obj = this.refs.get(index).getRemote(this.client, this.type);
-            this.objs.set(index, obj);
+            obj = this.items.get(index).reference.getRemote(this.client, this.type);
+            this.items.get(index).object = obj;
             return obj;
         } catch (IOException e) {
             // this is possible but should not happen
@@ -85,7 +87,7 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
      */
     @Override
     public int size() {
-        return this.refs.size();
+        return this.items.size();
     }
 
     /**
@@ -93,20 +95,21 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
      * will be gotten from the client.
      */
     public void refresh() {
-        for (int i = 0; i < this.refs.size(); ++i) {
+        for (int i = 0; i < this.items.size(); ++i) {
             // get() gets from the client when null
-            this.refs.set(i, null);
+            this.items.set(i, null);
         }
+        this.sortByTimestamp();
     }
 
     protected void setObjs(List<T> objs) {
-        this.objs.clear();
-        this.refs.clear();
+        this.items.clear();
 
         for (T obj: objs) {
-            this.objs.add(obj);
-            this.refs.add(obj.<T>reference());
+            this.items.add(new RemoteListItem<>(obj, obj.<T>reference()));
         }
+
+        this.sortByTimestamp();
     }
 
     /**
@@ -152,10 +155,33 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
         RemoteList<E> list = new RemoteList<E>(rc, type);
 
         for (RemoteReference<E> ref: refs) {
-            list.objs.add(null);
-            list.refs.add(ref);
+            list.items.add(new RemoteListItem<>(null, ref));
         }
 
         return list;
+    }
+
+    private void sortByTimestamp() {
+        Collections.sort(items);
+    }
+
+    private static class RemoteListItem<U extends RemoteObject> implements Comparable<RemoteListItem<U>> {
+        public RemoteReference<U> reference;
+        public U object;
+
+        public RemoteListItem(U object, RemoteReference<U> reference) {
+            this.reference = reference;
+            this.object = object;
+        }
+
+        @Override
+        public int compareTo(@NonNull RemoteListItem<U> other) {
+            return Long.compare(object.getTimestamp(), other.object.getTimestamp());
+        }
+
+        @Override
+        public String toString() {
+            return object.getId();
+        }
     }
 }

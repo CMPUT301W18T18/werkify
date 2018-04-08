@@ -238,6 +238,28 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
 
         @Override
+        public List<Signal> findSignalsByUser(User user) throws IOException {
+            try {
+                List<Signal> results = getWrappedSearcher().findSignalsByUser(user);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findSignalsByUser(user);
+            }
+        }
+
+        @Override
+        public List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException {
+            try {
+                List<Signal> results = getWrappedSearcher().findSignalsByUserAndTargetIds(userId, targetId);
+                cache.putAll(results);
+                return results;
+            } catch (IOException e) {
+                return getLocalSearcher().findSignalsByUserAndTargetIds(userId, targetId);
+            }
+        }
+
+        @Override
         public User getUser(String username) throws IOException {
             try {
                 User result = getWrappedSearcher().getUser(username);
@@ -337,6 +359,34 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
                 public boolean isMatch(Task task) {
                     try {
                         return (requester.equals(task.getRemoteRequester(client)) && statusList.contains(task.getStatus()));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Signal> findSignalsByUser(final User user) {
+            return cache.findMatching(new CacheMatcher<Signal>() {
+                @Override
+                public boolean isMatch(Signal signal) {
+                    try {
+                        return (user.equals(signal.getRemoteUser(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Signal> findSignalsByUserAndTargetIds(final String userId, final String targetId) {
+            return cache.findMatching(new CacheMatcher<Signal>() {
+                @Override
+                public boolean isMatch(Signal signal) {
+                    try {
+                        return (targetId.equals(signal.getTargetId()) && userId.equals(signal.getRemoteUser(client).getId()));
                     } catch (IOException e) {
                         return false;
                     }
