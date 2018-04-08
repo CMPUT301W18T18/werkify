@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -26,6 +27,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -46,7 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     private CameraPosition cameraPosition;
@@ -75,11 +77,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        User testUser = new User("Stefan","stefan@gmail.com","7809352501");
-        Task testTask = new Task("Mow my fucking lawn boss.",testUser,"memes");
-        TaskLocation testLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
-        testTask.setLocation(testLocation);
-        tasksNearMe.add(testTask);
+//        User testUser = new User("Stefan","stefan@gmail.com","7809352501");
+//        Task testTask = new Task("Mow my fucking lawn boss.",testUser,"memes");
+//        TaskLocation testLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
+//        testTask.setLocation(testLocation);
+//        tasksNearMe.add(testTask);
     }
 
     @Override
@@ -110,21 +112,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public View getInfoContents(Marker marker) {
-                CardView taskCardview = findViewById(R.id.taskCardView);
+                int layout = R.layout.taskcardview;
+                View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
+                CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
                 Task task = markerTaskHashMap.get(marker);
-                TextView taskTitle = taskCardview.findViewById(R.id.taskTitle);
+                TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
                 taskTitle.setText(task.getTitle());
-                TextView taskDescription = taskCardview.findViewById(R.id.taskDescription);
+                TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
                 taskDescription.setText(task.getDescription());
-                TextView taskUser = taskCardview.findViewById(R.id.taskUser);
+                TextView taskUser = taskCardView.findViewById(R.id.taskUser);
+                taskUser.setText("User");
                 try {
                     taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
                 } catch (IOException e){
 
                 }
-                StatusView taskStatus = taskCardview.findViewById(R.id.taskStatus);
+                StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
                 taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
-                return taskCardview;
+                return taskCardView;
             }
         });
 
@@ -268,5 +273,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
 
         return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Task task = markerTaskHashMap.get(marker);
+        Intent intent = new Intent(this,ViewTaskActivity.class);
+        intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK,task);
+        startActivity(intent);
     }
 }
