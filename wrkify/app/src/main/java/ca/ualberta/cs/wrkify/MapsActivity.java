@@ -60,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean mLocationPermissionGranted;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
-    private ArrayList<Task> tasksNearMe = new ArrayList<>();
+    private List<Task> tasksNearMe = new ArrayList<>();
     private HashMap<Marker,Task> markerTaskHashMap;
 
 
@@ -135,11 +135,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
         getLocationPermission();
-
         updateLocationUI();
 
         getCurrentLocation();
 
+        searchTasksNearMe();
         addTaskMarkers();
     }
 
@@ -192,10 +192,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Location> task) {
                         lastKnownLocation = task.getResult();
                         if (task.isSuccessful()&&lastKnownLocation!=null) {
+//                            Log.d("Location nonNull-->","yea");
                             // Set the map's camera position to the current location of the devices
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
                                             lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                                    new LatLng(45,-112),DEFAULT_ZOOM));
+//                            lastKnownLocation.setLongitude(-112);
+//                            lastKnownLocation.setLatitude(45);
                         } else {
                             mMap.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
@@ -238,6 +243,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void searchTasksNearMe(){
        //Search for tasks by location
+        try{
+            TaskLocation taskLocation = new TaskLocation(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
+            tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksByKeywordsNear("",taskLocation);
+        }
+        catch (IOException e){
+            return;
+        }
+        catch (NullPointerException e){
+            TaskLocation taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
+            try {
+              tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksByKeywordsNear("", taskLocation);
+            }
+            catch (IOException b){
+                return;
+            }
+        }
 
     }
 
