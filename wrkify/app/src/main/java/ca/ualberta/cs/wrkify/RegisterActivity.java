@@ -45,7 +45,6 @@ public class RegisterActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppTheme_TransparentActionBar);
         setContentView(R.layout.activity_register);

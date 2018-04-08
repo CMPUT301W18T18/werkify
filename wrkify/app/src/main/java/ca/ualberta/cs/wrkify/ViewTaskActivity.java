@@ -68,7 +68,6 @@ public class ViewTaskActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_task);
 
