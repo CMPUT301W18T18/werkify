@@ -193,15 +193,7 @@ public class EditTaskActivity extends AppCompatActivity {
      * This should signal the parent activity to delete the task.
      */
     private void deleteAndFinish() {
-        WrkifyClient.getInstance().delete(this.task);
-        setResult(RESULT_TASK_DELETED);
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-
-        finish();
+        this.new DeleteTaskTask().execute();
     }
 
     /**
@@ -278,6 +270,40 @@ public class EditTaskActivity extends AppCompatActivity {
                 setResult(RESULT_TASK_CREATED, intent);
             } else {
                 setResult(RESULT_OK, intent);
+            }
+
+            finish();
+        }
+    }
+
+    /**
+     * DeleteTaskTask is an AsyncTask that deletes the given task
+     * and returns.
+     */
+    public class DeleteTaskTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * delete the task from the server
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            WrkifyClient.getInstance().delete(task);
+            return null;
+        }
+
+        /**
+         * after the task has been delete from the server,
+         * return to the correct activity.
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            setResult(RESULT_TASK_DELETED);
+            View view = EditTaskActivity.this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
 
             finish();
