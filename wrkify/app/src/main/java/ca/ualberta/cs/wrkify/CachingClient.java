@@ -189,8 +189,8 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
 
         @Override
-        public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) throws IOException {
-            return getWrappedSearcher().findTasksByKeywordsNear(keywords, location);
+        public List<Task> findTasksNear(TaskLocation location) throws IOException {
+            return getWrappedSearcher().findTasksNear(location);
         }
 
         @Override
@@ -299,8 +299,8 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
 
         @Override
-        public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) {
-            throw new IllegalStateException("Can't perform keyword search on cache");
+        public List<Task> findTasksNear(TaskLocation location) {
+            throw new IllegalStateException("Can't perform location search on cache");
         }
 
         @Override

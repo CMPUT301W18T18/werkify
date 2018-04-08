@@ -233,7 +233,7 @@ public class SearcherTest {
     public void testFindByLocation() {
         List<Task> results;
         try {
-            results = searcher.findTasksByKeywordsNear("location task", new TaskLocation(38.9, -171.4));
+            results = searcher.findTasksNear(new TaskLocation(38.9, -171.4));
         } catch (IOException e) {
             fail();
             return;

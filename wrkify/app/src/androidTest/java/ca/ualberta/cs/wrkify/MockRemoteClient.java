@@ -118,7 +118,7 @@ class MockRemoteClient extends RemoteClient {
         }
 
         @Override
-        public List<Task> findTasksByKeywordsNear(String keywords, TaskLocation location) {
+        public List<Task> findTasksNear(TaskLocation location) {
             return mockSearch();
         }
 
