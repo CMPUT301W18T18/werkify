@@ -25,6 +25,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.transition.Slide;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.transition.TransitionManager;
 import android.util.Log;
@@ -60,8 +62,6 @@ abstract class TasksOverviewFragment extends Fragment {
     // (basic structure)
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return null;
-        /*
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
         
         // Find views
@@ -115,7 +115,7 @@ abstract class TasksOverviewFragment extends Fragment {
 
         // Bind adapter to pager
         // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
-        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists(), getTabTitles()));
+        pager.setAdapter(getFragmentPagerAdapter(getChildFragmentManager()));
 
         // Initialize add button
         addButtonVisible = isAddButtonEnabled(0);
@@ -154,13 +154,13 @@ abstract class TasksOverviewFragment extends Fragment {
             }
         });
 
-        return view;*/
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-/*
+
         Session session = Session.getInstance(getActivity());
         TransactionManager transactionManager = session.getTransactionManager();
         if (transactionManager.hasPendingTransactions()) {
@@ -175,7 +175,7 @@ abstract class TasksOverviewFragment extends Fragment {
         } else {
             hideOfflineIndicator();
         }
-    */}
+    }
 
     private void refreshTaskLists() {
         // TODO not implemented
@@ -215,25 +215,8 @@ abstract class TasksOverviewFragment extends Fragment {
         return this.pager;
     }
 
-    /**
-     * Selects which tasks to display in the task lists. Each element
-     * in the outer list is a list of tasks that will be displayed in a tab.
-     * Length of the list should be the same as the length of the list
-     * returned by getTabTitles for correct behaviour.
-     * @return list of task lists
-     */
-    protected abstract List<ArrayList<Task>> getTaskLists();
+    protected abstract FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager);
 
-    /**
-     * Determines the titles of the tabs (and the number of tabs).
-     * Each string in the returned list is used as a tab title from
-     * first to last. Length of the returned list should be the same
-     * as the length of the list returned by getTaskLists for
-     * correct behaviour.
-     * @return list of tab titles
-     */
-    protected abstract List<String> getTabTitles();
-    
     /**
      * Determines the 'activity title' shown when viewing this Fragment.
      * (It appears in the override app bar.)

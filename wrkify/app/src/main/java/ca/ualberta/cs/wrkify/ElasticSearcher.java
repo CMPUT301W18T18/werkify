@@ -82,7 +82,8 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
                                     )
                                 )
                             )
-                        )
+                        ),
+                        getTaskStatusQuery(statuses)
                     ))
                 )
             )
