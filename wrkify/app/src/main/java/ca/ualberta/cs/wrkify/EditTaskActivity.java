@@ -207,6 +207,8 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
+        View focus = getCurrentFocus();
+        if (focus != null) { focus.clearFocus(); }
         this.new EditTaskTask().execute();
     }
 
@@ -289,9 +291,6 @@ public class EditTaskActivity extends AppCompatActivity {
          */
         @Override
         protected void onPostExecute(Void result) {
-            View focus = getCurrentFocus();
-            if (focus != null) { focus.clearFocus(); }
-
             if (task == null) return;
 
             Intent intent = getIntent();
