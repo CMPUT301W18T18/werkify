@@ -23,8 +23,18 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
+/**
+ * Class for compressing Bitmaps to CompressedBitmap format
+ */
 public abstract class ImageUtilities {
 
+    /**
+     * Compresses a bitmap to a base 64 String
+     * @param bitmap Bitmap you want to compress
+     * @param bytes The maximum size of the compressed image data
+     * @param minQuality Minimum quality setting for compression
+     * @return
+     */
     public static String compressBitmapToB64(Bitmap bitmap, int bytes, int minQuality) {
 
         while (true) {
@@ -78,7 +88,11 @@ public abstract class ImageUtilities {
         }
     }
 
-
+    /**
+     *
+     * @param image Bitmap which you want to make a thumbnail for
+     * @return a new Bitmap which is scaled to the thumbnail size
+     */
     public static Bitmap makeThumbnail (Bitmap image){
         return Bitmap.createScaledBitmap(image, 100, 100, false);
     }

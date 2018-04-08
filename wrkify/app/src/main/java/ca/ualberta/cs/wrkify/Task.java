@@ -43,21 +43,8 @@ public class Task extends RemoteObject {
     private RemoteReference<User> provider;
     private TaskStatus status;
     private Bid acceptedBid;
-
     private ArrayList<RemoteReference<CompressedBitmap>> remoteThumbnails;
     private ArrayList<RemoteReference<CompressedBitmap>> remoteImages;
-
-
-    //TODO remove these later???
-    public void setRemoteThumbnails(ArrayList<RemoteReference<CompressedBitmap>> list){
-        this.remoteThumbnails = list;
-    }
-
-    public void setRemoteImages(ArrayList<RemoteReference<CompressedBitmap>> list){
-        this.remoteImages = list;
-    }
-
-    //End of functions to (maybe?) remove
 
     /**
      * the internalSetTitle function provides a private/final
@@ -348,6 +335,11 @@ public class Task extends RemoteObject {
         }
     }
 
+    /**
+     * Downloads and returns list of compressed thumbnails
+     * @return ArrayList of compressed thumbnails, in CompressedBitmap format
+     * @throws IOException
+     */
     public ArrayList<CompressedBitmap> getCompressedThumbnails() throws IOException {
         ArrayList<CompressedBitmap> list = new ArrayList<>();
         for (int i = 0; i < remoteThumbnails.size(); i++) {
@@ -356,38 +348,39 @@ public class Task extends RemoteObject {
         return list;
     }
 
-    public ArrayList<RemoteReference<CompressedBitmap>> getRemoteImages() throws IOException {
+    /**
+     * @return ArrayList of remote thumbnails
+     */
+    public ArrayList<RemoteReference<CompressedBitmap>> getRemoteThumbnails() {
+        return remoteThumbnails;
+    }
+
+    /**
+     * Attach an ArrayList of remote thumbnails to the Task
+     * @param list the remote thumbnails to attach to this task
+     */
+    public void setRemoteThumbnails(ArrayList<RemoteReference<CompressedBitmap>> list){
+        this.remoteThumbnails = list;
+    }
+
+    /**
+     * @return ArrayList of remote images (full-size images)
+     */
+    public ArrayList<RemoteReference<CompressedBitmap>> getRemoteImages() {
         return remoteImages;
     }
 
-    public ArrayList<CompressedBitmap> getConcreteImages() throws IOException {
-        ArrayList<CompressedBitmap> list = new ArrayList<>();
-        for (int i = 0; i < remoteImages.size(); i++) {
-            list.add(remoteImages.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
-        }
-        return list;
+    /**
+     * Attach an ArrayList of remote images to the task
+     * @param list the list of remote images to attach to this task
+     */
+    public void setRemoteImages(ArrayList<RemoteReference<CompressedBitmap>> list){
+        this.remoteImages = list;
     }
 
-    public void addImagePair(Bitmap thumbnail, Bitmap fullImage) {
-        String c_thumbnail = ImageUtilities.compressBitmapToB64(thumbnail, 65536,10);
-        String c_fullImage = ImageUtilities.compressBitmapToB64(fullImage, 65536,10);
-        CompressedBitmap cb_thumbnail = WrkifyClient.getInstance().create(CompressedBitmap.class, c_thumbnail);
-        CompressedBitmap cb_fullImage = WrkifyClient.getInstance().create(CompressedBitmap.class, c_fullImage);
-        RemoteReference<CompressedBitmap> remoteThumbnail = cb_thumbnail.reference();
-        RemoteReference<CompressedBitmap> remoteFullImage = cb_fullImage.reference();
-        remoteThumbnails.add(remoteThumbnail);
-        remoteImages.add(remoteFullImage);
-    }
-
-    public CompressedBitmap getImage(int position) {
-        try {
-            return remoteImages.get(position).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
-        } catch (IOException e) {
-            Log.e("Task", "getImage() failed");
-        }
-        return null;
-    }
-
+    /**
+     * Deletes all images from the Task, and server
+     */
     public void deleteAllImages() {
         if (remoteThumbnails != null) {
             for (int i = 0; i < remoteThumbnails.size(); i++) {
@@ -402,7 +395,6 @@ public class Task extends RemoteObject {
             }
             remoteImages.clear();
         }
-
     }
 
 }
