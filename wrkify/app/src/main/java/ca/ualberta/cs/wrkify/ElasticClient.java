@@ -98,8 +98,6 @@ public class ElasticClient extends RemoteClient {
         Log.i("elastic", "NEW " + type);
         Index index = new Index.Builder(instance).index(this.index).type(type.getName()).build();
 
-        Log.d("elastic", index.getRestMethodName() + " " + index.getPathToResult() + " " + index.getData(new Gson()));
-
         String originalId = instance.getId();
         try {
             instance.setId(null);
