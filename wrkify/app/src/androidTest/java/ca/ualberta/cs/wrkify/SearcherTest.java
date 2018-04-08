@@ -93,7 +93,7 @@ public class SearcherTest {
     }
 
     @AfterClass
-    public static void removeData() {
+    public static void removeData() {/*
         rc.delete(user1);
         rc.delete(user2);
         rc.delete(user3);
@@ -105,7 +105,7 @@ public class SearcherTest {
 
         rc.delete(locationTask1);
         rc.delete(locationTask2);
-        rc.delete(locationTask3);
+        rc.delete(locationTask3);*/
     }
 
     @Test

@@ -185,6 +185,33 @@ class MockRemoteClient extends RemoteClient {
             });
         }
 
+        public List<Signal> findSignalsByUser(final User user) {
+            return cache.findMatching(new CacheMatcher<Signal>() {
+                @Override
+                public boolean isMatch(Signal signal) {
+                    try {
+                        return (user.equals(signal.getRemoteUser(client)));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
+        @Override
+        public List<Signal> findSignalsByUserAndTargetIds(final String userId, final String targetId) {
+            return cache.findMatching(new CacheMatcher<Signal>() {
+                @Override
+                public boolean isMatch(Signal signal) {
+                    try {
+                        return (targetId.equals(signal.getTargetId()) && userId.equals(signal.getRemoteUser(client).getId()));
+                    } catch (IOException e) {
+                        return false;
+                    }
+                }
+            });
+        }
+
         @Override
         public User getUser(final String username) {
             List<User> results = cache.findMatching(new CacheMatcher<User>() {

@@ -9,8 +9,14 @@
         },
         "ca.ualberta.cs.wrkify.User": {
             "properties": {
-                "username": {"type": "string"},
-                "email": {"type": "string"},
+                "username": {
+                	"type": "string",
+                	"index": "not_analyzed"
+                },
+                "email": {
+                	"type": "string",
+                	"index": "not_analyzed"
+                },
                 "phoneNumber": {"type": "string"}
             }
         },
@@ -18,12 +24,39 @@
             "properties": {
                 "title": {"type": "string"},
                 "description": {"type": "string"},
-                "status": {"type": "string"},
-                "requester": {"type": "nested"},
-                "provider": {"type": "nested"},
+                "status": {
+                	"type": "string",
+                	"index": "not_analyzed"
+                },
+                "requester": {
+                	"type": "nested",
+                	"properties": {
+                		"refId": {
+                			"type": "string",
+                			"index": "not_analyzed"
+                		}
+                	}
+                },
+                "provider": {
+                	"type": "nested",
+                	"properties": {
+                		"refId": {
+                			"type": "string",
+                			"index": "not_analyzed"
+                		}
+                	}
+                },
                 "bidList": {
                     "properties": {
-                        "bidder": {"type": "nested"}
+                        "bidder": {
+                        	"type": "nested",
+                        	"properties": {
+                        		"refId": {
+                        			"type": "string",
+                        			"index": "not_analyzed"
+                        		}
+                        	}
+                        }
                     }
                 },
                 "location": {"type": "geo_point"}
@@ -32,7 +65,15 @@
         "ca.ualberta.cs.wrkify.Signal": {
 			"properties": {
 				"user": {"type": "nested"},
-				"targetId": {"type": "string"}
+				"targetId": {
+					"type": "string",
+					"properties": {
+						"typeId": {
+							"type": "string",
+							"index": "not_analyzed"
+						}
+					}
+				}
 			}
         }
     }
