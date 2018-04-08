@@ -35,7 +35,7 @@ public abstract class ImageUtilities {
      * @param minQuality Minimum quality setting for compression
      * @return
      */
-    public static String compressBitmapToB64(Bitmap bitmap, int bytes, int minQuality) {
+    private static String compressBitmapToB64(Bitmap bitmap, int bytes, int minQuality, Bitmap.CompressFormat format) {
 
         while (true) {
             Log.i("Compress image to B64", "START");
@@ -57,7 +57,7 @@ public abstract class ImageUtilities {
                 iterations++;
                 //Do compress
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, mid, os);
+                bitmap.compress(format, mid, os);
                 String result = Base64.encodeToString(os.toByteArray(), Base64.DEFAULT);
 
                 if (result.getBytes().length <= bytes) {
@@ -84,7 +84,6 @@ public abstract class ImageUtilities {
             int newHeight = (int) (height / ((double) width) * newWidth);
 
             bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
-
         }
     }
 
@@ -93,20 +92,33 @@ public abstract class ImageUtilities {
      * @param image Bitmap which you want to make a thumbnail for
      * @return a new Bitmap which is scaled to the thumbnail size
      */
-    public static Bitmap makeThumbnail (Bitmap image){
+    private static Bitmap makeThumbnailBitmap(Bitmap image){
         return Bitmap.createScaledBitmap(image, 100, 100, false);
     }
 
+    private static CompressedBitmap makeCompressedBitmap(Bitmap image, boolean remote, int bytes, int minQuality, Bitmap.CompressFormat format) {
+        String data = compressBitmapToB64(image, bytes, minQuality, format);
+        CompressedBitmap bm;
 
-    public static CompressedBitmap makeCompressedThumbnail(Bitmap image) {
-        Bitmap thumb = makeThumbnail(image);
-        CompressedBitmap bm = new CompressedBitmap(compressBitmapToB64(thumb, 10000, 0));
+        if (remote) {
+            bm = WrkifyClient.getInstance().create(CompressedBitmap.class, data);
+        } else {
+            bm = new CompressedBitmap(data);
+        }
         return bm;
     }
 
-    public static CompressedBitmap makeCompressedImage(Bitmap image) {
-        CompressedBitmap bm = new CompressedBitmap(compressBitmapToB64(image, 65536, 10));
-        return bm;
+    public static CompressedBitmap makeCompressedThumbnail(Bitmap image, boolean remote) {
+        Bitmap thumb = makeThumbnailBitmap(image);
+        return makeCompressedBitmap(thumb, remote, 10000, 0, Bitmap.CompressFormat.JPEG);
+    }
+
+    public static CompressedBitmap makeCompressedImage(Bitmap image, boolean remote) {
+        return makeCompressedBitmap(image, remote, 65536, 10, Bitmap.CompressFormat.JPEG);
+    }
+
+    public static CompressedBitmap convertToRemote(CompressedBitmap compressedBitmap){
+        return WrkifyClient.getInstance().create(CompressedBitmap.class, compressedBitmap.getData());
     }
 
 }

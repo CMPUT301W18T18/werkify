@@ -41,7 +41,9 @@
         <activity
             android:name=".EditTaskActivity"
             android:parentActivityName=".ViewTaskActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize"
+            />
 
         <!--Provider taken from https://developer.android.com/training/camera/photobasics.html -->
         <provider

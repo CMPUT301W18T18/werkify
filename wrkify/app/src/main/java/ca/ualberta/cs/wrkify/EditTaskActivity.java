@@ -92,19 +92,6 @@ public class EditTaskActivity extends AppCompatActivity {
             thumbnails.add(thumbnail);
         }
 
-        public void deleteImageFromThumbnail(CompressedBitmap thumbnail) {
-            int index = thumbnails.indexOf(thumbnail);
-            if (index >= remoteImages.size()) {
-                localImages.remove(index - remoteImages.size());
-                thumbnails.remove(index);
-            } else {
-                toDelete.add(remoteImages.get(index));
-                toDelete.add(thumbnail.<CompressedBitmap>reference());
-                thumbnails.remove(index);
-                remoteImages.remove(index);
-            }
-        }
-
         public CompressedBitmap getImage(int index) {
             if (index >= remoteImages.size()) {
                 return localImages.get(index - remoteImages.size());
@@ -127,17 +114,16 @@ public class EditTaskActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
         }
 
         private void uploadLocalImages(Task task) {
             int thumbnailIndexOffset = remoteImages.size();
             for (int i = 0; i < localImages.size(); i++) {
-                CompressedBitmap uploadedImage = WrkifyClient.getInstance().create(CompressedBitmap.class, localImages.get(i).getData());
+                CompressedBitmap uploadedImage = ImageUtilities.convertToRemote(localImages.get(i));
                 remoteImages.add(uploadedImage.<CompressedBitmap>reference());
 
                 int thumbnailIndex = i + thumbnailIndexOffset;
-                CompressedBitmap uploadedThumbnail = WrkifyClient.getInstance().create(CompressedBitmap.class, thumbnails.get(thumbnailIndex).getData());
+                CompressedBitmap uploadedThumbnail = ImageUtilities.convertToRemote(thumbnails.get(thumbnailIndex));
                 thumbnails.set(thumbnailIndex, uploadedThumbnail);
             }
             localImages.clear();
@@ -388,8 +374,8 @@ public class EditTaskActivity extends AppCompatActivity {
                     MediaStore.Images.Media.insertImage(getContentResolver(), image, "Wrkify image", "Wrkify image");
 
                     //Add to ImageManager, NOT Task
-                    CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(image);
-                    CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(image);
+                    CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(image, false);
+                    CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(image, false);
 
                     imageManager.addImagePair(compressedThumbnail, compressedImage);
                     adapter.notifyDataSetChanged();
@@ -402,8 +388,8 @@ public class EditTaskActivity extends AppCompatActivity {
             Uri uri = data.getData();
             try {
                 Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(bm);
-                CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(bm);
+                CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(bm, false);
+                CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(bm, false);
                 imageManager.addImagePair(compressedThumbnail, compressedImage);
                 adapter.notifyDataSetChanged();
 
@@ -446,8 +432,6 @@ public class EditTaskActivity extends AppCompatActivity {
         currentImagePath = imageFile.getAbsolutePath();
         return imageFile;
     }
-
-
 
     protected void openCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -533,7 +517,6 @@ public class EditTaskActivity extends AppCompatActivity {
     }
 
     public void showImage(int position) {
-        //COME BACK HERE
         Bitmap bm = null;
         CompressedBitmap cb = imageManager.getImage(position);
         if (cb == null) {

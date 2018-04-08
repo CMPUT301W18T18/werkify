@@ -79,6 +79,8 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
         return new ArrayList<>(selected);
     }
 
+
+
     public void animateDeletions() {
         Transition transition = makeDeleteTransition();
         attachScrollDisableListener(transition);
