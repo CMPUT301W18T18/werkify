@@ -1,6 +1,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
@@ -62,31 +63,38 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
      */
     private void confirmAndSubmitBid(View view) {
         final EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
-        final Task tsk = this.task;
-        final Context ctx = getContext();
         ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
                     String.format(Locale.US, "Bid $%s on this task?", bidField.getText()),
                     "Cancel", "Bid",
                     new ConfirmationDialogFragment.OnConfirmListener() {
                         @Override
                         public void onConfirm() {
-                            Bid bid = new Bid(
-                                    new Price(bidField.getText().toString()),
-                                    Session.getInstance(ctx).getUser());
-                            tsk.addBid(bid);
-
-                            TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-                            transactionManager.enqueue(new TaskAddBidTransaction(tsk, bid));
-
-                            // TODO notify of offline status
-                            transactionManager.flush(WrkifyClient.getInstance());
-
-                            WrkifyClient.getInstance().updateCached(tsk);
+                            new BidTask().execute(new Price(bidField.getText().toString()));
                             collapse();
                         }
                     }
         );
         dialog.show(getActivity().getFragmentManager(), null);
+    }
+
+    private class BidTask extends AsyncTask<Price, Void, Void> {
+        @Override
+        protected Void doInBackground(Price... prices) {
+
+            Bid bid = new Bid(
+                    prices[0],
+                    Session.getInstance(getContext()).getUser());
+            task.addBid(bid);
+
+            TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
+            transactionManager.enqueue(new TaskAddBidTransaction(task, bid));
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
+
+            WrkifyClient.getInstance().updateCached(task);
+            return null;
+        }
     }
 
     @Override
