@@ -63,14 +63,25 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
      */
     private void confirmAndSubmitBid(View view) {
         final EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
+        final Price bidPrice;
+        try {
+            bidPrice = new Price(bidField.getText().toString());
+        } catch (NumberFormatException e) {
+            // invalid bid
+            return;
+        }
         ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
                     String.format(Locale.US, "Bid $%s on this task?", bidField.getText()),
                     "Cancel", "Bid",
                     new ConfirmationDialogFragment.OnConfirmListener() {
                         @Override
                         public void onConfirm() {
-                            new BidTask().execute(new Price(bidField.getText().toString()));
-                            collapse();
+                            try {
+                                new BidTask().execute(bidPrice);
+                                collapse();
+                            } catch (NumberFormatException e) {
+                                // invalid bid - continue
+                            }
                         }
                     }
         );
