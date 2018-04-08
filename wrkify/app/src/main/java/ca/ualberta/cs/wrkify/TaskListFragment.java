@@ -49,7 +49,8 @@ public abstract class TaskListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.tasks = getTaskList();
+        this.tasks = new RemoteList<Task>(WrkifyClient.getInstance(), Task.class);
+        this.new RefreshTask().execute();
     }
 
     /**
@@ -97,7 +98,8 @@ public abstract class TaskListFragment extends Fragment {
 
     /**
      * allow the subclass to define the creation of the TaskList
-     * @return
+     * this function will be run in an AsyncTask
+     * @return a List of the tasks for the activity to display
      */
     protected abstract RemoteList getTaskList();
 
@@ -130,6 +132,41 @@ public abstract class TaskListFragment extends Fragment {
                         tasks.size() == 0? View.GONE : View.VISIBLE);
                 getView().findViewById(R.id.taskListEmptyMessage).setVisibility(
                         tasks.size() == 0? View.VISIBLE : View.GONE);
+            }
+        }
+    }
+
+    /**
+     * GetTaskListTask runs getTaskList() of the subclass asynchronously and
+     * updates the view afterwards. (if it is properly created)
+     */
+    private class GetTaskListTask extends AsyncTask<Void, Void, RemoteList<Task>> {
+        /**
+         * runs the getTaskList() function of the subclass
+         * @param voids unused
+         * @return the TaskList that getTaskList() returns
+         */
+        @Override
+        protected RemoteList<Task> doInBackground(Void... voids) {
+            return TaskListFragment.this.getTaskList();
+        }
+
+        /**
+         * update the view after the list is gotten
+         * @param tasks the list of tasks to display
+         */
+        @Override
+        protected void onPostExecute(RemoteList<Task> tasks) {
+            TaskListFragment.this.tasks = tasks;
+
+            if (taskListAdapter != null) {
+                taskListAdapter.notifyDataSetChanged();
+                if (getView() != null) {
+                    getView().findViewById(R.id.taskListView).setVisibility(
+                            tasks.size() == 0? View.GONE : View.VISIBLE);
+                    getView().findViewById(R.id.taskListEmptyMessage).setVisibility(
+                            tasks.size() == 0? View.VISIBLE : View.GONE);
+                }
             }
         }
     }
