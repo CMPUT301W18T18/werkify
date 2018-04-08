@@ -17,12 +17,15 @@
 
 package ca.ualberta.cs.wrkify;
 
+import java.io.IOError;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import static android.os.Build.VERSION_CODES.N;
 
 /**
  * Local remote client for running UI tests.
@@ -77,6 +80,11 @@ class MockRemoteClient extends RemoteClient {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    void deleteByReference(RemoteReference ref, Class type) {
+        throw new UnsupportedOperationException();
+    };
 
     /**
      * Sets the results for the next call to {@link #search(String, Class)} on the

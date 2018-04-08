@@ -65,13 +65,18 @@ import java.util.ArrayList;
  */
 public class EditTaskActivity extends AppCompatActivity {
 
+    /**
+     *Class for separating local and remote images
+     */
     public class ImageManager{
         private ArrayList<RemoteReference<CompressedBitmap>> remoteImages;
         private ArrayList<CompressedBitmap> localImages;
         private ArrayList<CompressedBitmap> thumbnails;
         private ArrayList<RemoteReference<CompressedBitmap>> toDelete;
 
-
+        /**
+         * Constructor for ImageManager, initializes all the lists
+         */
         public ImageManager() {
             remoteImages = new ArrayList<>();
             localImages = new ArrayList<>();
@@ -79,63 +84,35 @@ public class EditTaskActivity extends AppCompatActivity {
             toDelete = new ArrayList<>();
         }
 
+        /**
+         * @param list ArrayList of RemoteReferences to CompressedBitmaps
+         */
         public void setRemoteImages(ArrayList<RemoteReference<CompressedBitmap>> list) {
             this.remoteImages = list;
         }
 
+        /**
+         * @param thumbnails ArrayList of CompressedBitmaps representing thumbnails
+         */
         public void setThumbnails(ArrayList<CompressedBitmap> thumbnails) {
             this.thumbnails = thumbnails;
         }
 
+        /**
+         * Add an image to the list, as a (thumbnail, image) pair
+         * @param thumbnail CompressedBitmap representing thumbnail
+         * @param image CompressedBitmap representing full-size image
+         */
         public void addImagePair(CompressedBitmap thumbnail, CompressedBitmap image) {
             localImages.add(image);
             thumbnails.add(thumbnail);
         }
 
-        public CompressedBitmap getImage(int index) {
-            if (index >= remoteImages.size()) {
-                return localImages.get(index - remoteImages.size());
-            } else {
-                try {
-                    return remoteImages.get(index).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
-                } catch (IOException e) {
-                    Log.e("Didn't work", "couldn't get image from image list in activity");
-                    return null;
-                }
-            }
-
-        }
-
-        private void flushDeletions() {
-            for (int i = 0; i < toDelete.size(); i++) {
-                try {
-                    WrkifyClient.getInstance().delete(toDelete.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        private void uploadLocalImages(Task task) {
-            int thumbnailIndexOffset = remoteImages.size();
-            for (int i = 0; i < localImages.size(); i++) {
-                CompressedBitmap uploadedImage = ImageUtilities.convertToRemote(localImages.get(i));
-                remoteImages.add(uploadedImage.<CompressedBitmap>reference());
-
-                int thumbnailIndex = i + thumbnailIndexOffset;
-                CompressedBitmap uploadedThumbnail = ImageUtilities.convertToRemote(thumbnails.get(thumbnailIndex));
-                thumbnails.set(thumbnailIndex, uploadedThumbnail);
-            }
-            localImages.clear();
-            ArrayList<RemoteReference<CompressedBitmap>> newRemoteThumbnails = new ArrayList<>();
-            for (int i = 0; i < thumbnails.size(); i++) {
-                newRemoteThumbnails.add(thumbnails.get(i).<CompressedBitmap>reference());
-            }
-
-            task.setRemoteImages(remoteImages);
-            task.setRemoteThumbnails(newRemoteThumbnails);
-        }
-
+        /**
+         * Deletes images specified by the IDs in the list. Local images are deleted, while
+         * remote images are removed from the list and queued for deletion upon saving changes
+         * @param idList ArrayList of IDs whose images you want to delete from the list
+         */
         public void deleteFromIds(ArrayList<Integer> idList) {
             Collections.sort(idList);
 
@@ -154,9 +131,67 @@ public class EditTaskActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * @param index Position of the image you want to get
+         * @return CompressedBitmap representing full-size image
+         */
+        public CompressedBitmap getImage(int index) {
+            if (index >= remoteImages.size()) {
+                return localImages.get(index - remoteImages.size());
+            } else {
+                try {
+                    return remoteImages.get(index).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
+                } catch (IOException e) {
+                    Log.e("Didn't work", "couldn't get image from image list in activity");
+                    return null;
+                }
+            }
+        }
+
+        /**
+         * Applies queued deletions, then uploads local images
+         * @param task
+         */
         public void save(Task task) {
             flushDeletions();
             uploadLocalImages(task);
+        }
+
+        /**
+         * Deletes remote image from the server, where deletions were queued
+         */
+        private void flushDeletions() {
+            for (int i = 0; i < toDelete.size(); i++) {
+                try {
+                    WrkifyClient.getInstance().delete(toDelete.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /**
+         * Upload local images who haven't been uploaded yet
+         * @param task Task to upload images to
+         */
+        private void uploadLocalImages(Task task) {
+            int thumbnailIndexOffset = remoteImages.size();
+            for (int i = 0; i < localImages.size(); i++) {
+                CompressedBitmap uploadedImage = ImageUtilities.convertToRemote(localImages.get(i));
+                remoteImages.add(uploadedImage.<CompressedBitmap>reference());
+
+                int thumbnailIndex = i + thumbnailIndexOffset;
+                CompressedBitmap uploadedThumbnail = ImageUtilities.convertToRemote(thumbnails.get(thumbnailIndex));
+                thumbnails.set(thumbnailIndex, uploadedThumbnail);
+            }
+            localImages.clear();
+            ArrayList<RemoteReference<CompressedBitmap>> newRemoteThumbnails = new ArrayList<>();
+            for (int i = 0; i < thumbnails.size(); i++) {
+                newRemoteThumbnails.add(thumbnails.get(i).<CompressedBitmap>reference());
+            }
+
+            task.setRemoteImages(remoteImages);
+            task.setRemoteThumbnails(newRemoteThumbnails);
         }
     }
 
@@ -177,6 +212,8 @@ public class EditTaskActivity extends AppCompatActivity {
     private CheckList checkList;
     private boolean taskIsNew = false;
 
+    private String currentImagePath; //File path for new image
+
     private EditText titleField;
     private EditText descriptionField;
     private CheckListEditorView checkListEditorView;
@@ -186,8 +223,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TaskImageListAdapter adapter;
     private ImageManager imageManager;
-    private boolean selectionMode = false;
-
+    private boolean selectionMode = false; //True if selecting images for deletion
     private ActionMode currentAction = null;
 
     private static final int REQUEST_IMAGE_CAMERA = 1;
@@ -308,7 +344,110 @@ public class EditTaskActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    protected void setSelectionMode(boolean selecting) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAMERA && resultCode == RESULT_OK) {
+            try {
+                Uri uri = Uri.fromFile(new File(currentImagePath));
+                Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                if (image != null) {
+                    // https://stackoverflow.com/questions/8560501/android-save-image-into-gallery https://stackoverflow.com/a/8722494 (line below)
+                    MediaStore.Images.Media.insertImage(getContentResolver(), image, "Wrkify image", "Wrkify image");
+
+                    //Add to ImageManager, NOT Task
+                    CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(image, false);
+                    CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(image, false);
+
+                    imageManager.addImagePair(compressedThumbnail, compressedImage);
+                    adapter.notifyDataSetChanged();
+                }
+            } catch (IOException e) {
+                Log.e("EditTaskActivity", e.toString());
+            }
+            //Add the image
+        } else if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(bm, false);
+                CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(bm, false);
+                imageManager.addImagePair(compressedThumbnail, compressedImage);
+                adapter.notifyDataSetChanged();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_task, menu);
+
+        MenuItem saveItem = menu.findItem(R.id.menuItemSaveTask);
+        MenuItem deleteItem = menu.findItem(R.id.menuItemDeleteTask);
+        MenuItem addPhoto = menu.findItem(R.id.menuItemAddPhoto);
+
+        addPhoto.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                clickedAddPhoto();
+                return true;
+            }
+        });
+
+        if (this.taskIsNew) {
+            // Set up menu for new task:
+
+            // Save button is labelled "post"
+            saveItem.setTitle("Post");
+
+            // Delete button is not available
+            deleteItem.setVisible(false);
+        }
+        else {
+            // Set up menu for editing existing task:
+
+            // Delete button deletes task
+            deleteItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    ConfirmationDialogFragment confirmation = ConfirmationDialogFragment.makeDialog(
+                            "Delete this task?",
+                            "Cancel", "Delete",
+                            new ConfirmationDialogFragment.OnConfirmListener() {
+                                @Override
+                                public void onConfirm() {
+                                    deleteAndFinish();
+                                }
+                            }
+                    );
+                    confirmation.show(getFragmentManager(), null);
+                    return true;
+                }
+            });
+        }
+
+        // Clicking save always saves task
+        saveItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                saveAndFinish();
+                return true;
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    private void setSelectionMode(boolean selecting) {
         this.selectionMode = selecting;
 
         if (selecting) {
@@ -352,6 +491,9 @@ public class EditTaskActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * When the delete action mode is active, updates the count text in the action bar
+     */
     private void updateSelectionCount() {
         if (currentAction != null) {
             if (adapter.numberSelected() == 0) {
@@ -362,44 +504,10 @@ public class EditTaskActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAMERA && resultCode == RESULT_OK) {
-            try {
-                Uri uri = Uri.fromFile(new File(currentImagePath));
-                Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                if (image != null) {
-                    // https://stackoverflow.com/questions/8560501/android-save-image-into-gallery https://stackoverflow.com/a/8722494 (line below)
-                    MediaStore.Images.Media.insertImage(getContentResolver(), image, "Wrkify image", "Wrkify image");
-
-                    //Add to ImageManager, NOT Task
-                    CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(image, false);
-                    CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(image, false);
-
-                    imageManager.addImagePair(compressedThumbnail, compressedImage);
-                    adapter.notifyDataSetChanged();
-                }
-            } catch (IOException e) {
-                Log.e("EditTaskActivity", e.toString());
-            }
-            //Add the image
-        } else if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            try {
-                Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(bm, false);
-                CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(bm, false);
-                imageManager.addImagePair(compressedThumbnail, compressedImage);
-                adapter.notifyDataSetChanged();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    protected void addPhotoClicked() {
+    /**
+     * Opens alert dialog asking for an image source (camera or gallery)
+     */
+    private void clickedAddPhoto() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.get_image_dialog_title).setItems(R.array.get_image_dialog_choices, new DialogInterface.OnClickListener() {
             @Override
@@ -420,9 +528,12 @@ public class EditTaskActivity extends AppCompatActivity {
 
     }
 
-    //Taken from https://developer.android.com/training/camera/photobasics.html
-    protected String currentImagePath;
-    protected File makeNewImage() throws IOException {
+    /**
+     * @return new Image file that you can write to
+     * @throws IOException
+     */
+    private File makeNewImage() throws IOException {
+        //Taken from https://developer.android.com/training/camera/photobasics.html
         String time = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String filename = "wrkify_" + time;
         String extension = ".jpg";
@@ -433,7 +544,10 @@ public class EditTaskActivity extends AppCompatActivity {
         return imageFile;
     }
 
-    protected void openCamera() {
+    /**
+     * Requests a new image from the camera app, launches the app
+     */
+    private void openCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (i.resolveActivity(getPackageManager()) != null) {
             try {
@@ -448,7 +562,10 @@ public class EditTaskActivity extends AppCompatActivity {
         }
     }
 
-    protected void openGallery() {
+    /**
+     * Requests a new image from the gallery app, launches the app
+     */
+    private void openGallery() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("image/*");
         if (i.resolveActivity(getPackageManager()) != null) {
@@ -456,67 +573,11 @@ public class EditTaskActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.edit_task, menu);
-
-        MenuItem saveItem = menu.findItem(R.id.menuItemSaveTask);
-        MenuItem deleteItem = menu.findItem(R.id.menuItemDeleteTask);
-        MenuItem addPhoto = menu.findItem(R.id.menuItemAddPhoto);
-
-        addPhoto.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                addPhotoClicked();
-                return true;
-            }
-        });
-
-        if (this.taskIsNew) {
-            // Set up menu for new task:
-
-            // Save button is labelled "post"
-            saveItem.setTitle("Post");
-
-            // Delete button is not available
-            deleteItem.setVisible(false);
-        }
-        else {
-            // Set up menu for editing existing task:
-
-            // Delete button deletes task
-            deleteItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    ConfirmationDialogFragment confirmation = ConfirmationDialogFragment.makeDialog(
-                            "Delete this task?",
-                            "Cancel", "Delete",
-                            new ConfirmationDialogFragment.OnConfirmListener() {
-                                @Override
-                                public void onConfirm() {
-                                    deleteAndFinish();
-                                }
-                            }
-                    );
-                    confirmation.show(getFragmentManager(), null);
-                    return true;
-                }
-            });
-        }
-
-        // Clicking save always saves task
-        saveItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    saveAndFinish();
-                    return true;
-                }
-            });
-
-        return true;
-    }
-
-    public void showImage(int position) {
+    /**
+     * Opens the specified image in a viewing app
+     * @param position Position of image you want to view
+     */
+    private void showImage(int position) {
         Bitmap bm = null;
         CompressedBitmap cb = imageManager.getImage(position);
         if (cb == null) {
@@ -563,7 +624,6 @@ public class EditTaskActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-
         finish();
     }
 
@@ -612,21 +672,22 @@ public class EditTaskActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Shows the Views for editing CheckLists
+     */
     private void showChecklistEditor() {
         checkListEditorView.setVisibility(View.VISIBLE);
         checkListAddButton.setVisibility(View.VISIBLE);
         checkListNewButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Hides the Views for editing CheckLists
+     */
     private void hideChecklistEditor() {
         checkListEditorView.setVisibility(View.GONE);
         checkListAddButton.setVisibility(View.GONE);
         checkListNewButton.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-        return true;
-    }
 }
