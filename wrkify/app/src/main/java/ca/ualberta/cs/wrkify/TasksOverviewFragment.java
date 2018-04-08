@@ -169,7 +169,7 @@ abstract class TasksOverviewFragment extends Fragment {
 
     private class NotificationFetchTask extends AsyncTask<Void, Void, Void> {
 
-        private boolean offLineIndicator;
+        private boolean offlineIndicator;
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -177,14 +177,14 @@ abstract class TasksOverviewFragment extends Fragment {
             TransactionManager transactionManager = session.getTransactionManager();
             if (transactionManager.hasPendingTransactions()) {
                 if (transactionManager.flush(WrkifyClient.getInstance())) {
-                    offLineIndicator = false;
+                    offlineIndicator = false;
                 } else {
-                    offLineIndicator = true;
+                    offlineIndicator = true;
                 }
 
                 refreshTaskLists();
             } else {
-                offLineIndicator = false;
+                offlineIndicator = false;
             }
 
             Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
@@ -193,13 +193,16 @@ abstract class TasksOverviewFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void result) {
-            if (offLineIndicator) {
+            if (offlineIndicator) {
                 showOfflineIndicator();
             } else {
                 hideOfflineIndicator();
             }
 
-            updateNotificationDisplay(getView());
+            View view = getView();
+            if (view != null) {
+                updateNotificationDisplay(getView());
+            }
         }
     }
 
