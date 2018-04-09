@@ -20,7 +20,6 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.View;
@@ -30,8 +29,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.IOException;
-
-import static ca.ualberta.cs.wrkify.LoginActivity.EXTRA_SESSION_USER;
 
 /**
  * Allows a user to register.
@@ -169,7 +166,7 @@ public class RegisterActivity extends Activity {
                 finish();
             } else {
                 Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
-                        R.string.bad_user_info, Snackbar.LENGTH_LONG);
+                        R.string.register_failed, Snackbar.LENGTH_LONG);
                 snack.setAction("Action", null);
                 snack.show();
             }
