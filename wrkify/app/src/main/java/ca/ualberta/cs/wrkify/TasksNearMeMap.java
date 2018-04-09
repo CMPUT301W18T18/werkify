@@ -20,6 +20,7 @@ package ca.ualberta.cs.wrkify;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -61,7 +62,8 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
     private List<Task> tasksNearMe = new ArrayList<>();
-    private HashMap<Marker,Task> markerTaskHashMap;
+    private HashMap<Marker,Task> markerTaskHashMap = new HashMap<>();
+    private CardView taskCardView;
 
 
     @Override
@@ -104,6 +106,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnInfoWindowClickListener(this);
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -112,25 +115,26 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
             @Override
             public View getInfoContents(Marker marker) {
-                int layout = R.layout.taskcardview;
-                View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
-                CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
-                Task task = markerTaskHashMap.get(marker);
-                TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
-//                taskTitle.setText("TestTask");
-                taskTitle.setText(task.getTitle());
-                TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
-//                taskDescription.setText("Test");
-                taskDescription.setText(task.getDescription());
-                TextView taskUser = taskCardView.findViewById(R.id.taskUser);
-                taskUser.setText("User");
-                try {
-                    taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
-                } catch (IOException e){
-
-                }
-                StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
-                taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
+//                int layout = R.layout.taskcardview;
+//                View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
+//                CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
+//                Task task = markerTaskHashMap.get(marker);
+//                TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
+////                taskTitle.setText("TestTask");
+//                taskTitle.setText(task.getTitle());
+//                TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
+////                taskDescription.setText("Test");
+//                taskDescription.setText(task.getDescription());
+//                TextView taskUser = taskCardView.findViewById(R.id.taskUser);
+//                taskUser.setText("User");
+//                try {
+//                    taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+//                } catch (IOException e){
+//
+//                }
+//                StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
+//                taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
+                viewMarker(marker);
                 return taskCardView;
             }
         });
@@ -141,10 +145,13 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
         getCurrentLocation();
 
-        searchTasksNearMe();
-        addTaskMarkers();
+//        searchTasksNearMe();
+//        addTaskMarkers();
     }
 
+    public void viewMarker(Marker marker){
+        this.new MarkerInfo().execute(marker);
+    }
     /**
      * Prompts the user for permission to use the device location.
      */
@@ -199,6 +206,9 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
                                             lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            searchTasksNearMe();
+                            Log.d("TASK LIST SIZE--->",Integer.valueOf(tasksNearMe.size()).toString());
+//                            addTaskMarkers();
 //                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
 //                                    new LatLng(45,-112),DEFAULT_ZOOM));
 //                            lastKnownLocation.setLongitude(-112);
@@ -207,6 +217,8 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                             mMap.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            searchTasksNearMe();
+//                            addTaskMarkers();
                         }
                     }
                 });
@@ -214,6 +226,8 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
             else{
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                searchTasksNearMe();
+//                addTaskMarkers();
             }
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
@@ -247,26 +261,28 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
        //Search for tasks by location
         try{
             TaskLocation taskLocation = new TaskLocation(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
-            tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksNear(taskLocation);
+            this.new SearchTask().execute(taskLocation);
         }
-        catch (IOException e){
-            return;
-        }
+//        catch (IOException e){
+//            return;
+//        }
         catch (NullPointerException e){
             TaskLocation taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
-            try {
-              tasksNearMe = WrkifyClient.getInstance().getSearcher().findTasksNear(taskLocation);
-            }
-            catch (IOException b){
-                return;
-            }
-        }
+//            try {
+                this.new SearchTask().execute(taskLocation);
 
+//            }
+//            catch (IOException b){
+//                return;
+//            }
+        }
     }
 
     private void addTaskMarkers(){
+        Log.d("TASK SIZE Markers--->",Integer.valueOf(tasksNearMe.size()).toString());
         for(Task task : tasksNearMe){
-            markerTaskHashMap = new HashMap<>();
+            Log.d("Task Title--->",task.getTitle());
+            Log.d("Task Location--->",task.getLocation().toString());
             TaskLocation location = task.getLocation();
             try {
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -304,5 +320,87 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         Intent intent = new Intent(this,ViewTaskActivity.class);
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK,task);
         startActivity(intent);
+    }
+
+    private class SearchTask extends AsyncTask<TaskLocation, Void,List<Task>> {
+        @Override
+        protected List<Task> doInBackground(TaskLocation... locations) {
+            if (locations.length != 1) {
+                throw new IllegalArgumentException("exactly one query must be provided");
+            }
+
+            TaskLocation location = locations[0];
+
+            List<Task> tasks;
+            try {
+                tasks = WrkifyClient.getInstance().getSearcher().findTasksNear(location);
+            } catch (IOException e) {
+                tasks = new ArrayList<>();
+            }
+
+            if (tasks == null) {
+                tasks = new ArrayList<>();
+            }
+
+            return tasks;
+        }
+
+        /**
+         * after the tasks have been fetched,
+         * update the data set
+         *
+         * @param tasks the tasks of our search
+         */
+        @Override
+        protected void onPostExecute(List<Task> tasks) {
+            tasksNearMe.clear();
+            tasksNearMe.addAll(tasks);
+            addTaskMarkers();
+            Log.d("TASK LIST --->",Integer.valueOf(tasksNearMe.size()).toString());
+        }
+    }
+
+    private class MarkerInfo extends AsyncTask<Marker,Void,CardView>{
+
+        @Override
+        protected CardView doInBackground(Marker... markers) {
+            if (markers.length != 1) {
+                throw new IllegalArgumentException("exactly one query must be provided");
+            }
+
+            Marker marker = markers[0];
+
+            int layout = R.layout.taskcardview;
+            View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
+            CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
+            Task task = markerTaskHashMap.get(marker);
+            TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
+//                taskTitle.setText("TestTask");
+            taskTitle.setText(task.getTitle());
+            TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
+//                taskDescription.setText("Test");
+            taskDescription.setText(task.getDescription());
+            TextView taskUser = taskCardView.findViewById(R.id.taskUser);
+            taskUser.setText("User");
+            try {
+                taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+            } catch (IOException e){
+
+            }
+            StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
+            ArrayList<Bid> bids = task.getBidList();
+            if(bids.size()>0) {
+                taskStatus.setStatus(task.getStatus(), task.getBidList().get(0).getValue());
+            }
+            else{
+                taskStatus.setStatus(task.getStatus(), new Price(0.0));
+            }
+            return taskCardView;
+        }
+
+        @Override
+        protected void onPostExecute(CardView cv) {
+            taskCardView = cv;
+        }
     }
 }

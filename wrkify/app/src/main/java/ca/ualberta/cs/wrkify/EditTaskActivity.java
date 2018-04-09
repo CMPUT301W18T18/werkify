@@ -71,6 +71,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
     private Task task;
     private CheckList checkList;
+    private TaskLocation location;
     private boolean taskIsNew = false;
 
     private EditText titleField;
@@ -167,7 +168,7 @@ public class EditTaskActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==RESULT_LOCATION){
            TaskLocation taskcoordinates = (TaskLocation) data.getSerializableExtra(SetTaskLocationActivity.LOCATION_EXTRA);
-           task.setLocation(taskcoordinates);
+           this.location = taskcoordinates;
            String locationStr = Double.valueOf(taskcoordinates.getLatitude()).toString() + ", " + Double.valueOf(taskcoordinates.getLongitude()).toString();
            this.locationField.setText(locationStr);
         }
@@ -315,6 +316,7 @@ public class EditTaskActivity extends AppCompatActivity {
                         descriptionField.getText().toString()
                 );
                 task.setCheckList(checkList);
+                task.setLocation(location);
 
                 TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
                 transactionManager.enqueue(new TaskCreateTransaction(task));
@@ -329,10 +331,12 @@ public class EditTaskActivity extends AppCompatActivity {
                 transactionManager.enqueue(new TaskTitleTransaction(task, newTitle));
                 transactionManager.enqueue(new TaskDescriptionTransaction(task, newDescription));
                 transactionManager.enqueue(new TaskCheckListTransaction(task, checkList));
+                transactionManager.enqueue(new TaskLocationTransaction(task,location));
 
                 task.setTitle(newTitle);
                 task.setDescription(newDescription);
                 task.setCheckList(checkList);
+                task.setLocation(location);
                 WrkifyClient.getInstance().updateCached(task);
 
                 if (transactionManager.flush(WrkifyClient.getInstance())) {
