@@ -29,6 +29,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 import static ca.ualberta.cs.wrkify.LoginActivity.EXTRA_SESSION_USER;
 
 /**
@@ -141,6 +143,15 @@ public class RegisterActivity extends Activity {
             String phoneNumber = strings[2];
 
             RemoteClient rc = WrkifyClient.getInstance();
+
+            try {
+                if (rc.getSearcher().getUser(username) != null) {
+                    return null;
+                }
+            } catch (IOException e) {
+                return null;
+            }
+
             session = Session.getInstance(RegisterActivity.this, rc);
             return rc.create(User.class, username, email, phoneNumber);
         }
