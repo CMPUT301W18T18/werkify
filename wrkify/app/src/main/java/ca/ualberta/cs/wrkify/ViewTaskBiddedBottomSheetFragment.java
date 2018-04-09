@@ -33,6 +33,7 @@ import android.view.Window;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
+import static ca.ualberta.cs.wrkify.BidListAdapter.RESULT_UNSYNCED_CHANGES;
 import static ca.ualberta.cs.wrkify.ViewTaskActivity.REQUEST_VIEW_BIDS;
 
 /**
@@ -90,6 +91,7 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("resultCode", Integer.toString(resultCode));
         if (requestCode == REQUEST_VIEW_BIDS && resultCode == RESULT_OK) {
             ((ViewTaskActivity) getActivity()).replaceTask((Task) data.getSerializableExtra(ViewBidsActivity.EXTRA_RETURNED_TASK));
         }
