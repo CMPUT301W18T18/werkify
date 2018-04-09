@@ -102,6 +102,7 @@ public class EditProfileActivity extends AppCompatActivity {
         String newPhoneNumber = phoneField.getText().toString();
 
         try {
+            User.verifyEmail(newEmail);
             user.setEmail(newEmail);
         } catch (IllegalArgumentException e) {
             emailField.setError("Not a valid email address");
@@ -109,6 +110,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
 
         try {
+            User.verifyPhoneNumber(newPhoneNumber);
             user.setPhoneNumber(newPhoneNumber);
         } catch (IllegalArgumentException e) {
             phoneField.setError("Not a valid phone number");
