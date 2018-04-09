@@ -225,8 +225,8 @@
   <property name="kdenlive:file_hash">99eb4fa979795b8a758b73c335730f23</property>
   <property name="global_feed">1</property>
  </producer>
- <producer id="10" title="Anonymous Submission" out="558" in="0">
-  <property name="length">00:00:18;19</property>
+ <producer id="10" title="Anonymous Submission" out="557" in="0">
+  <property name="length">00:00:18;18</property>
   <property name="eof">pause</property>
   <property name="resource">videos/scene3.mp4</property>
   <property name="audio_index">-1</property>
@@ -424,8 +424,8 @@
   <property name="kdenlive:file_size">2693478</property>
   <property name="kdenlive:file_hash">7e99bc2caa747c140a6d2bbf2afd5210</property>
  </producer>
- <producer id="18" out="149" in="0">
-  <property name="length">150</property>
+ <producer id="18" out="183" in="0">
+  <property name="length">184</property>
   <property name="eof">pause</property>
   <property name="resource">images/wrkifytitle.png</property>
   <property name="ttl">25</property>
@@ -441,6 +441,23 @@
   <property name="kdenlive:file_size">28533</property>
   <property name="kdenlive:file_hash">405da36e333c74c489d0e6df9d5a1490</property>
  </producer>
+ <producer id="19" out="194" in="0">
+  <property name="length">195</property>
+  <property name="eof">pause</property>
+  <property name="resource">images/wrkifytitle2.png</property>
+  <property name="ttl">25</property>
+  <property name="aspect_ratio">1</property>
+  <property name="progressive">1</property>
+  <property name="seekable">1</property>
+  <property name="loop">1</property>
+  <property name="meta.media.width">1920</property>
+  <property name="meta.media.height">1080</property>
+  <property name="mlt_service">pixbuf</property>
+  <property name="kdenlive:folderid">-1</property>
+  <property name="kdenlive:duration">150</property>
+  <property name="kdenlive:file_size">47400</property>
+  <property name="kdenlive:file_hash">fff7c4be5be6770380429dc5e0e4298e</property>
+ </producer>
  <playlist id="main bin">
   <property name="kdenlive:docproperties.audiotargettrack">-1</property>
   <property name="kdenlive:docproperties.decimalPoint">.</property>
@@ -451,7 +468,7 @@
   <property name="kdenlive:docproperties.generateimageproxy">0</property>
   <property name="kdenlive:docproperties.generateproxy">0</property>
   <property name="kdenlive:docproperties.kdenliveversion">17.08.2</property>
-  <property name="kdenlive:docproperties.position">2016</property>
+  <property name="kdenlive:docproperties.position">2706</property>
   <property name="kdenlive:docproperties.previewchunks"/>
   <property name="kdenlive:docproperties.previewextension"/>
   <property name="kdenlive:docproperties.previewparameters"/>
@@ -493,13 +510,14 @@
   <entry out="349" producer="5" in="0"/>
   <entry out="452" producer="7" in="0"/>
   <entry out="143" producer="9" in="0"/>
-  <entry out="558" producer="10" in="0"/>
+  <entry out="557" producer="10" in="0"/>
   <entry out="469" producer="11" in="0"/>
   <entry out="496" producer="12" in="0"/>
   <entry out="149" producer="15" in="0"/>
   <entry out="149" producer="16" in="0"/>
   <entry out="149" producer="17" in="0"/>
   <entry out="149" producer="18" in="0"/>
+  <entry out="149" producer="19" in="0"/>
  </playlist>
  <producer id="black" out="500" in="0">
   <property name="length">15000</property>
@@ -510,7 +528,7 @@
   <property name="set.test_audio">0</property>
  </producer>
  <playlist id="black_track">
-  <entry out="2727" producer="black" in="0"/>
+  <entry out="2706" producer="black" in="0"/>
  </playlist>
  <producer id="5_playlist3" title="Anonymous Submission" out="349" in="0">
   <property name="length">00:00:11;20</property>
@@ -686,22 +704,22 @@
  <playlist id="playlist3">
   <property name="kdenlive:track_name">real life</property>
   <property name="kdenlive:locked_track">0</property>
-  <blank length="202"/>
-  <entry out="149" producer="18" in="0"/>
+  <blank length="65"/>
+  <entry out="182" producer="18" in="0"/>
   <entry out="215" producer="5_playlist3" in="0"/>
   <entry out="496" producer="15" in="0"/>
   <entry out="349" producer="5_playlist3" in="216"/>
-  <blank length="17"/>
-  <entry out="286" producer="1_playlist3" in="0"/>
-  <entry out="182" producer="1_playlist3" in="0"/>
-  <blank length="14"/>
+  <blank length="8"/>
+  <entry out="240" producer="1_playlist3" in="0"/>
+  <entry out="228" producer="1_playlist3" in="0"/>
+  <blank length="9"/>
   <entry out="65" producer="7_playlist3" in="0"/>
-  <blank length="2"/>
-  <entry out="188" producer="16" in="0"/>
+  <entry out="190" producer="16" in="0"/>
   <entry out="288" producer="7_playlist3" in="66"/>
-  <entry out="232" producer="17" in="0"/>
-  <entry out="452" producer="7_playlist3" in="289"/>
-  <entry out="149" producer="18" in="0"/>
+  <entry out="232" producer="17" in="63"/>
+  <entry out="397" producer="7_playlist3" in="289"/>
+  <entry out="170" producer="18" in="0"/>
+  <entry out="193" producer="19" in="0"/>
  </playlist>
  <producer id="12_playlist4" title="Anonymous Submission" out="496" in="0">
   <property name="length">00:00:16;17</property>
@@ -859,16 +877,16 @@
  <playlist id="playlist4">
   <property name="kdenlive:track_name">overlay</property>
   <property name="kdenlive:locked_track">0</property>
-  <blank length="568"/>
+  <blank length="464"/>
   <entry out="496" producer="12_playlist4" in="0"/>
-  <blank length="151"/>
+  <blank length="142"/>
   <entry out="469" producer="11_playlist4" in="0"/>
-  <blank length="80"/>
+  <blank length="75"/>
   <entry out="190" producer="10_playlist4" in="0"/>
   <blank length="223"/>
-  <entry out="452" producer="10_playlist4" in="220"/>
+  <entry out="452" producer="10_playlist4" in="283"/>
  </playlist>
- <tractor id="maintractor" title="Anonymous Submission" global_feed="1" out="2727" in="0">
+ <tractor id="maintractor" title="Anonymous Submission" global_feed="1" out="2706" in="0">
   <track producer="black_track"/>
   <track producer="playlist3"/>
   <track producer="playlist4"/>
@@ -888,7 +906,7 @@
    <property name="combine">1</property>
    <property name="internal_added">237</property>
   </transition>
-  <transition id="transition2" out="1064" in="568">
+  <transition id="transition3" out="1572" in="1103">
    <property name="a_track">1</property>
    <property name="b_track">2</property>
    <property name="start">0/0:100%x100%</property>
@@ -902,7 +920,7 @@
    <property name="deinterlace">0</property>
    <property name="distort">0</property>
    <property name="fill">1</property>
-   <property name="geometry">0=979/78:1162x654:100;216=979/78:1162x654:100</property>
+   <property name="geometry">611/79:1712x963:100</property>
    <property name="halign">centre</property>
    <property name="luma_invert">0</property>
    <property name="operator">over</property>
@@ -910,7 +928,7 @@
    <property name="valign">middle</property>
    <property name="luma"/>
   </transition>
-  <transition id="transition3" out="1685" in="1216">
+  <transition id="transition4" out="1838" in="1648">
    <property name="a_track">1</property>
    <property name="b_track">2</property>
    <property name="start">0/0:100%x100%</property>
@@ -924,7 +942,7 @@
    <property name="deinterlace">0</property>
    <property name="distort">0</property>
    <property name="fill">1</property>
-   <property name="geometry">695/160:1342x755:100</property>
+   <property name="geometry">752/91:1609x905:100</property>
    <property name="halign">centre</property>
    <property name="luma_invert">0</property>
    <property name="operator">over</property>
@@ -932,7 +950,7 @@
    <property name="valign">middle</property>
    <property name="luma"/>
   </transition>
-  <transition id="transition4" out="1956" in="1766">
+  <transition id="transition5" out="2231" in="2062">
    <property name="a_track">1</property>
    <property name="b_track">2</property>
    <property name="start">0/0:100%x100%</property>
@@ -946,7 +964,7 @@
    <property name="deinterlace">0</property>
    <property name="distort">0</property>
    <property name="fill">1</property>
-   <property name="geometry">973/209:1230x692:100</property>
+   <property name="geometry">693/82:1620x911:100</property>
    <property name="halign">centre</property>
    <property name="luma_invert">0</property>
    <property name="operator">over</property>
@@ -954,7 +972,7 @@
    <property name="valign">middle</property>
    <property name="luma"/>
   </transition>
-  <transition id="transition5" out="2412" in="2180">
+  <transition id="transition2" out="960" in="464">
    <property name="a_track">1</property>
    <property name="b_track">2</property>
    <property name="start">0/0:100%x100%</property>
@@ -968,7 +986,7 @@
    <property name="deinterlace">0</property>
    <property name="distort">0</property>
    <property name="fill">1</property>
-   <property name="geometry">902/201:1283x722:100</property>
+   <property name="geometry">711/75:1691x951:100</property>
    <property name="halign">centre</property>
    <property name="luma_invert">0</property>
    <property name="operator">over</property>
