@@ -281,16 +281,17 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     private void addTaskMarkers(){
         Log.d("TASK SIZE Markers--->",Integer.valueOf(tasksNearMe.size()).toString());
         for(Task task : tasksNearMe){
-            Log.d("Task Title--->",task.getTitle());
-            Log.d("Task Location--->",task.getLocation().toString());
             TaskLocation location = task.getLocation();
             try {
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+                mMap.addMarker(new MarkerOptions().position(latLng));
                 mMap.setOnMarkerClickListener(this);
-                markerTaskHashMap.put(marker,task);
+                markerTaskHashMap.put(mMap.addMarker(new MarkerOptions().position(latLng)),task);
+                Log.d("Task Title--->",task.getTitle());
+                Log.d("Task Location--->",location.toString());
             }
             catch (NullPointerException e){
+                Log.d("Task location null--->","yes");
                 continue;
             }
 
@@ -353,7 +354,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
          */
         @Override
         protected void onPostExecute(List<Task> tasks) {
-            tasksNearMe.clear();
+//            tasksNearMe.clear();
             tasksNearMe.addAll(tasks);
             addTaskMarkers();
             Log.d("TASK LIST --->",Integer.valueOf(tasksNearMe.size()).toString());
