@@ -48,8 +48,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
+public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.InfoWindowAdapter{
 
     private GoogleMap mMap;
     private CameraPosition cameraPosition;
@@ -102,7 +103,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnInfoWindowClickListener(this);
-        mMap.setInfoWindowAdapter(this.new MarkerInfo());
+        mMap.setInfoWindowAdapter(this);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
         getLocationPermission();
@@ -112,9 +113,9 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
     }
 
-    public void viewMarker(Marker marker){
-        this.new MarkerInfo().execute(marker);
-    }
+//    public void viewMarker(Marker marker){
+//        this.new MarkerInfo().execute(marker);
+//    }
     /**
      * Prompts the user for permission to use the device location.
      */
@@ -291,7 +292,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    private class MarkerInfo extends AsyncTask<Marker,Void,CardView> implements GoogleMap.InfoWindowAdapter {
+    private class MarkerInfo extends AsyncTask<Marker,Void,CardView>{
 
         @Override
         protected CardView doInBackground(Marker... markers) {
@@ -303,7 +304,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
             int layout = R.layout.taskcardview;
             View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
-            CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
+            taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
             Task task = markerTaskHashMap.get(marker);
             TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
             taskTitle.setText(task.getTitle());
@@ -332,15 +333,26 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
             taskCardView = cv;
         }
 
-        @Override
-        public View getInfoWindow(Marker marker) {
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        AsyncTask mi = this.new MarkerInfo().execute(marker);
+        try {
+            taskCardView = (CardView) mi.get();
+        }
+        catch(InterruptedException a){
             return null;
         }
-
-        @Override
-        public View getInfoContents(Marker marker) {
-            return this.doInBackground(marker);
-
+        catch(ExecutionException e){
+            return null;
         }
+        return taskCardView;
+
     }
 }
