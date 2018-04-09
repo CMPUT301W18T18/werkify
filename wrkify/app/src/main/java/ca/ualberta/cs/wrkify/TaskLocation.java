@@ -19,7 +19,9 @@ package ca.ualberta.cs.wrkify;
 
 import android.location.Location;
 
-public class TaskLocation {
+import java.io.Serializable;
+
+public class TaskLocation implements Serializable{
     // NOTE These variables probably need to be named exactly
     // "lat" and "lon" in order to be searchable
     private double lat;
