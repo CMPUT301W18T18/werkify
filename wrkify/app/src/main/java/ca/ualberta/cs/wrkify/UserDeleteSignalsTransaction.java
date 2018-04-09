@@ -20,14 +20,29 @@ package ca.ualberta.cs.wrkify;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * UserDeleteSignalsTransaction is a transaction to delete
+ * all the signals.
+ */
 public class UserDeleteSignalsTransaction extends Transaction<User> {
     private String targetId;
 
+    /**
+     * create UserDeleteSignalsTransaction from a user and a targetId
+     * @param user the user to delete the signals of
+     * @param targetId the id of the target
+     */
     public UserDeleteSignalsTransaction(User user, String targetId) {
         super(user, User.class);
         this.targetId = targetId;
     }
 
+    /**
+     * applys the deletion of the signals of a user.
+     * @param client the client to delete with
+     * @return true if successful, false otherwise.
+     * @throws IOException according to client
+     */
     @Override
     public boolean applyInClient(CachingClient client) throws IOException {
         List<Signal> signals = client.getSearcher().findSignalsByUserAndTargetIds(getId(), targetId);

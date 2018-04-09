@@ -33,6 +33,11 @@ public class UserSetPhoneNumberTransaction extends StateChangeTransaction<User> 
         this.phoneNumber = phoneNumber;
     }
 
+    /**
+     * apply the setting of the users phone number
+     * @param user the user to set
+     * @return true if successful false otherwise
+     */
     @Override
     protected Boolean apply(User user) {
         try {

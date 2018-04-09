@@ -20,7 +20,19 @@ package ca.ualberta.cs.wrkify;
 import android.content.Context;
 import android.os.AsyncTask;
 
+/**
+ * TransactionAsyncTask is an AsyncTask for applying as transaction
+ * to an object.
+ *
+ * @see Transaction
+ */
 public class TransactionAsyncTask extends AsyncTask<Object, Void, Void> {
+
+    /**
+     * applies the transaction
+     * @param objs the Task, Transaction, and context
+     * @return unused
+     */
     @Override
     protected Void doInBackground(Object... objs) {
         Task task = (Task) objs[0];

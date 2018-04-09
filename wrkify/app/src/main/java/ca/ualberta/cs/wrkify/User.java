@@ -38,6 +38,11 @@ public class User extends RemoteObject {
             + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
 
+    /**
+     * verifies that a username is valid
+     * no whitespace, non empty, less than 24 chanracters
+     * @param username the username to verify
+     */
     public static void verifyUsername(String username) {
         // from https://stackoverflow.com/questions/4067809/ (2018-02-26)
         Pattern pattern = Pattern.compile("\\s");
@@ -52,12 +57,21 @@ public class User extends RemoteObject {
         }
     }
 
+    /**
+     * verifies that an email is valid
+     * by emailRegex
+     * @param email the email to verify
+     */
     public static void verifyEmail(String email) {
         if (!email.matches(emailRegex)) {
             throw new IllegalArgumentException("Not a valid email address");
         }
     }
 
+    /**
+     * verifies that the phone number is a valid phone number.
+     * @param phoneNumber the phone number
+     */
     public static void verifyPhoneNumber(String phoneNumber) {
         if (PhoneNumberUtils.formatNumber(phoneNumber, "US") == null) {
             throw new IllegalArgumentException("Not a valid phone number");

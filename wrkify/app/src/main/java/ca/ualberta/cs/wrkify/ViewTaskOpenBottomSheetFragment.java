@@ -28,6 +28,13 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
 
     private Task task;
 
+    /**
+     * create the bottomsheet view
+     * @param inflater the LayoutInflater
+     * @param container the ViewGroup container
+     * @param savedInstanceState unused
+     * @return the created view
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +95,15 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
         dialog.show(getActivity().getFragmentManager(), null);
     }
 
+    /**
+     * BidTask is an AsyncTask to place a bid and then update the view
+     */
     private class BidTask extends AsyncTask<Price, Void, Void> {
+        /**
+         * place the view
+         * @param prices a single price
+         * @return unused
+         */
         @Override
         protected Void doInBackground(Price... prices) {
 
@@ -110,12 +125,21 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             return null;
         }
 
+        /**
+         * update the view
+         * @param result unused
+         */
         @Override
         protected void onPostExecute(Void result) {
             ((ViewTaskActivity) getActivity()).initializeFromTask(task);
         }
     }
 
+    /**
+     * reinitialize the view from a task
+     * @param container ViewGroup containing the header and content frame
+     * @param task task object to initialize from.
+     */
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
         this.task = task;
@@ -132,21 +156,37 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
         }
     }
 
+    /**
+     * get the status string
+     * @return always null
+     */
     @Override
     protected String getStatusString() {
         return "Open";
     }
 
+    /**
+     * get the background color of the bottomsheet
+     * @return always colorStatusRequested
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusRequested;
     }
 
+    /**
+     * gets the content layout
+     * @param root the root viewgroup
+     * @return the inflated view
+     */
     @Override
     protected View getContentLayout(ViewGroup root) {
         return inflate(getActivity(), R.layout.activity_view_task_bottom_sheet_bid, null);
     }
 
+    /**
+     * collapse the bottom sheet view
+     */
     @Override
     public void collapse() {
         if (getView().findViewById(R.id.taskViewBottomSheetBidField).isFocused()) {

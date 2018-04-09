@@ -23,20 +23,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by peter on 25/03/18.
+ * TransactionManager is a queue of Transactions
+ *
+ * @see Transaction
  */
-
 public class TransactionManager {
     private ArrayList<Transaction> queue;
 
+    /**
+     * creates a TransactionManager
+     */
     public TransactionManager() {
         queue = new ArrayList<Transaction>();
     }
 
+    /**
+     * add a transaction to the queue
+     * @param tr the transaction to add
+     */
     public void enqueue(Transaction tr) {
         queue.add(tr);
     }
 
+    /**
+     * flush the queue, applying all transactions untill the
+     * CachingClient stops working.
+     * @param client the client
+     * @return true if flushed, false otherwise
+     */
     public Boolean flush(CachingClient client) {
         while (queue.size() > 0) {
             try {
@@ -56,6 +70,11 @@ public class TransactionManager {
         return !queue.isEmpty();
     }
 
+    /**
+     * checks if an object has a pending transaction
+     * @param object the remote object to check
+     * @return true if pending, false otherwise
+     */
     public boolean hasPendingTransactionsFor(RemoteObject object) {
         // TODO this seems inefficient
         for (Transaction transaction: queue) {
@@ -66,6 +85,10 @@ public class TransactionManager {
         return false;
     }
 
+    /**
+     * remove the next transaction from the queue without removing it
+     * @return the transaction on the queue.
+     */
     public Transaction pop() {
         Transaction tr = queue.get(0);
         queue.remove(0);

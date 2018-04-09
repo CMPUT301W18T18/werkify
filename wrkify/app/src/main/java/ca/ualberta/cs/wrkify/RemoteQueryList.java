@@ -19,14 +19,27 @@ package ca.ualberta.cs.wrkify;
 
 import java.util.List;
 
+/**
+ * RemoteQueryList is a RemoteList that defines refresh behavior
+ * based on a query to a remoteClient
+ * @param <T>
+ */
 public abstract class RemoteQueryList<T extends RemoteObject> extends RemoteList<T> {
     private CachingClient client;
 
+    /**
+     * creates the RemoteQueryList from the client.
+     * @param client the client that we will refresh from.
+     * @param type the type that this list holds.
+     */
     public RemoteQueryList(CachingClient client, Class<T> type) {
         super(client, type);
         this.client = client;
     }
 
+    /**
+     * refresh the list from the client
+     */
     @Override
     public void refresh() {
         List<T> objs = query(this.client);
@@ -35,5 +48,11 @@ public abstract class RemoteQueryList<T extends RemoteObject> extends RemoteList
         }
     }
 
+    /**
+     * subclasses can define query to get custom refresh
+     * behavior.
+     * @param client the client to query.
+     * @return a List of results of the query.
+     */
     public abstract List<T> query(CachingClient client);
 }

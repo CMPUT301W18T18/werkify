@@ -20,6 +20,10 @@ package ca.ualberta.cs.wrkify;
 
 import java.io.IOException;
 
+/**
+ * Signal is a remoteObject that holds
+ * notification info.
+ */
 public class Signal extends RemoteObject {
     public enum SignalType {
         SIGNAL_NEW_BID,
@@ -36,6 +40,13 @@ public class Signal extends RemoteObject {
     private final String targetId;
     private final String targetName;
 
+    /**
+     * create a signal with the relavent info
+     * @param user the user who the signal is to.
+     * @param type the type of Signal.
+     * @param targetId the id of the subject object
+     * @param targetName the name of the subject object
+     */
     public Signal(User user, SignalType type, String targetId, String targetName) {
         this.user = user.reference();
         this.type = type;
@@ -43,18 +54,36 @@ public class Signal extends RemoteObject {
         this.targetName = targetName;
     }
 
+    /**
+     * return the type of the signal
+     * @return the type
+     */
     public SignalType getType() {
         return type;
     }
 
+    /**
+     * return the TargetId
+     * @return the TargetId
+     */
     public String getTargetId() {
         return targetId;
     }
 
+    /**
+     * return the TargetName
+     * @return the TargetName
+     */
     public String getTargetName() {
         return targetName;
     }
 
+    /**
+     * get the user that the signal is for
+     * @param client the client we get the user from
+     * @return the user
+     * @throws IOException when the client fails to connect
+     */
     public User getRemoteUser(RemoteClient client) throws IOException {
         return user.getRemote(client, User.class);
     }

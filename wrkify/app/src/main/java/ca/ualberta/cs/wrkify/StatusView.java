@@ -31,14 +31,32 @@ import android.util.AttributeSet;
 
 public class StatusView extends AppCompatTextView {
 
+    /**
+     * create a StatusView from a context
+     * this is basically the default constructor.
+     * @param context the android context
+     */
     public StatusView(Context context) {
         super(context);
     }
 
+    /**
+     * create a StatusView from a context and an
+     * AttributeSet
+     * @param context the android context
+     * @param attrs the AttributeSet
+     */
     public StatusView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+    /**
+     * create a StatusView from a context, an
+     * AttributeSet, and a style
+     * @param context the android context
+     * @param attrs the AttributeSet
+     * @param defStyleAttr the style
+     */
     public StatusView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }

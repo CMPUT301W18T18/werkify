@@ -19,11 +19,25 @@ package ca.ualberta.cs.wrkify;
 
 import java.io.IOException;
 
+/**
+ * TaskDeleteTransaction is a Transaction that models
+ * the deleteion of a Task
+ */
 public class TaskDeleteTransaction extends Transaction<Task> {
+    /**
+     * create a TaskDeleteTransaction from a Task
+     * @param task the task to delete
+     */
     public TaskDeleteTransaction(Task task) {
         super(task, Task.class);
     }
 
+    /**
+     * apply the deletion of the task
+     * @param client the client we are using
+     * @return true if sucessful, false otherwise.
+     * @throws IOException according to client
+     */
     @Override
     public boolean applyInClient(CachingClient client) throws IOException {
         Task task = (Task) client.downloadFromRemote(getId(), getType());

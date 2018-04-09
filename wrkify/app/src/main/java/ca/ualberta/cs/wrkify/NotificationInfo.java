@@ -43,6 +43,12 @@ public class NotificationInfo {
 
     private OnNotificationAcknowledgedListener listener;
 
+    /**
+     * create the notification info.
+     * @param preText first line of notification
+     * @param targetText second line of notification.
+     * @param postText third line of notification.
+     */
     public NotificationInfo(String preText, String targetText, String postText) {
         this.preText = preText;
         this.targetText = targetText;
@@ -50,55 +56,110 @@ public class NotificationInfo {
         this.isImportant = false;
     }
 
+    /**
+     * get the first line of the notification
+     * @return the line text
+     */
     public String getPreText() {
         return preText;
     }
 
+    /**
+     * get the second line of the notification
+     * @return the line text
+     */
     public String getTargetText() {
         return targetText;
     }
 
+    /**
+     * get the third line of the notification
+     * @return the line text
+     */
     public String getPostText() {
         return postText;
     }
 
+    /**
+     * check if the notification is flagged as
+     * important.
+     * @return true if important, false unimportant
+     */
     public Boolean isImportant() {
         return isImportant;
     }
 
+    /**
+     * change the importance of the notification
+     * @param isImportant true if important, false unimportant
+     */
     public void setIsImportant(Boolean isImportant) {
         this.isImportant = isImportant;
     }
 
+    /**
+     * set what the target RemoteObject is and the action to
+     * take on selection
+     * @param targetId the id of the target
+     * @param action the action when pressed
+     */
     public void setViewTarget(String targetId, NotificationAction action) {
         this.targetId = targetId;
         this.action = action;
     }
 
+    /**
+     * get the id of the notification target.
+     * @return the id.
+     */
     public String getTargetId() {
         return targetId;
     }
 
+    /**
+     * get the action of the notification
+     * @return the action
+     */
     public NotificationAction getNotificationAction() {
         return action;
     }
 
+    /**
+     * run the NotificationAction of the Notification
+     * @param context the activity context
+     * @return the boolean result of the action
+     */
     public boolean launchNotificationAction(Context context) {
         if (getNotificationAction() == null) { return true; }
         return getNotificationAction().launch(context, this);
     }
 
+    /**
+     * set the listener, which will run when the notification
+     * is acknowledged.
+     * @param listener the listener
+     */
     public void setOnNotificationAcknowledgedListener(OnNotificationAcknowledgedListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * runs the Acknowledgement listener of the notification
+     */
     public void acknowledge() {
         if (this.listener != null) {
             listener.onNotificationAcknowledged(this);
         }
     }
 
+    /**
+     * the interface for notification acknowledgement.
+     */
     public interface OnNotificationAcknowledgedListener {
+        /**
+         * run on notification acknowledge
+         * @param notification the notification that have been acknowledged
+         */
         void onNotificationAcknowledged(NotificationInfo notification);
     }
 }

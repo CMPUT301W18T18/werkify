@@ -18,8 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import java.io.IOException;
 
 /**
@@ -41,6 +39,12 @@ public abstract class StateChangeTransaction<T extends RemoteObject> extends Tra
         super(remObj, type);
     }
 
+    /**
+     * apply the StateChangeTransaction for a given cliennt
+     * @param client the client to apply
+     * @return true if successful, false otherwise.
+     * @throws IOException when client fails
+     */
     public final boolean applyInClient(CachingClient client) throws IOException {
         T obj = (T) client.downloadFromRemote(getId(), getType());
 
@@ -80,6 +84,13 @@ public abstract class StateChangeTransaction<T extends RemoteObject> extends Tra
      */
     protected abstract Boolean apply(T object);
 
+    /**
+     * generates the signals for the state change.
+     * @param client the client to apply to.
+     * @param object the object the signal is about.
+     * @return the array of generated signals.
+     * @throws IOException used in subclasses
+     */
     @NonNull
     protected Signal[] generateSignals(CachingClient client, T object) throws IOException {
         return new Signal[]{};

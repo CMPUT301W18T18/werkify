@@ -71,16 +71,27 @@ public class ViewTaskBiddedBottomSheetFragment extends ViewTaskBottomSheetFragme
         });
     }
 
+    /**
+     * @return always bidded
+     */
     @Override
     protected String getStatusString() {
         return "Bidded";
     }
 
+    /**
+     * @return always colorStatusBidded;
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusBidded;
     }
 
+    /**
+     * gets the contentLayout
+     * @param root
+     * @return always null
+     */
     @Override
     protected View getContentLayout(ViewGroup root) {
         return null;

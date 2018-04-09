@@ -33,6 +33,11 @@ public class UserSetEmailTransaction extends StateChangeTransaction<User> {
         this.email = email;
     }
 
+    /**
+     * apply the setting of a user email address.
+     * @param user the user to set the address of
+     * @return true if successful, false otherwise
+     */
     @Override
     protected Boolean apply(User user) {
         try {

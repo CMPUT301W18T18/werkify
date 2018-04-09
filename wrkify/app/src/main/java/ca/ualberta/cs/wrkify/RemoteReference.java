@@ -48,10 +48,19 @@ public class RemoteReference<T extends RemoteObject> implements Serializable {
         return client.download(this.refId, tClass);
     }
 
+    /**
+     * gets the id of the reference.
+     * @return the id.
+     */
     public String getRefId() {
         return refId;
     }
 
+    /**
+     * compare two remote references by their id;
+     * @param obj the other object we are comparing to
+     * @return true if equal, false otherwise.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof RemoteReference) {

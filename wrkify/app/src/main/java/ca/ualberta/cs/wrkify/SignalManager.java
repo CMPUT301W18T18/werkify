@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * SignalManager converts signals inro android notifications
+ */
 public class SignalManager {
     private static final String NI_GENERIC_TOP = "The task";
     private static final String NI_CLOSED_BOTTOM = "has been marked complete.";
@@ -41,11 +44,19 @@ public class SignalManager {
     private final RemoteClient client;
     private final Map<String, List<Signal>> targetMap;
 
+    /**
+     * create the SignalManager from a RemoteClient
+     * @param client the client
+     */
     public SignalManager(RemoteClient client) {
         this.client = client;
         this.targetMap = new HashMap<>();
     }
 
+    /**
+     * add a signal to the signal manager;
+     * @param signal the signal to add
+     */
     public void addSignal(Signal signal) {
         String targetID = signal.getTargetId();
         if (!targetMap.containsKey(targetID)) {
@@ -55,16 +66,29 @@ public class SignalManager {
         targetMap.get(targetID).add(signal);
     }
 
+    /**
+     * add many signals to the signal manager via
+     * addSignal
+     * @param signals the signals to add
+     */
     public void addSignals(List<Signal> signals) {
         for (Signal s: signals) {
             this.addSignal(s);
         }
     }
 
+    /**
+     * clears the signals
+     */
     public void clear() {
         this.targetMap.clear();
     }
 
+    /**
+     * get all the notifications from the
+     * accrued signals.
+     * @return the list of Notifications
+     */
     public List<NotificationInfo> getNotifications() {
         List<NotificationInfo> notifications = new ArrayList<>();
 
@@ -79,6 +103,10 @@ public class SignalManager {
         return notifications;
     }
 
+    /**
+     * delete signals that target the given id
+     * @param id the given id
+     */
     public void deleteSignalsForID(String id) {
         if (!this.targetMap.containsKey(id)) { return; }
 
@@ -87,6 +115,12 @@ public class SignalManager {
         }
     }
 
+    /**
+     * generate notifications for a target
+     * @param targetID the id of the target
+     * @param targetSignals the signals for the target
+     * @return the notification
+     */
     @Nullable
     protected NotificationInfo generateNotificationFor(String targetID, List<Signal> targetSignals) {
         int newBidCount = 0;
@@ -117,6 +151,14 @@ public class SignalManager {
         return null;
     }
 
+    /**
+     * make a notification for task statuts
+     * @param preText
+     * @param taskTitle
+     * @param postText
+     * @param taskID the id of the task to notify for.
+     * @return the generated notification
+     */
     protected NotificationInfo makeTaskStatusNI(String preText, String taskTitle, String postText, String taskID) {
         NotificationInfo notification = new NotificationInfo(preText, taskTitle, postText);
         notification.setIsImportant(true);
@@ -130,6 +172,13 @@ public class SignalManager {
         return notification;
     }
 
+    /**
+     * make a notification for task statuts
+     * @param bidCount the number of bids to notify for
+     * @param taskTitle
+     * @param taskID the id of the task to notify for.
+     * @return the generated notification
+     */
     protected NotificationInfo makeNewBidsNI(String taskTitle, String taskID, int bidCount) {
         String taskCountString = String.format(Locale.US, NI_NEW_BIDS_BOTTOM_F, bidCount);
         NotificationInfo notification = new NotificationInfo(NI_GENERIC_POST_TOP, taskTitle, taskCountString);

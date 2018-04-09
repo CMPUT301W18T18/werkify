@@ -18,11 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.app.FragmentManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,6 +34,11 @@ import static android.view.View.inflate;
  */
 public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottomSheetFragment {
 
+    /**
+     * reinitialize the bottomsheet view with a new task.
+     * @param container ViewGroup containing the header and content frame
+     * @param task task object to initialize from
+     */
     @Override
     protected void initializeWithTask(ViewGroup container, final Task task) {
         User assignee;
@@ -104,16 +105,29 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
 
 
 
+    /**
+     * gets the status string
+     * @return always "Assigned"
+     */
     @Override
     protected String getStatusString() {
         return "Assigned";
     }
 
+    /**
+     * get the bottomsheet color
+     * @return always colorStatusAssigned.
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusAssigned;
     }
 
+    /**
+     * gets the ContentLayout
+     * @param root
+     * @return null
+     */
     @Override
     protected View getContentLayout(ViewGroup root) {
         return inflate(getActivity(), R.layout.activity_view_task_bottom_sheet_assigned, null);
