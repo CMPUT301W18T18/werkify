@@ -222,7 +222,7 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
             ),
             j("filter",
                 j("geo_distance",
-                    j("distance","1km"),
+                    j("distance","15km"),
                     j("location",
                         j("lat", location.getLatitude()),
                         j("lon", location.getLongitude())

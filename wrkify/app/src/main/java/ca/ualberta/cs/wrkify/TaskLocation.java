@@ -19,6 +19,9 @@ package ca.ualberta.cs.wrkify;
 
 import android.location.Location;
 
+import java.io.Serializable;
+
+
 /**
  * TaskLocation is the Location class
  * used in task to make Elasticsearch
@@ -26,7 +29,7 @@ import android.location.Location;
  *
  * @see Location
  */
-public class TaskLocation {
+public class TaskLocation implements Serializable{
     // NOTE These variables probably need to be named exactly
     // "lat" and "lon" in order to be searchable
     private double lat;

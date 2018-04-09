@@ -89,6 +89,17 @@
                     android:layout_marginTop="16dp"
                     android:background="@android:color/background_light"
                     tools:text="Description goes here" />
+                <TextView
+                    android:id="@+id/taskViewLocation"
+                    style="@android:style/TextAppearance.Material.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/background_light"
+                    tools:text="Location goes here" />
 
                 <ca.ualberta.cs.wrkify.CheckListProviderView
                     android:id="@+id/taskViewChecklist"

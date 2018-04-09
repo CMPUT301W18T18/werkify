@@ -3,6 +3,14 @@
     package="ca.ualberta.cs.wrkify">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the 'MyLocation' functionality. 
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -11,41 +19,65 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewBidsActivity"
+        <activity
+            android:name=".ViewBidsActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize">
-        </activity>
-        <activity android:name=".ViewTaskActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ViewTaskActivity"
             android:configChanges="orientation|screenSize" />
-        <activity android:name=".ViewProfileActivity"
+        <activity
+            android:name=".ViewProfileActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize">
-                <intent-filter>
-                    <action android:name="android.intent.action.MAIN" />
-                    <category android:name="android.intent.category.LAUNCHER" />
-                </intent-filter>
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".RegisterActivity"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".LoginActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".EditProfileActivity"
-            android:parentActivityName=".ViewProfileActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".ViewProfileActivity" />
         <activity
             android:name=".EditTaskActivity"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".ViewTaskActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize" />
+            android:windowSoftInputMode="adjustResize" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".TasksNearMeMap"
+            android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".SetTaskLocationActivity"
+            android:label="@string/title_activity_set_task_location" />
+        <activity
+            android:name=".TestMapsActivity"
+            android:label="@string/title_activity_test_maps"></activity>
     </application>
 
 </manifest>

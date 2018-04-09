@@ -83,6 +83,30 @@
             android:inputType="textMultiLine" />
 
         <TextView
+            android:id="@+id/editTaskLocationLabel"
+            android:labelFor="@id/editTaskLocationField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
+            app:layout_constraintBottom_toTopOf="@+id/editTaskLocationField"
+            app:layout_constraintStart_toStartOf="@id/editTaskLocationField"
+            android:layout_marginStart="4dp" />
+
+        <Button
+            android:id="@+id/editTaskLocationField"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:text="Set Location"
+            android:textSize="10dp"
+            app:layout_constraintTop_toBottomOf="@id/editTaskDescriptionField"
+            app:layout_constraintVertical_bias="0"
+            android:layout_marginTop="36dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="false" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/edit_task_checklist_label"
@@ -95,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#1E000000"
-            app:layout_constraintTop_toBottomOf="@id/editTaskDescriptionField"
+            app:layout_constraintTop_toBottomOf="@id/editTaskLocationField"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="36dp"
             android:layout_marginStart="8dp"/>

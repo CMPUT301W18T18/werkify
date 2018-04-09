@@ -73,14 +73,27 @@ abstract class TasksOverviewFragment extends Fragment {
         this.addButton = view.findViewById(R.id.overviewAddButton);
         this.offlineIndicator = view.findViewById(R.id.overviewOfflineIndicator);
 
-        UserView userView = view.findViewById(R.id.overviewSelfView);
+        final UserView userView = view.findViewById(R.id.overviewSelfView);
         Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
         
         // Set title
         toolbar.setTitle(getAppBarTitle());
 
         // Set user view
-        userView.setUserName(Session.getInstance(getContext()).getUser().getUsername());
+//        userView.setUserName(Session.getInstance(getContext()).getUser().getUsername());
+        class GetUser extends AsyncTask<Void,Void,String>{
+
+            @Override
+            protected String doInBackground(Void...voids) {
+                return Session.getInstance(getContext()).getUser().getUsername();
+            }
+            @Override
+            protected void onPostExecute(String un) {
+                userView.setUserName(un);
+            }
+        }
+        new GetUser().execute();
+
         userView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

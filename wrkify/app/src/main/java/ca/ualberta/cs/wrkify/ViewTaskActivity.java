@@ -259,7 +259,26 @@ public class ViewTaskActivity extends AppCompatActivity {
                     }
                 });
             }
+
+            TextView locationView = findViewById(R.id.taskViewLocation);
+            if(task.getLocation()!=null) {
+                String locationStr = Double.valueOf(task.getLocation().getLatitude()).toString() + "," + Double.valueOf(task.getLocation().getLongitude()).toString();
+                locationView.setText(locationStr);
+            }
+            locationView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewTaskLocation();
+                }
+            });
         }
+
+    }
+
+    private void viewTaskLocation(){
+        Intent intent = new Intent(this,SetTaskLocationActivity.class);
+        intent.putExtra(SetTaskLocationActivity.TASK_EXTRA,task);
+        startActivity(intent);
     }
 
     /**

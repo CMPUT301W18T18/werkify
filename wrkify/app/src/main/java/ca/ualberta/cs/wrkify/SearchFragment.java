@@ -17,7 +17,9 @@
 
 package ca.ualberta.cs.wrkify;
 
+
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -107,6 +109,13 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        final TextView mapIcon = (TextView) rootView.findViewById(R.id.nearme);
+        mapIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewMap();
+            }
+        });
 
         return rootView;
     }
@@ -134,6 +143,12 @@ public class SearchFragment extends Fragment {
         this.taskList = newList;
         TaskListAdapter<Task> newAdapter = new TaskListAdapter<>(new AppCompatActivity(),this.taskList);
         this.recycler.setAdapter(newAdapter);
+    }
+
+
+    public void viewMap() {
+        Intent intent = new Intent(this.getContext(), TasksNearMeMap.class);
+        startActivity(intent);
     }
 
     /**

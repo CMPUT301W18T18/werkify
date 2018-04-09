@@ -31,6 +31,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 
@@ -63,9 +66,12 @@ public class EditTaskActivity extends AppCompatActivity {
     /** The task was edited, but the changes were not synced successfully. */
     public static final int RESULT_UNSYNCED_CHANGES = 20;
 
+    public static final int RESULT_LOCATION = 25;
+
 
     private Task task;
     private CheckList checkList;
+    private TaskLocation location;
     private boolean taskIsNew = false;
 
     private EditText titleField;
@@ -73,6 +79,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private CheckListEditorView checkListEditorView;
     private Button checkListNewButton;
     private Button checkListAddButton;
+    private Button locationField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +93,7 @@ public class EditTaskActivity extends AppCompatActivity {
         this.checkListEditorView = findViewById(R.id.editTaskChecklist);
         this.checkListNewButton = findViewById(R.id.editTaskButtonChecklistNew);
         this.checkListAddButton = findViewById(R.id.editTaskButtonChecklistAdd);
+        this.locationField = findViewById(R.id.editTaskLocationField);
 
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
 
@@ -141,6 +149,29 @@ public class EditTaskActivity extends AppCompatActivity {
                 }
             }
         });
+        this.locationField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTaskLocation();
+            }
+        });
+    }
+
+    public void setTaskLocation(){
+        Intent intent = new Intent(this,SetTaskLocationActivity.class);
+        startActivityForResult(intent,RESULT_LOCATION);
+//        Intent intent = new Intent(this,TestMapsActivity.class);
+//        startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==RESULT_LOCATION){
+           TaskLocation taskcoordinates = (TaskLocation) data.getSerializableExtra(SetTaskLocationActivity.LOCATION_EXTRA);
+           this.location = taskcoordinates;
+           String locationStr = Double.valueOf(taskcoordinates.getLatitude()).toString() + ", " + Double.valueOf(taskcoordinates.getLongitude()).toString();
+           this.locationField.setText(locationStr);
+        }
     }
 
     /**
@@ -303,6 +334,7 @@ public class EditTaskActivity extends AppCompatActivity {
                         descriptionField.getText().toString()
                 );
                 task.setCheckList(checkList);
+                task.setLocation(location);
 
                 TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
                 transactionManager.enqueue(new TaskCreateTransaction(task));
@@ -317,10 +349,12 @@ public class EditTaskActivity extends AppCompatActivity {
                 transactionManager.enqueue(new TaskTitleTransaction(task, newTitle));
                 transactionManager.enqueue(new TaskDescriptionTransaction(task, newDescription));
                 transactionManager.enqueue(new TaskCheckListTransaction(task, checkList));
+                transactionManager.enqueue(new TaskLocationTransaction(task,location));
 
                 task.setTitle(newTitle);
                 task.setDescription(newDescription);
                 task.setCheckList(checkList);
+                task.setLocation(location);
                 WrkifyClient.getInstance().updateCached(task);
 
                 if (transactionManager.flush(WrkifyClient.getInstance())) {
