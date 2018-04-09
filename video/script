@@ -19,7 +19,7 @@ Programmer 1: looks like someone bid on our task!
 Provider: did you guys order pizza?
 
 <Programmer 1 marks the task as done>
-<Programmer 2 gives the provider $10.00>
+<Programmer 1 gives the provider $10.00>
 <provider give pizza>
 <exit Provider>
 
@@ -36,7 +36,7 @@ Programmer 1: Give me a second.
 ~cut to programmers~
 
 Programmer 1: 10 dollars okay?
-Programmer 1: what?
+Programmer 2: what?
 
 ~cut to provider~
 
