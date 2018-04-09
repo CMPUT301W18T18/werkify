@@ -168,7 +168,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         // Initialize the checklist view
         final CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
-        checkListProviderView.setEditingEnabled(sessionUserIsProvider);
+        checkListProviderView.setEditingEnabled(sessionUserIsProvider && task.getStatus() == TaskStatus.ASSIGNED);
         checkListProviderView.setCheckList(task.getCheckList());
         checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
 
