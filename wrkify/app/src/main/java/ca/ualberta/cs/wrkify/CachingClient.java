@@ -81,8 +81,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             return null;
         }
     }
-    
+
     public String canonicalize(String id) {
+        if (transientIdSet.contains(id) && !transientIdMap.containsKey(id)) {
+            return null;
+        }
+
         while (transientIdMap.containsKey(id)) {
             id = transientIdMap.get(id);
         }
