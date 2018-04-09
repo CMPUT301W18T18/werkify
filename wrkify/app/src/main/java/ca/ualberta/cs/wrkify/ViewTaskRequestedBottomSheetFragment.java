@@ -26,21 +26,39 @@ import android.view.ViewGroup;
  * that has no bids so far.
  */
 public class ViewTaskRequestedBottomSheetFragment extends ViewTaskBottomSheetFragment {
+    /**
+     * gets the status string
+     * @return always "Requested"
+     */
     @Override
     protected String getStatusString() {
         return "Requested";
     }
 
+    /**
+     * gets the bottom sheet color
+     * @return always colorStatusRequested.
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusRequested;
     }
 
+    /**
+     * reinitialize the bottomsheet with a new task
+     * @param container ViewGroup containing the header and content frame
+     * @param task task object to initialize from
+     */
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
         setDetailString(container, "No bids yet");
     }
 
+    /**
+     * get the content layout
+     * @param root the root ViewGroup
+     * @return always null;
+     */
     @Override
     protected View getContentLayout(ViewGroup root) {
         return null;

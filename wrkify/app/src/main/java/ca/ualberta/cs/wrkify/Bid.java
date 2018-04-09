@@ -105,6 +105,12 @@ public class Bid implements Comparable<Bid>, Serializable {
         return this.getValue().compareTo(bid.getValue());
     }
 
+    /**
+     * determines if bids are equal based on if their bidders and
+     * values are equal
+     * @param obj the object you are comparing this bid to
+     * @return true it the objects are equal, false otherwise.
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof Bid) {

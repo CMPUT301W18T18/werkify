@@ -15,7 +15,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.graphics.Bitmap;
-import android.location.Location;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
@@ -43,6 +42,12 @@ public class Task extends RemoteObject {
     private TaskStatus status;
     private Bid acceptedBid;
 
+    /**
+     * verifies that a title meets the title requirements.
+     * title must be trimed then less that 32 chars and
+     * greater than 0 chars
+     * @param title the task title
+     */
     public static void verifyTitle(String title) {
         if (title.length() > 32) {
             throw new IllegalArgumentException("Title too long");
@@ -51,12 +56,21 @@ public class Task extends RemoteObject {
         }
     }
 
+    /**
+     * verifies that the description is less that
+     * the maximum length
+     * @param description the task description
+     */
     public static void verifyDescription(String description) {
         if (description.length() > 512) {
             throw new IllegalArgumentException("Description too long");
         }
     }
 
+    /**
+     * verifys that the checklist is non empty
+     * @param checkList
+     */
     public static void verifyChecklist(CheckList checkList) {
         for (CheckList.CheckListItem item: checkList.getItems()) {
             if (item.getDescription().trim().length() == 0) {
@@ -90,10 +104,10 @@ public class Task extends RemoteObject {
     }
 
     /**
-     * instantiates a Task by title, requester, and description
+     * instantiates a Task by title, requester reference, and description
      *
      * @param title a string for the title of the Task
-     * @param requester The User that requested the Task
+     * @param requester The reference to requester
      * @param description a string for the description of the Task
      */
     public Task(String title, RemoteReference<User> requester, String description) {
@@ -105,7 +119,14 @@ public class Task extends RemoteObject {
         this.imageList = new ArrayList<Bitmap>();
         this.bidList = new ArrayList<Bid>();
     }
-    
+
+    /**
+     * instantiates a Task by title, requester, and description
+     *
+     * @param title a string for the title of the Task
+     * @param requester The User that requests the Task
+     * @param description a string for the description of the Task
+     */
     public Task(String title, User requester, String description) {
         this(title, requester.<User>reference(), description);
     }

@@ -25,8 +25,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.IOException;
-
 /**
  * Used by BidListAdapter. Holds Views in the inflated layout representing a Bid item.
  * Handles setting of Bid data given a Bid

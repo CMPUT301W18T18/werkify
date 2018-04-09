@@ -17,10 +17,14 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.support.annotation.Nullable;
-
 import java.io.IOException;
 
+
+/**
+ * Transaction represents a single change to a remote Object
+ * that can be applied to a RemoteObject
+ * @param <T> the type of the RemoteObject we are transacting.
+ */
 public abstract class Transaction<T extends RemoteObject> {
     protected String id;
     protected Class<T> type;

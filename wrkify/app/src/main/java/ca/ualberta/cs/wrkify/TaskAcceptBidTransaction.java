@@ -29,7 +29,6 @@ import java.io.IOException;
  * @see StateChangeTransaction
  * @see Task
  */
-
 public class TaskAcceptBidTransaction extends StateChangeTransaction<Task> {
     private Bid bid;
 
@@ -58,6 +57,13 @@ public class TaskAcceptBidTransaction extends StateChangeTransaction<Task> {
         }
     }
 
+    /**
+     * generate the Signals for accepting a bid
+     * @param client the client to apply to.
+     * @param task the task that has it's bid accepted
+     * @return the array of generated signals
+     * @throws IOException according to client
+     */
     @NonNull
     @Override
     protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {

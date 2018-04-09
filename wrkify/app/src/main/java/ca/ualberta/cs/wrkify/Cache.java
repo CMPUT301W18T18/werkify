@@ -26,30 +26,62 @@ import java.util.List;
  * Cache for RemoteObjects.
  * This is basically a slightly more type-aware
  * wrapper around a HashMap.
+ *
+ * @see RemoteObject
  */
 public class Cache {
     private HashMap<String, RemoteObject> map = new HashMap<>();
 
+    /**
+     * the empty constructor for cache
+     */
     public Cache() { }
 
+    /**
+     * get an object by it's id.
+     * @param id the id of the object.
+     * @param <T> the remoteObject that you are getting.
+     * @return the object pointed to by id.
+     */
     public <T extends RemoteObject> T get(String id) {
         return (T) this.map.get(id);
     }
 
+    /**
+     * put an object in the cache.
+     * @param id the id associated with the object.
+     * @param object the object you are putting in the cache
+     * @param <T> the type of object
+     */
     public <T extends RemoteObject> void put(String id, T object) {
         this.map.put(id, object);
     }
 
+    /**
+     * put a collection of objects in the cache.
+     * @param objects the objects to put in the cache.
+     * @param <T> the type of remoteObject that the objects are
+     */
     public <T extends RemoteObject> void putAll(Collection<T> objects) {
         for (RemoteObject object: objects) {
             put(object.getId(), object);
         }
     }
 
+    /**
+     * remove an object from the cache by it's id.
+     * @param id the id of the object to remove.
+     */
     public void discard(String id) {
         this.map.remove(id);
     }
 
+    /**
+     * finds all items in the cache that match the CacheMatcher.
+     * @param matcher the CacheMatcher, specifying what to match.
+     * @param <T> the type of RemoteObject to match.
+     * @return a List of the objects that match.
+     */
     public <T extends RemoteObject> List<T> findMatching(CacheMatcher<T> matcher) {
         List<T> results = new ArrayList<>();
         Collection<String> keys = map.keySet();

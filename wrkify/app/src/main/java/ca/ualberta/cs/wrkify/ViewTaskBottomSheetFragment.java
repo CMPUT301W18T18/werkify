@@ -61,10 +61,18 @@ public abstract class ViewTaskBottomSheetFragment extends Fragment {
      */
     public ViewTaskBottomSheetFragment() { }
 
+    /**
+     * gets the content view
+     * @return the content view
+     */
     public ViewGroup getContentView() {
         return contentView;
     }
 
+    /**
+     * gets the header view
+     * @return the header view
+     */
     public ViewGroup getHeaderView() {
         return headerView;
     }

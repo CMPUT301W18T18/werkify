@@ -22,13 +22,27 @@ import android.content.Intent;
 
 import java.io.IOException;
 
+/**
+ * ViewTaskNotificationAction is NotificationAction that launches
+ * the associated task.
+ */
 public class ViewTaskNotificationAction implements NotificationAction {
     private RemoteReference<Task> reference;
 
+    /**
+     * creates a ViewTaskNotificationAction froma taskId
+     * @param taskId the id of the task
+     */
     public ViewTaskNotificationAction(String taskId) {
         this.reference = new RemoteReference<>(taskId);
     }
 
+    /**
+     * launches the task of the notification
+     * @param context the android context
+     * @param notification the notification that has been presses
+     * @return
+     */
     @Override
     public boolean launch(Context context, NotificationInfo notification) {
         Intent intent = new Intent(context, ViewTaskActivity.class);

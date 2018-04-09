@@ -57,7 +57,7 @@ public class WrkifyClient {
     }
 
     /**
-     * private to prevent instatiation
+     * private to prevent instantiation
      */
     private WrkifyClient() {}
 }

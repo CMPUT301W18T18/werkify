@@ -20,6 +20,11 @@ package ca.ualberta.cs.wrkify;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Searcher is an abstract class that defines standard
+ * queries that are used application wide.
+ * @param <TClient> the type of client we are searching.
+ */
 abstract class Searcher<TClient extends RemoteClient> {
     protected TClient client;
 

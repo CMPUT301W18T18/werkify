@@ -61,6 +61,13 @@ public class TaskAddOrReplaceBidTransaction extends StateChangeTransaction<Task>
         }
     }
 
+    /**
+     * generate the Signals for adding or replacing a bid
+     * @param client the client to apply to.
+     * @param task the task that has bids added too
+     * @return the array of generated signals
+     * @throws IOException according to client
+     */
     @NonNull
     @Override
     protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {

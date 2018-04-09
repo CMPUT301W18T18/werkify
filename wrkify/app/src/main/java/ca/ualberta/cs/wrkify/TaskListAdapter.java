@@ -45,23 +45,22 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     protected List<T> taskList;
     private RecyclerView recyclerView;
 
-    /*
-    *Sets the task list to be used for a RecyclerView, sets sessionUser
-    *
-    * @param context AppCompatActivity of calling Activity
-    * @param List<T> where T is anything that extends Task
-    * @param isRequester, boolean indicating calling perspective (Requester/Provider)
+    /**
+     *Sets the task list to be used for a RecyclerView, sets sessionUser
+     *
+     * @param context AppCompatActivity of calling Activity
+     * @param taskList where T is anything that extends Task
      */
     public TaskListAdapter(Context context, List<T> taskList){
         this.taskList = taskList;
     }
 
 
-    /*
-    *Creates TaskViewHolder for caching Task CardViews
-    *
-    * @param parent ViewGroup of parent activity
-    * @param viewType
+    /**
+     *Creates TaskViewHolder for caching Task CardViews
+     *
+     * @param parent ViewGroup of parent activity
+     * @param viewType
      */
     @NonNull
     @Override
@@ -72,17 +71,20 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     }
 
 
-    /*
-    *Binds a holder to a the recyvler view
-    *
-    * @param holder TaskViewHolder containing a Task Card View
-    * @param position Index in the recycler list
+    /**
+     *Binds a holder to a the recyvler view
+     *
+     * @param holder TaskViewHolder containing a Task Card View
+     * @param position Index in the recycler list
      */
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         this.new TaskDisplayTask().execute(position, holder);
     }
 
+    /**
+     * TaskDisplayTask is an AsyncTask for displaying a task
+     */
     private class TaskDisplayTask extends AsyncTask<Object, Void, Void> {
         private TaskViewHolder holder;
 
@@ -96,6 +98,11 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
 
         private User sessionUser;
 
+        /**
+         * gets the task and associated information.
+         * @param posholder the postition then the holder
+         * @return unused
+         */
         @Override
         protected Void doInBackground(Object... posholder) {
             int position = (Integer) posholder[0];
@@ -155,6 +162,11 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
             return null;
         }
 
+        /**
+         * displays the task information we got in
+         * doInBackground.
+         * @param result unused
+         */
         @Override
         protected void onPostExecute(Void result) {
             holder.getTaskTitle().setText(title);
@@ -175,21 +187,21 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
         }
     }
 
-    /*
-    *Returns the size of recycler list.
+    /**
+     * Returns the size of recycler list.
      */
     @Override
     public int getItemCount() {
         return this.taskList.size();
     }
 
-    /*
-    *Runs the ViewTaskActivity when a task is selected
-    * from the recycler view list
-    *
-    * @param sessionUser app User
-    * @param task The task that was clicked
-    */
+    /**
+     * Runs the ViewTaskActivity when a task is selected
+     * from the recycler view list
+     *
+     * @param sessionUser app User
+     * @param task The task that was clicked
+     */
     public void viewTask(User sessionUser, T task){
         Intent intent = new Intent(this.recyclerView.getContext(), ViewTaskActivity.class);
         intent.putExtra(ViewTaskActivity.EXTRA_TARGET_TASK, task);
@@ -204,17 +216,17 @@ public class TaskListAdapter<T extends Task> extends RecyclerView.Adapter<TaskVi
     }
 
 
-    /*
-    *Sets the list to be adapted for a recycler view
-    *
-    * @param taskList List of objects in Task family
-    */
+    /**
+     * Sets the list to be adapted for a recycler view
+     *
+     * @param taskList List of objects in Task family
+     */
     public void setTaskList(List<T> taskList){
         this.taskList = taskList;
     }
 
-    /*
-    *Returns the List of tasks that are being adapted
+    /**
+     * Returns the List of tasks that are being adapted
      */
     public List<T> getTaskList(){
         return this.taskList;

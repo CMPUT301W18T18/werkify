@@ -106,14 +106,27 @@ public class Session {
         save(context);
     }
 
+    /**
+     * get the notificationCollector of the logged in user.
+     * @return the notificationCollector
+     */
     public NotificationCollector getNotificationCollector() {
         return notificationCollector;
     }
 
+    /**
+     * get the users transactionManager
+     * @return the transactionManager
+     */
     public TransactionManager getTransactionManager() {
         return transactionManager;
     }
 
+    /**
+     * download the users signals (Notifications)
+     * @param client the client to download form.
+     * @return true if downloaded, false otherwise.
+     */
     public boolean downloadSignals(RemoteClient client) {
         try {
             signalManager.clear();

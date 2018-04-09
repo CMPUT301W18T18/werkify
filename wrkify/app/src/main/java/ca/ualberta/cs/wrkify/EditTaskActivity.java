@@ -143,6 +143,12 @@ public class EditTaskActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * display the save options if editing, and the post options
+     * if creating
+     * @param menu the menu we are inflating
+     * @return always true.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_task, menu);
@@ -242,18 +248,30 @@ public class EditTaskActivity extends AppCompatActivity {
         this.new EditTaskTask().execute();
     }
 
+    /**
+     * show all the Views of the checkList editor
+     * and hide the new checklist button
+     */
     private void showChecklistEditor() {
         checkListEditorView.setVisibility(View.VISIBLE);
         checkListAddButton.setVisibility(View.VISIBLE);
         checkListNewButton.setVisibility(View.GONE);
     }
 
+    /**
+     * hide all the Views of the checkList editor
+     * and show the new checklist button
+     */
     private void hideChecklistEditor() {
         checkListEditorView.setVisibility(View.GONE);
         checkListAddButton.setVisibility(View.GONE);
         checkListNewButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * end the activity on navigation up
+     * @return always true.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();

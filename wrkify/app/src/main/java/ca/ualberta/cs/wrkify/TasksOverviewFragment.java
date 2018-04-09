@@ -160,6 +160,9 @@ abstract class TasksOverviewFragment extends Fragment {
         return view;
     }
 
+    /**
+     * refreshes to notifications on resume
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -167,10 +170,19 @@ abstract class TasksOverviewFragment extends Fragment {
         this.new NotificationFetchTask().execute();
     }
 
+    /**
+     * NotificationFetchTask is an Async task to fetch and
+     * display notifications
+     */
     private class NotificationFetchTask extends AsyncTask<Void, Void, Void> {
 
         private boolean offlineIndicator;
 
+        /**
+         * fetch the relavent notifications
+         * @param voids unused
+         * @return unused
+         */
         @Override
         protected Void doInBackground(Void... voids) {
             Session session = Session.getInstance(getActivity());
@@ -191,6 +203,11 @@ abstract class TasksOverviewFragment extends Fragment {
             return null;
         }
 
+        /**
+         * display the notifications we fetched in
+         * execute.
+         * @param result unused
+         */
         @Override
         protected void onPostExecute(Void result) {
             if (offlineIndicator) {
@@ -206,13 +223,16 @@ abstract class TasksOverviewFragment extends Fragment {
         }
     }
 
+    /**
+     * refreshes the lists of tasks
+     * @Depreacted taskLists refresh themselves
+     */
     private void refreshTaskLists() {
         // TODO not implemented
     }
 
     /**
      * Hides the add button.
-     * TODO add transition
      */
     private void hideAddButton() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
@@ -221,17 +241,22 @@ abstract class TasksOverviewFragment extends Fragment {
 
     /**
      * Shows the add button.
-     * TODO add transition
      */
     private void showAddButton() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * hide the offline indicator bar
+     */
     private void hideOfflineIndicator() {
         offlineIndicator.setVisibility(View.GONE);
     }
 
+    /**
+     * show the offline indicator bar
+     */
     private void showOfflineIndicator() {
         offlineIndicator.setVisibility(View.VISIBLE);
     }

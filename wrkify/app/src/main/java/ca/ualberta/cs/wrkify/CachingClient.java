@@ -21,14 +21,9 @@ package ca.ualberta.cs.wrkify;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,9 +35,9 @@ import java.util.UUID;
  * will return the cached object. An object can be re-downloaded by
  * calling discardCached on its id.
  *
- * TODO this will ultimately also buffer uploads/deletes/searches.
- *
  * @see Cache
+ * @see RemoteObject
+ * @see RemoteClient
  */
 public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private TClient client;
@@ -53,24 +48,55 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private CachingClientWrapperSearcher searcher = new CachingClientWrapperSearcher(this);
     private CachingClientSearcher localSearcher = new CachingClientSearcher(this);
 
+    /**
+     * creates a CachingClient to wrap an existing RemoteClient.
+     * @param client the client you are wrapping.
+     */
     public CachingClient(TClient client) {
         this.client = client;
         this.cache = new Cache();
         this.transientIdSet = new HashSet<>();
     }
 
+    /**
+     * discard the cached changes to an object.
+     * this will force the use of the wrapped client
+     * to get future references to this object.
+     * @param id the id associated with the object you are discarding.
+     */
     public void discardCached(String id) {
         this.cache.discard(id);
     }
 
+    /**
+     * set obj as the cached version of itself.
+     * @param obj the object to put in the cache.
+     */
     public void updateCached(RemoteObject obj) {
         cache.put(obj.getId(), obj);
     }
 
+    /**
+     * download the object referred to by id, from the wrapped RemoteClient
+     * rather then the cache.
+     * @param id the id associated with the object you want.
+     * @param type the type of the RemoteObject.
+     * @param <T> the generic type of the remote object.
+     * @return the RemoteObject of type T referred to by id.
+     * @throws IOException when download fails.
+     */
     public <T extends RemoteObject> T downloadFromRemote(String id, Class<T> type) throws IOException {
         return client.download(id, type);
     }
 
+    /**
+     * create a remote object locally. this object will not be created
+     * on the server but can be uploaded later.
+     * @param type the type of remote object to create.
+     * @param conArgs the arguments to the constructor of the remoteObject.
+     * @param <T> the generic type of the RemoteObject.
+     * @return the newly created object.
+     */
     public <T extends RemoteObject> T createLocal(Class<T> type, Object... conArgs) {
         try {
             T object = (T) newInstance(type, conArgs);
@@ -81,6 +107,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
     }
 
+    /**
+     * create a remote object on the server and put it in the cache.
+     * @param type the type of your instance.
+     * @param conArgs the arguments to your constructor.
+     * @param <T> the generic type of your instance.
+     * @return the newly created object.
+     */
     @Override
     @Nullable
     public <T extends RemoteObject> T create(Class<T> type, Object... conArgs) {
@@ -92,6 +125,15 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         return object;
     }
 
+    /**
+     * download the Object from the cache. if the cache misses,
+     * download from the wrapped client.
+     * @param id object id.
+     * @param type the type of the object.
+     * @param <T> the generic type of the object.
+     * @return the downloaded object
+     * @throws IOException
+     */
     @Override
     @Nullable
     public <T extends RemoteObject> T download(String id, Class<T> type) throws IOException {
@@ -104,6 +146,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         return downloadedObject;
     }
 
+    /**
+     * upload the object to the inner client and keep
+     * the new version in the caches.
+     * @param obj the object to upload
+     * @throws IOException when upload fails.
+     */
     @Override
     public void upload(RemoteObject obj) throws IOException {
         if (this.transientIdSet.contains(obj.getId())) {
@@ -114,8 +162,18 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         cache.put(obj.getId(), obj);
     }
 
+    /**
+     * uploadNew uploads a remote object that does not exist
+     * on the server, and creates a new id for it.
+     * try to use create instead of this.
+     * @param type the type of the object to upload.
+     * @param obj the object you are uploading.
+     * @param <T> the generic type of the object.
+     * @return the object that was uploaded.
+     * @throws IOException when the inner upload fails.
+     */
     @Override
-    <T extends RemoteObject> T uploadNew(Class<T> type, T obj) throws IOException {
+    public <T extends RemoteObject> T uploadNew(Class<T> type, T obj) throws IOException {
         if (client.uploadNew(type, obj) == null) {
             throw new IOException();
         }
@@ -123,18 +181,31 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         return obj;
     }
 
+    /**
+     * delete the object from the client and
+     * from the cache.
+     * @param obj the remote object to delete
+     */
     @Override
     public void delete(RemoteObject obj) {
         client.delete(obj);
         cache.discard(obj.getId());
     }
 
+    /**
+     * gets this clients searcher.
+     * @return the searcher.
+     */
     @Override
-    Searcher getSearcher() {
+    public Searcher getSearcher() {
         return searcher;
     }
 
-    Searcher getLocalSearcher() {
+    /**
+     * gets a searcher for the cache.
+     * @return the local searcher.
+     */
+    public Searcher getLocalSearcher() {
         return localSearcher;
     }
 
@@ -142,25 +213,44 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
      * Generates a unique transient ID for an object.
      * A transient ID should never be a valid Elastic ID.
      * @return new transient ID
-     *
-     * TODO this will eventually be used for create buffering, but is currently unused.
      */
     private String makeTransientId() {
-        // TODO not sure if this is the best way to do this
         String transientId = UUID.randomUUID().toString();
         transientIdSet.add(transientId);
         return transientId;
     }
 
+    /**
+     * gets the searcher of the client that CachingClient wraps.
+     * @return the inner searcher.
+     */
     private Searcher getWrappedSearcher() {
         return client.getSearcher();
     }
 
+    /**
+     * CachingClientWrapperSearcher Is a Searcher that that wraps a
+     * RemoteClient Searcher
+     *
+     * @see Searcher
+     */
     public class CachingClientWrapperSearcher extends Searcher<CachingClient> {
+        /**
+         * create the CachingClientWrapperSearcher from the
+         * client we are wrapping
+         * @param client the client we are wrapping
+         */
         public CachingClientWrapperSearcher(CachingClient client) {
             super(client);
         }
 
+        /**
+         * finds task by bidder first in  wrapped client,
+         * then in the cache
+         * @param bidder the bidder of the tasks we match
+         * @return A list of the tasks that match
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Task> findTasksByBidder(User bidder) throws IOException {
             try {
@@ -172,6 +262,15 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds task by bidder and statuses. first in  wrapped client,
+         * then in the cache.
+         *
+         * @param bidder the bidder of the tasks we match.
+         * @param statuses the valid statuses for the search.
+         * @return A list of the tasks that match.
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Task> findTasksByBidder(User bidder, TaskStatus... statuses) throws IOException {
             try {
@@ -183,16 +282,36 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds task by keywords in the wrapped client.
+         *
+         * @param keywords the keywords of the tasks
+         * @return A list of the tasks that match.
+         * @throws IOException when the internal searcher throws it.
+         */
         @Override
         public List<Task> findTasksByKeywords(String keywords) throws IOException {
             return getWrappedSearcher().findTasksByKeywords(keywords);
         }
 
+        /**
+         * find tasks near a location in the wrapped client.
+         * @param location the TaskLocation to find tasks near.
+         * @return the List<Task> of tasks that are near the location
+         * @throws IOException when the wrapped client does.
+         */
         @Override
         public List<Task> findTasksNear(TaskLocation location) throws IOException {
             return getWrappedSearcher().findTasksNear(location);
         }
 
+        /**
+         * finds task by provider first in  wrapped client,
+         * then in the cache.
+         * @param provider the User that will do the tasks.
+         * @return A list of the tasks that match.
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Task> findTasksByProvider(User provider) throws IOException {
             try {
@@ -204,6 +323,15 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds task by provider and statuses. first in  wrapped client,
+         * then in the cache.
+         *
+         * @param provider the User that will do the tasks.
+         * @param statuses the valid statuses for the search.
+         * @return A list of the tasks that match.
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Task> findTasksByProvider(User provider, TaskStatus... statuses) throws IOException {
             try {
@@ -215,6 +343,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds task by the requester first in  wrapped client,
+         * then in the cache
+         * @param requester the User that reuqested the Task
+         * @return A list of the tasks that match
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Task> findTasksByRequester(User requester) throws IOException {
             try {
@@ -226,6 +361,14 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds task by the requester first in  wrapped client,
+         * then in the cache
+         * @param requester the User that reuqested the Task
+         * @param statuses the valid statuses for the search.
+         * @return A list of the tasks that match
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Task> findTasksByRequester(User requester, TaskStatus... statuses) throws IOException {
             try {
@@ -237,6 +380,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds all the signals (notifications) that are
+         * sent to the provided user.
+         * @param user the users that you want to get signals of.
+         * @return A list of the tasks that match.
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Signal> findSignalsByUser(User user) throws IOException {
             try {
@@ -248,6 +398,14 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * finds all the signals (notifications) that are
+         * sent to the provided user and are about the target id.
+         * @param userId the users that you want to get signals of.
+         * @param targetId the targetId that we are looking for.
+         * @return A list of the tasks that match.
+         * @throws IOException never, however the interface defines it.
+         */
         @Override
         public List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException {
             try {
@@ -259,6 +417,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             }
         }
 
+        /**
+         * get a user by it's username first on server, then
+         * if that fails, in the cache.
+         * @param username the username of the user
+         * @return the user with username username.
+         * @throws IOException never, but it's part of the interface
+         */
         @Override
         public User getUser(String username) throws IOException {
             try {
@@ -272,11 +437,28 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         }
     }
 
+    /**
+     * CachingClient Searcher is a searcher that searches the cache
+     * exclusively.
+     *
+     * @see Searcher
+     * @see Cache
+     */
     public class CachingClientSearcher extends Searcher<CachingClient> {
+
+        /**
+         * create the CachingClientSearcher from a CachingClient.
+         * @param client the CachingClient to search
+         */
         public CachingClientSearcher(CachingClient client) {
             super(client);
         }
 
+        /**
+         * gets tasks in the cache where bidder is the bidder.
+         * @param bidder User to search for
+         * @return the List<Task> of results
+         */
         @Override
         public List<Task> findTasksByBidder(final User bidder) {
             return cache.findMatching(new CacheMatcher<Task>() {
@@ -287,6 +469,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * gets tasks in the cache where bidder is the bidder
+         * and the status is one of statuses
+         * @param bidder User to search for
+         * @param statuses the statuses that are valid
+         * @return the List<Task> of results
+         */
         @Override
         public List<Task> findTasksByBidder(final User bidder, final TaskStatus... statuses) {
             final List<TaskStatus> statusList = Arrays.asList(statuses);
@@ -298,16 +487,31 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * finds tasks in the cache that are near location
+         * @param location the Location to search around
+         * @return the List<Task> of results
+         */
         @Override
         public List<Task> findTasksNear(TaskLocation location) {
             throw new IllegalStateException("Can't perform location search on cache");
         }
 
+        /**
+         * finds tasks in the cache that contain any of the keywords.
+         * @param keywords Keywords to search for.
+         * @return the List<Task> of results
+         */
         @Override
         public List<Task> findTasksByKeywords(String keywords) {
             throw new IllegalStateException("Can't perform keyword search on cache");
         }
 
+        /**
+         * gets tasks in the cache where provider is the provider.
+         * @param provider User to search for
+         * @return the List<Task> of results
+         */
         @Override
         public List<Task> findTasksByProvider(final User provider) {
             return cache.findMatching(new CacheMatcher<Task>() {
@@ -322,6 +526,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * gets tasks in the cache where provider is the provider.
+         * @param provider User to search for
+         * @param statuses the statuses that are valid
+         * @return the List<Task> of results
+         */
         @Override
         public List<Task> findTasksByProvider(final User provider, final TaskStatus... statuses) {
             final List<TaskStatus> statusList = Arrays.asList(statuses);
@@ -337,6 +547,11 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * finds task by the requester in the cache
+         * @param requester the User that requested the Task
+         * @return A list of the tasks that match
+         */
         @Override
         public List<Task> findTasksByRequester(final User requester) {
             return cache.findMatching(new CacheMatcher<Task>() {
@@ -351,6 +566,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * finds task by the requester in the cache.
+         * @param requester the User that requested the Task
+         * @param statuses the valid statuses for the search.
+         * @return A list of the tasks that match
+         */
         @Override
         public List<Task> findTasksByRequester(final User requester, TaskStatus... statuses) {
             final List<TaskStatus> statusList = Arrays.asList(statuses);
@@ -366,6 +587,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * finds all the signals (notifications) that are
+         * sent to the provided user.
+         * @param user the users that you want to get signals of.
+         * @return A list of the tasks that match.
+         */
         @Override
         public List<Signal> findSignalsByUser(final User user) {
             return cache.findMatching(new CacheMatcher<Signal>() {
@@ -380,6 +607,13 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * finds all the signals (notifications) that are
+         * sent to the provided user and are about the target id.
+         * @param userId the users that you want to get signals of.
+         * @param targetId the targetId that we are looking for.
+         * @return A list of the tasks that match.
+         */
         @Override
         public List<Signal> findSignalsByUserAndTargetIds(final String userId, final String targetId) {
             return cache.findMatching(new CacheMatcher<Signal>() {
@@ -394,6 +628,12 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
             });
         }
 
+        /**
+         * get a user by it's username first on server, then
+         * if that fails, in the cache.
+         * @param username the username of the user
+         * @return the user with username username.
+         */
         @Override
         public User getUser(final String username) {
             List<User> results = cache.findMatching(new CacheMatcher<User>() {

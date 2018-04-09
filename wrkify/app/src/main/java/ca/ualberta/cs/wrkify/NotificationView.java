@@ -25,9 +25,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.IOException;
-
-
 /**
  * View displaying a NotificationInfo object.
  * A NotificationView has an Action button and a Dismiss button.
@@ -162,10 +159,16 @@ public class NotificationView extends ConstraintLayout {
         });
     }
 
+    /**
+     * removes the signals associated with a task
+     */
     private void destroyAssociatedSignals() {
         this.new DestroySignalTask().execute();
     }
 
+    /**
+     * the AsyncTask to asynchronously destroy the signals associated with a task
+     */
     private class DestroySignalTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {

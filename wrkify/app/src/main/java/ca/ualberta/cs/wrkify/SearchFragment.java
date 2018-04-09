@@ -17,11 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
-
-import android.app.ActionBar;
-import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -29,24 +25,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toolbar;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,6 +136,10 @@ public class SearchFragment extends Fragment {
         this.recycler.setAdapter(newAdapter);
     }
 
+    /**
+     * refresh the search results when
+     * the activity resumes.
+     */
     @Override
     public void onResume() {
         super.onResume();
