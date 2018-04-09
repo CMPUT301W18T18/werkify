@@ -84,9 +84,7 @@ public abstract class TaskListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         this.refresh();
-
     }
 
     /**
