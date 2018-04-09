@@ -66,7 +66,7 @@ abstract class AbstractIntentTest<T extends Activity> {
         WrkifyClient.setInstance(new CachingClient<>(client));
         this.createMockData(client);
 
-        this.session = new MockSession(getInitialSessionUser());
+        this.session = new MockSession(client, getInitialSessionUser());
         Session.setInstance(session);
 
         if (shouldStartAutomatically()) {

@@ -124,7 +124,7 @@ public class TaskTransactionsTest {
     @Test
     public void testAddBid() {
         Bid b1 = new Bid(new Price(5.0), this.u2);
-        TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
+        TaskAddOrReplaceBidTransaction t = new TaskAddOrReplaceBidTransaction(this.t1, null, b1);
 
         Boolean status;
 
@@ -142,7 +142,7 @@ public class TaskTransactionsTest {
     @Test
     public void TestCancelBid() {
         Bid b1 = new Bid(new Price(5.0), this.u2);
-        TaskAddBidTransaction t = new TaskAddBidTransaction(this.t1, b1);
+        TaskAddOrReplaceBidTransaction t = new TaskAddOrReplaceBidTransaction(this.t1, null, b1);
         TaskCancelBidTransaction t2 = new TaskCancelBidTransaction(this.t1, b1);
 
         t2.apply(this.t1);
@@ -204,7 +204,7 @@ public class TaskTransactionsTest {
         Boolean status;
         status = t.applyTo(this.t1);
         assertTrue(status);
-        assertEquals(TaskStatus.BIDDED, this.t1.getStatus());
+        assertEquals(TaskStatus.REQUESTED, this.t1.getStatus());
 
         status = t.applyTo(this.t1);
         assertFalse(status);

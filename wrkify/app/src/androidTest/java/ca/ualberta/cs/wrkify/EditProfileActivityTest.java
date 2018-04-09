@@ -110,7 +110,6 @@ public class EditProfileActivityTest extends AbstractIntentTest<EditProfileActiv
      * Set an empty phone number.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testEmptyPhoneNumber() {
         onView(withId(R.id.editProfilePhoneField)).perform(clearText());

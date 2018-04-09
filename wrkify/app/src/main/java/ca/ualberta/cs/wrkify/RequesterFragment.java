@@ -82,6 +82,7 @@ public class RequesterFragment extends TasksOverviewFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // update the list
+        super.onActivityResult(requestCode, resultCode, data);
         this.adapter.refreshRequested();
     }
 

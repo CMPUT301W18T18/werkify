@@ -179,7 +179,7 @@ public class Session {
         } catch (FileNotFoundException e) {
             this.user = null;
         } catch (IOException e) {
-            throw new RuntimeException();
+            this.user = null;
         }
     }
 }

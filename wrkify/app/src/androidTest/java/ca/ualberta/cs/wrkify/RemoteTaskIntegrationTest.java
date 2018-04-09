@@ -33,7 +33,7 @@ public class RemoteTaskIntegrationTest {
     public void testGetRequester() {
         RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
-        User use = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");
+        User use = rc.create(User.class, "peter", "peter@example.com", "7805555555");
         Task task = rc.create(Task.class, "mow my lawn", use, "mow my lawn");
 
         assertNotEquals(null, use);

@@ -43,6 +43,28 @@ public class Task extends RemoteObject {
     private TaskStatus status;
     private Bid acceptedBid;
 
+    public static void verifyTitle(String title) {
+        if (title.length() > 32) {
+            throw new IllegalArgumentException("Title too long");
+        } else if (title.trim().length() <= 0) {
+            throw new IllegalArgumentException("Title cannot be empty");
+        }
+    }
+
+    public static void verifyDescription(String description) {
+        if (description.length() > 512) {
+            throw new IllegalArgumentException("Description too long");
+        }
+    }
+
+    public static void verifyChecklist(CheckList checkList) {
+        for (CheckList.CheckListItem item: checkList.getItems()) {
+            if (item.getDescription().trim().length() == 0) {
+                throw new IllegalArgumentException("Checklist item cannot be empty");
+            }
+        }
+    }
+
     /**
      * the internalSetTitle function provides a private/final
      * way of setting title, for the use of constructors/setters
@@ -51,13 +73,8 @@ public class Task extends RemoteObject {
      * @throws IllegalArgumentException when constraints are violated
      */
     private void internalSetTitle(String title) throws IllegalArgumentException {
-        if (title.length() > 32) {
-            throw new IllegalArgumentException("Title too long");
-        } else if (title.trim().length() <= 0) {
-            throw new IllegalArgumentException("Title cannot be empty");
-        } else {
-            this.title = title.trim();
-        }
+        verifyTitle(title);
+        this.title = title.trim();
     }
 
     /**
@@ -68,11 +85,8 @@ public class Task extends RemoteObject {
      * @throws IllegalArgumentException when constraints are violated
      */
     private void internalSetDescription(String description) {
-        if (description.length() > 512) {
-            throw new IllegalArgumentException("Description too long");
-        } else {
-            this.description = description.trim();
-        }
+        verifyDescription(description);
+        this.description = description.trim();
     }
 
     /**
@@ -259,6 +273,16 @@ public class Task extends RemoteObject {
         }
     }
 
+    public void replaceBid(Bid target, Bid bid) {
+        if (target != null) {
+            int index = bidList.indexOf(target);
+            bidList.remove(target);
+            bidList.add(index, bid);
+        } else {
+            addBid(bid);
+        }
+    }
+
     @Nullable
     public Bid getBidForUser(User user) {
         for (Bid bid: this.bidList) {
@@ -327,8 +351,9 @@ public class Task extends RemoteObject {
     public void unassign() {
         if (this.status == TaskStatus.ASSIGNED) {
             this.provider = null;
-            this.status = TaskStatus.BIDDED;
+            this.status = TaskStatus.REQUESTED;
             this.acceptedBid = null;
+            this.bidList.clear();
         } else {
             throw new UnsupportedOperationException("cannot unassign when already unassigned");
         }

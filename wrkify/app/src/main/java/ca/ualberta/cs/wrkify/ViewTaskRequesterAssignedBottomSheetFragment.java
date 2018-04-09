@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.FragmentManager;
@@ -66,14 +67,11 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             public void onConfirm() {
                                 task.complete();
 
-                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-                                transactionManager.enqueue(new TaskCompleteTransaction(task));
+                                new TransactionAsyncTask().execute(
+                                        task, new TaskCompleteTransaction(task), getContext());
 
-                                // TODO notify of offline status
-                                transactionManager.flush(WrkifyClient.getInstance());
-
-                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+
                                 collapse();
                             }
                         });
@@ -91,13 +89,9 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             public void onConfirm() {
                                 task.unassign();
 
-                                TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-                                transactionManager.enqueue(new TaskUnassignTransaction(task));
+                                new TransactionAsyncTask().execute(
+                                        task, new TaskUnassignTransaction(task), getContext());
 
-                                // TODO notify of offline status
-                                transactionManager.flush(WrkifyClient.getInstance());
-
-                                WrkifyClient.getInstance().updateCached(task);
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
                                 collapse();
                             }
@@ -107,6 +101,8 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
             }
         });
     }
+
+
 
     @Override
     protected String getStatusString() {

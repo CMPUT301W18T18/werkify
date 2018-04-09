@@ -18,9 +18,11 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -76,30 +78,46 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     private void initializeFromUser(User user) {
         this.user = user;
-        refreshUser();
-
-        TextView username = findViewById(R.id.UserName);
-        TextView email = findViewById(R.id.email);
-        TextView phonenumber = findViewById(R.id.PhoneNumber);
-
-        username.setText(user.getUsername());
-        email.setText(user.getEmail());
-        //TODO phone number formating
-        phonenumber.setText(user.getPhoneNumber());
-
-        //TODO FAB hidden if user is not us
+        this.new InitializeFromUserTask().execute();
     }
 
     /**
-     * Re-downloads the user being viewed from the remote server.
-     * This ensures the profile being viewed is up to date.
+     * InitializeFromUserTask is an AsyncTask that that
+     * refreshes the user then displays the user information.
      */
-    private void refreshUser() {
-        try {
-            ((CachingClient) WrkifyClient.getInstance()).discardCached(this.user.getId());
-            this.user = (User) WrkifyClient.getInstance().download(this.user.getId(), this.user.getClass());
-        } catch (IOException e) {
-            // TODO You are offline.
+    private class InitializeFromUserTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * refresh the user
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                ((CachingClient) WrkifyClient.getInstance()).discardCached(user.getId());
+                user = (User) WrkifyClient.getInstance().download(user.getId(), user.getClass());
+            } catch (IOException e) {
+                // TODO You are offline.
+            }
+
+            return null;
+        }
+
+        /**
+         * after the user has been refreshed, display it's
+         * information
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            TextView username = findViewById(R.id.UserName);
+            TextView email = findViewById(R.id.email);
+            TextView phonenumber = findViewById(R.id.PhoneNumber);
+
+            username.setText(user.getUsername());
+            email.setText(user.getEmail());
+            //TODO phone number formating
+            phonenumber.setText(PhoneNumberUtils.formatNumber(user.getPhoneNumber(), "US"));
         }
     }
 }

@@ -54,9 +54,9 @@ public class SearcherTest {
             rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
             searcher = rc.getSearcher();
 
-            user1 = rc.create(User.class, "peter", "peter@a.com", "1");
-            user2 = rc.create(User.class, "taylor", "taylor@a.com", "2");
-            user3 = rc.create(User.class, "john", "john@a.com", "3");
+            user1 = rc.create(User.class, "peter", "peter@a.com", "1111111111");
+            user2 = rc.create(User.class, "taylor", "taylor@a.com", "2222222222");
+            user3 = rc.create(User.class, "john", "john@a.com", "3333333333");
 
             task1 = rc.create(Task.class, "task 1", user1, "do nothing");
             task2 = rc.create(Task.class, "task 2", user1, "blah");

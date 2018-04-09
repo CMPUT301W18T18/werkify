@@ -35,8 +35,12 @@
     <string name="checklist_editor_delete_description">Delete item</string>
     <string name="login_fail">Account not found.</string>
     <string name="no_internet">Cannot connect to server.</string>
+<<<<<<< HEAD
     <string name="bad_user_info">Invalid name, email, or phone number</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_set_task_location">SetTaskLocationActivity</string>
     <string name="title_activity_test_maps">testMap</string>
+=======
+    <string name="register_failed">Registration failed</string>
+>>>>>>> 70563cc97bbbc958724aac246ad6480235934483
 </resources>

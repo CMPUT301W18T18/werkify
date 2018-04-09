@@ -75,7 +75,7 @@ public class ViewProfileActivityTest extends AbstractIntentTest<ViewProfileActiv
 
         onView(withId(R.id.UserName)).check(matches(withText("User2")));
         onView(withId(R.id.email)).check(matches(withText("user2@example.com")));
-        onView(withId(R.id.PhoneNumber)).check(matches(withText("5830275947")));
+        onView(withId(R.id.PhoneNumber)).check(matches(withText("(583) 027-5947")));
 
         onView(withId(R.id.editButton)).check(matches(not(isDisplayed())));
     }

@@ -39,7 +39,8 @@ class MockSession extends Session {
      * Creates a MockSession with the given User logged in.
      * @param user initial session user (null for logged out)
      */
-    public MockSession(@Nullable User user) {
+    public MockSession(RemoteClient client, @Nullable User user) {
+        super(client);
         this.user = user;
     }
 
