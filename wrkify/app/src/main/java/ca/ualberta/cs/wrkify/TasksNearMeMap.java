@@ -66,7 +66,12 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     private HashMap<Marker,Task> markerTaskHashMap;
     private CardView taskCardView;
 
-
+    /**
+     * Override android standard onCreate, gets the last known location
+     * of the device, and sets the google map map fragment
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +87,10 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         mapFragment.getMapAsync(this);
     }
 
+    /**
+     *
+     * @param outState
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (mMap != null) {
@@ -153,7 +162,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                 }
             }
         }
-        updateLocationUI();
+//        updateLocationUI();
     }
 
     public void getCurrentLocation(){

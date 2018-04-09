@@ -48,7 +48,6 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
     private GoogleMap mMap;
     private CameraPosition cameraPosition;
     private LatLng defaultLocation = new LatLng(53.509,-113.5);
-//    private LatLng defaultTestLocation = new LatLng(53.50)
     private Location lastKnownLocation;
     private FusedLocationProviderClient mFusedLocationClient;
     private static final int DEFAULT_ZOOM = 14;
