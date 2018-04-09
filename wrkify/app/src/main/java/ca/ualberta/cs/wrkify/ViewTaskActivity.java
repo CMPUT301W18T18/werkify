@@ -153,6 +153,10 @@ public class ViewTaskActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
 
+            // Set the task title
+            TextView titleView = findViewById(R.id.taskViewTitle);
+            titleView.setText(task.getTitle());
+
             // Set the task user view
             UserView userView = findViewById(R.id.taskViewUser);
             if (remoteRequester != null) {
