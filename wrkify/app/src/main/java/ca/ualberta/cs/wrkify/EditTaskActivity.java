@@ -159,7 +159,6 @@ public class EditTaskActivity extends AppCompatActivity {
          */
         public void save(Task task) {
             flushDeletions();
-            uploadLocalImages(task);
         }
 
         /**
@@ -173,30 +172,6 @@ public class EditTaskActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        }
-
-        /**
-         * Upload local images who haven't been uploaded yet
-         * @param task Task to upload images to
-         */
-        private void uploadLocalImages(Task task) {
-            int thumbnailIndexOffset = remoteImages.size();
-            for (int i = 0; i < localImages.size(); i++) {
-                //CompressedBitmap uploadedImage = ImageUtilities.convertToRemote(localImages.get(i));
-                //remoteImages.add(uploadedImage.<CompressedBitmap>reference());
-
-                int thumbnailIndex = i + thumbnailIndexOffset;
-                //CompressedBitmap uploadedThumbnail = ImageUtilities.convertToRemote(thumbnails.get(thumbnailIndex));
-                //thumbnails.set(thumbnailIndex, uploadedThumbnail);
-            }
-            localImages.clear();
-            ArrayList<RemoteReference<CompressedBitmap>> newRemoteThumbnails = new ArrayList<>();
-            for (int i = 0; i < thumbnails.size(); i++) {
-                newRemoteThumbnails.add(thumbnails.get(i).<CompressedBitmap>reference());
-            }
-
-            task.setRemoteImages(remoteImages);
-            task.setRemoteThumbnails(newRemoteThumbnails);
         }
 
 
@@ -652,38 +627,15 @@ public class EditTaskActivity extends AppCompatActivity {
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
 
-        if (this.taskIsNew) {
-            /*this.task = WrkifyClient.getInstance()
-                    .create(Task.class,
-                            this.titleField.getText().toString(),
-                            Session.getInstance(this).getUser(),
-                            this.descriptionField.getText().toString()
-                    );
-
-            */
-            imageManager.save(this.task);
-            task.setCheckList(this.checkList);
-            //WrkifyClient.getInstance().upload(task);
-        } else {
-            imageManager.save(this.task);
-            task.setTitle(titleField.getText().toString());
-            task.setDescription(descriptionField.getText().toString());
-            //WrkifyClient.getInstance().upload(this.task);
-        }
-
-        if (task == null){
-            saveEnabled = true;
-            return;
-        }
 
         Intent intent = getIntent();
         intent.putExtra(EXTRA_RETURNED_TASK, this.task);
 
         if (taskIsNew) setResult(RESULT_TASK_CREATED, intent);
         else setResult(RESULT_OK, intent);
-
-        finish();
         this.new EditTaskTask().execute();
+        finish();
+
     }
 
     /**
