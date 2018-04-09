@@ -36,4 +36,9 @@
     <string name="login_fail">Account not found.</string>
     <string name="no_internet">Cannot connect to server.</string>
     <string name="register_failed">Registration failed</string>
+    <string name="get_image_dialog_title">Get image from:</string>
+    <string-array name="get_image_dialog_choices">
+        <item>Camera</item>
+        <item>Gallery</item>
+    </string-array>
 </resources>

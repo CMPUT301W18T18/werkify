@@ -18,16 +18,23 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,9 +42,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * Activity for a task requester to edit a task that they own
@@ -196,6 +208,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private ImageManager imageManager;
     private TaskImageListAdapter adapter;
     private ActionMode currentAction;
+    private String currentImagePath;
 
     private static final int REQUEST_IMAGE_CAMERA = 1;
     private static final int REQUEST_IMAGE_GALLERY = 2;
@@ -214,7 +227,31 @@ public class EditTaskActivity extends AppCompatActivity {
         this.checkListNewButton = findViewById(R.id.editTaskButtonChecklistNew);
         this.checkListAddButton = findViewById(R.id.editTaskButtonChecklistAdd);
 
+        //Set up image stuff
         imageManager = new ImageManager();
+        recyclerView = findViewById(R.id.editTaskImageRecyclerView);
+        adapter = new TaskImageListAdapter(imageManager.thumbnails) {
+            @Override
+            public void buttonClicked(int position) {
+                if (currentAction == null) {
+                    showImage(position);
+                } else {
+                    toggleSelected(position);
+                    updateSelectionCount();
+                }
+            }
+
+            @Override
+            public void buttonLongClicked(int position) {
+                if (currentAction == null) {
+                    startSelectionMode();
+                    toggleSelected(position);
+                    updateSelectionCount();
+                }
+            }
+        };
+
+
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
 
         if (this.task == null) {
@@ -277,6 +314,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
         MenuItem saveItem = menu.findItem(R.id.menuItemSaveTask);
         MenuItem deleteItem = menu.findItem(R.id.menuItemDeleteTask);
+        MenuItem addImage = menu.findItem(R.id.menuItemAddPhoto);
 
         if (this.taskIsNew) {
             // Set up menu for new task:
@@ -319,7 +357,173 @@ public class EditTaskActivity extends AppCompatActivity {
                 }
             });
 
+        addImage.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                clickedAddPhoto();
+                return true;
+            }
+        });
+
         return true;
+    }
+
+    /**
+     * When the delete action mode is active, updates the count text in the action bar
+     */
+    private void updateSelectionCount() {
+        if (currentAction != null) {
+            if (adapter.numberSelected() == 0) {
+                currentAction.finish();
+                return;
+            }
+            currentAction.setTitle(adapter.numberSelected() + " selected");
+        }
+    }
+
+    private void startSelectionMode() {
+        ActionMode.Callback callback = new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(final ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.deletion_menu, menu);
+                MenuItem deleteButton = menu.findItem(R.id.deleteImagesMenuButton);
+                deleteButton.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        imageManager.deleteFromIds(adapter.getSelectedIds());
+                        adapter.animateDeletions();
+                        mode.finish();
+                        return true;
+                    }
+                });
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                adapter.deselectAll();
+                currentAction = null;
+
+            }
+        };
+        currentAction = startActionMode(callback);
+    }
+
+    /**
+     * Opens alert dialog asking for an image source (camera or gallery)
+     */
+    private void clickedAddPhoto() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.get_image_dialog_title).setItems(R.array.get_image_dialog_choices, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        openCamera();
+                        break;
+
+                    case 1:
+                        openGallery();
+                        break;
+                }
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+    }
+
+    /**
+     * @return new Image file that you can write to
+     * @throws IOException
+     */
+    private File makeNewImage() throws IOException {
+        //Taken from https://developer.android.com/training/camera/photobasics.html
+        String time = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String filename = "wrkify_" + time;
+        String extension = ".jpg";
+
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(filename, extension, storageDir);
+        currentImagePath = imageFile.getAbsolutePath();
+        return imageFile;
+    }
+
+    /**
+     * Requests a new image from the camera app, launches the app
+     */
+    private void openCamera() {
+        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (i.resolveActivity(getPackageManager()) != null) {
+            try {
+                File imageFile = makeNewImage();
+                Uri uri = FileProvider.getUriForFile(this, "ca.ualberta.cs.wrkify.fileprovider", imageFile);
+                i.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                startActivityForResult(i, REQUEST_IMAGE_CAMERA);
+            } catch (IOException e) {
+                Log.e("EditTaskActivity", e.toString());
+            }
+
+        }
+    }
+
+    /**
+     * Requests a new image from the gallery app, launches the app
+     */
+    private void openGallery() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.setType("image/*");
+        if (i.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(i, REQUEST_IMAGE_GALLERY);
+        }
+    }
+
+    /**
+     * Opens the specified image in a viewing app
+     * @param position Position of image you want to view
+     */
+    private void showImage(int position) {
+        Bitmap bm = null;
+        CompressedBitmap cb = imageManager.getImage(position);
+        if (cb == null) {
+            return;
+        }
+        bm = cb.getBitmap();
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setType("image/*");
+
+        try {
+            File dir = new File(getCacheDir(), "dataHere");
+            dir.mkdir();
+            File f = new File(dir, "sending.png");
+
+            FileOutputStream fos = new FileOutputStream(f);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.PNG, 100, os);
+            fos.write(os.toByteArray());
+            fos.close();
+
+            Uri uri = FileProvider.getUriForFile(this, "ca.ualberta.cs.wrkify.fileprovider", f);
+            i.setData(uri);
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(i);
+
+        } catch (IOException e) {
+            Log.e("EditTaskActivity", e.toString());
+        }
+
+
     }
 
     /**
