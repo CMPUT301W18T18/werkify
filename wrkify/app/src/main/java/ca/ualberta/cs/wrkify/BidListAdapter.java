@@ -498,7 +498,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
             task.acceptBid(data.get(position));
 
-            int resultCode;
             TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
             transactionManager.enqueue(new TaskAcceptBidTransaction(task, data.get(position)));
 

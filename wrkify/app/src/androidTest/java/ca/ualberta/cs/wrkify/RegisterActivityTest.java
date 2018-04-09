@@ -103,7 +103,6 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
      * Register with empty phone number.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testEmptyPhoneNumber() {
         registerWith("newUser", "new-user@example.com", "");
@@ -128,7 +127,6 @@ public class RegisterActivityTest extends AbstractIntentTest<RegisterActivity> {
      * Register with an already-registered username.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testUnavailableUsername() {
         registerWith("existingUser", "new-user@example.com", "1938059920");

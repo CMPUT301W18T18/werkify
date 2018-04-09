@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -207,8 +208,37 @@ public class EditTaskActivity extends AppCompatActivity {
      * else RESULT_OK if the task exists and has been edited.
      */
     private void saveAndFinish() {
+        boolean valid = true;
+
         View focus = getCurrentFocus();
         if (focus != null) { focus.clearFocus(); }
+
+        try {
+            Task.verifyTitle(titleField.getText().toString());
+        } catch (IllegalArgumentException e) {
+            titleField.setError(e.getMessage());
+            valid = false;
+        }
+
+        try {
+            Task.verifyDescription(descriptionField.getText().toString());
+        } catch (IllegalArgumentException e) {
+            descriptionField.setError(e.getMessage());
+            valid = false;
+        }
+
+        try {
+            Task.verifyChecklist(checkList);
+        } catch (IllegalArgumentException e) {
+            Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                    e.getMessage(), Snackbar.LENGTH_LONG);
+            snack.setAction("Action", null);
+            snack.show();
+            valid = false;
+        }
+
+        if (!valid) { return; }
+
         this.new EditTaskTask().execute();
     }
 

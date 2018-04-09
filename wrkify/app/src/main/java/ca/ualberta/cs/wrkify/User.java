@@ -14,6 +14,8 @@
  */
 package ca.ualberta.cs.wrkify;
 
+import android.telephony.PhoneNumberUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,32 @@ public class User extends RemoteObject {
             + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\."
             + "[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
+
+    public static void verifyUsername(String username) {
+        // from https://stackoverflow.com/questions/4067809/ (2018-02-26)
+        Pattern pattern = Pattern.compile("\\s");
+        Matcher matcher = pattern.matcher(username);
+
+        if (matcher.find()) {
+            throw new IllegalArgumentException("Username cannot contain whitespace");
+        } else if (username.length() > 24) {
+            throw new IllegalArgumentException("Username too long");
+        } else if (username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty");
+        }
+    }
+
+    public static void verifyEmail(String email) {
+        if (!email.matches(emailRegex)) {
+            throw new IllegalArgumentException("Not a valid email address");
+        }
+    }
+
+    public static void verifyPhoneNumber(String phoneNumber) {
+        if (PhoneNumberUtils.formatNumber(phoneNumber, "US") == null) {
+            throw new IllegalArgumentException("Not a valid phone number");
+        }
+    }
 
     /**
      * creates a user from username, email, phoneNumber
@@ -63,19 +91,9 @@ public class User extends RemoteObject {
      * @throws IllegalArgumentException when restrictions are violated.
      */
     private final void InternalSetUsername(String username) throws IllegalArgumentException {
-        // from https://stackoverflow.com/questions/4067809/ (2018-02-26)
-        Pattern pattern = Pattern.compile("\\s");
-        Matcher matcher = pattern.matcher(username);
+        verifyUsername(username);
 
-        if (matcher.find()) {
-            throw new IllegalArgumentException("username cannot contain whitespace");
-        } else if (username.length() > 24) {
-            throw new IllegalArgumentException("username too long");
-        } else if (username.isEmpty()) {
-            throw new IllegalArgumentException("username cannot be empty");
-        } else {
-            this.username = username;
-        }
+        this.username = username;
     }
 
     /**
@@ -89,11 +107,9 @@ public class User extends RemoteObject {
      * @throws IllegalArgumentException when email is not an email
      */
     private final void InternalSetEmail(String email) throws IllegalArgumentException {
-        if (!email.matches(emailRegex)) {
-            throw new IllegalArgumentException("email does not appear to be valid");
-        } else {
-            this.email = email;
-        }
+        verifyEmail(email);
+
+        this.email = email;
     }
 
     /**
@@ -105,7 +121,10 @@ public class User extends RemoteObject {
      * @param phoneNumber
      */
     private final void InternalSetPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber.replaceAll("[^\\d]", "");
+        // TODO Uncommenting this makes User untestable
+        // verifyPhoneNumber(phoneNumber);
+
+        this.phoneNumber = phoneNumber;
     }
 
     /**

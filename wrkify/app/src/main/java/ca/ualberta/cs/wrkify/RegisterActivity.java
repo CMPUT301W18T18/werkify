@@ -20,7 +20,6 @@ package ca.ualberta.cs.wrkify;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,7 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import static ca.ualberta.cs.wrkify.LoginActivity.EXTRA_SESSION_USER;
+import java.io.IOException;
 
 /**
  * Allows a user to register.
@@ -94,6 +93,31 @@ public class RegisterActivity extends Activity {
      * @param phoneNumber the phone number to register with
      */
     private void tryRegisterAndFinish(String username, String email, String phoneNumber) {
+        boolean valid = true;
+
+        try {
+            User.verifyUsername(username);
+        } catch (IllegalArgumentException e) {
+            registerField.setError(e.getMessage());
+            valid = false;
+        }
+
+        try {
+            User.verifyEmail(email);
+        } catch (IllegalArgumentException e) {
+            registerEmail.setError(e.getMessage());
+            valid = false;
+        }
+
+        try {
+            User.verifyPhoneNumber(phoneNumber);
+        } catch (IllegalArgumentException e) {
+            registerPhonenumber.setError(e.getMessage());
+            valid = false;
+        }
+
+        if (!valid) { return; }
+
         this.new RegisterTask().execute(username, email, phoneNumber);
     }
 
@@ -116,6 +140,15 @@ public class RegisterActivity extends Activity {
             String phoneNumber = strings[2];
 
             RemoteClient rc = WrkifyClient.getInstance();
+
+            try {
+                if (rc.getSearcher().getUser(username) != null) {
+                    return null;
+                }
+            } catch (IOException e) {
+                return null;
+            }
+
             session = Session.getInstance(RegisterActivity.this, rc);
             return rc.create(User.class, username, email, phoneNumber);
         }
@@ -133,7 +166,7 @@ public class RegisterActivity extends Activity {
                 finish();
             } else {
                 Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
-                        R.string.bad_user_info, Snackbar.LENGTH_LONG);
+                        R.string.register_failed, Snackbar.LENGTH_LONG);
                 snack.setAction("Action", null);
                 snack.show();
             }

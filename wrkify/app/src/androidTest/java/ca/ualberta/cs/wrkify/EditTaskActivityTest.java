@@ -258,11 +258,11 @@ public class EditTaskActivityTest extends AbstractIntentTest<EditTaskActivity> {
      * Create a task with no title.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testNewTaskInvalidTitle() {
         launchActivityWithTask();
 
+        onView(withId(R.id.editTaskTitleField)).perform(clearText());
         onView(withId(R.id.menuItemSaveTask)).perform(click());
 
         assertActivityNotFinished();
@@ -272,7 +272,6 @@ public class EditTaskActivityTest extends AbstractIntentTest<EditTaskActivity> {
      * Save an edited task with no title.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testEditTaskInvalidTitle() {
         launchActivityWithTask();

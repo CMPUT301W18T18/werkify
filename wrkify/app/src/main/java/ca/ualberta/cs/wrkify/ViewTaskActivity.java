@@ -168,7 +168,7 @@ public class ViewTaskActivity extends AppCompatActivity {
 
         // Initialize the checklist view
         final CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
-        checkListProviderView.setEditingEnabled(sessionUserIsProvider);
+        checkListProviderView.setEditingEnabled(sessionUserIsProvider && task.getStatus() == TaskStatus.ASSIGNED);
         checkListProviderView.setCheckList(task.getCheckList());
         checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
 
@@ -253,7 +253,11 @@ public class ViewTaskActivity extends AppCompatActivity {
         }
         switch(task.getStatus()) {
             case REQUESTED:
-            case BIDDED: return new ViewTaskOpenBottomSheetFragment();
+            case BIDDED: if (task.getBidForUser(Session.getInstance(this).getUser()) != null) {
+                    return new ViewTaskProviderBiddedBottomSheetFragment();
+                } else {
+                    return new ViewTaskOpenBottomSheetFragment();
+                }
             case ASSIGNED: return new ViewTaskAssignedBottomSheetFragment();
             case DONE: return new ViewTaskDoneBottomSheetFragment();
         }

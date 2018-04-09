@@ -34,7 +34,7 @@ public class RemoteUserIntegrationTest {
     public void testCreateGetDelete() {
         RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
-        User cto = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");
+        User cto = rc.create(User.class, "peter", "peter@example.com", "7805555555");
 
         assertEquals("peter", cto.getUsername());
         assertEquals("peter@example.com", cto.getEmail());

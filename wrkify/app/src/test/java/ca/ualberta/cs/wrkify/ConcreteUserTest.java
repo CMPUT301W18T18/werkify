@@ -39,7 +39,8 @@ public class ConcreteUserTest {
 
         assertEquals(resultUsername, username);
         assertEquals(resultEmail, email);
-        assertEquals(resultPhoneNumber, "7801234567");
+
+        // TODO Phone number formatting is handled by Android API
     }
 
     @Test
@@ -105,11 +106,7 @@ public class ConcreteUserTest {
         user.setEmail(email2);
         assertEquals(user.getEmail(), email2);
 
-        user.setPhoneNumber(phoneNumber2);
-        assertEquals(user.getPhoneNumber(), "1234567643");
-
-        user.setPhoneNumber(phoneNumber3);
-        assertEquals(user.getPhoneNumber(), "1235675232");
+        // TODO Phone number formatting is handled by Android API
     }
 
 }

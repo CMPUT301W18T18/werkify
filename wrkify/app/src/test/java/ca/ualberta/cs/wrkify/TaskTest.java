@@ -176,7 +176,7 @@ public class TaskTest {
         assertEquals(TaskStatus.ASSIGNED, concTask.getStatus());
 
         concTask.unassign();
-        assertEquals(TaskStatus.BIDDED, concTask.getStatus());
+        assertEquals(TaskStatus.REQUESTED, concTask.getStatus());
     }
 
     @Test

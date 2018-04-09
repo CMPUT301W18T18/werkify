@@ -25,24 +25,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TaskAddBidTransaction models adding a bid to
- * a task.
+ * TaskAddOrReplaceBidTransaction models adding a bid to
+ * a task, replacing the bidding user's existing bid if it exists.
  *
  * @see Task
  * @see StateChangeTransaction
  */
 
-public class TaskAddBidTransaction extends StateChangeTransaction<Task> {
+public class TaskAddOrReplaceBidTransaction extends StateChangeTransaction<Task> {
     private Bid bid;
+    private Bid replaceTarget;
 
     /**
-     * create a TaskAddBidTransaction with a bid to add
+     * create a TaskAddOrReplaceBidTransaction with a bid to add
      * @param task the task your are adding a bid to
      * @param bid the bid you are adding to task
      */
-    public TaskAddBidTransaction(Task task, Bid bid) {
+    public TaskAddOrReplaceBidTransaction(Task task, Bid replaceTarget, Bid bid) {
         super(task, Task.class);
         this.bid = bid;
+        this.replaceTarget = replaceTarget;
     }
 
     /**
@@ -52,7 +54,7 @@ public class TaskAddBidTransaction extends StateChangeTransaction<Task> {
      */
     protected Boolean apply(Task task) {
         try {
-            task.addBid(this.bid);
+            task.replaceBid(replaceTarget, bid);
             return true;
         } catch (UnsupportedOperationException e) {
             return false;

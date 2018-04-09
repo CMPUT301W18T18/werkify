@@ -213,7 +213,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * Place an invalid bid on an unbidded task.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testInvalidBid() {
         launchActivityWith(otherUser, unbiddedTask);
@@ -231,7 +230,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
         onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
-        onView(withText("Bid")).check(matches(not(isDisplayed())));
+        onView(withText("Bid")).check(doesNotExist());
 
         closeSoftKeyboard();
 
@@ -301,11 +300,31 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         show your bid
      *         allow replacing your bid
      */
-    @Ignore("Not implemented")
     @Test
     public void testViewSelfBiddedTask() {
-        // TODO This isn't implemented, so not testing
-        fail();
+        launchActivityWith(provider, biddedTask);
+
+        checkTaskDetails(biddedTask);
+        assertNoEditButton();
+        assertChecklistStatic();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Bidded", "2 bids", "$10.00", "Your bid: $10.00");
+
+        placeBid("8.00");
+
+        pressBackUnconditionally();
+        assertActivityFinished();
+
+        try {
+            Task editedTask = getClient().download(biddedTask.getId(), Task.class);
+
+            assertEquals(TaskStatus.BIDDED, editedTask.getStatus());
+            assertEquals(2, editedTask.getBidList().size());
+            assertEquals(new Price("8.00"), editedTask.getBidForUser(provider).getValue());
+            assertEquals(new Price(12.00), editedTask.getBidForUser(otherBidder).getValue());
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     /**
@@ -457,7 +476,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         remove current bids
      * Requires deactivating animations.
      */
-    @Ignore("Bids are not removed")
     @Test
     public void testDeassignTask() {
         testViewOwnAssignedTask();
@@ -510,7 +528,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         show status CLOSED
      *         show the assignee
      */
-    @Ignore("Checklist is currently shown?")
     @Test
     public void testViewCompletedTask() {
         launchActivityWith(provider, closedTask);

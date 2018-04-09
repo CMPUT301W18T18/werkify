@@ -63,14 +63,25 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
      */
     private void confirmAndSubmitBid(View view) {
         final EditText bidField = view.findViewById(R.id.taskViewBottomSheetBidField);
+        final Price bidPrice;
+        try {
+            bidPrice = new Price(bidField.getText().toString());
+        } catch (NumberFormatException e) {
+            // invalid bid
+            return;
+        }
         ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
                     String.format(Locale.US, "Bid $%s on this task?", bidField.getText()),
                     "Cancel", "Bid",
                     new ConfirmationDialogFragment.OnConfirmListener() {
                         @Override
                         public void onConfirm() {
-                            new BidTask().execute(new Price(bidField.getText().toString()));
-                            collapse();
+                            try {
+                                new BidTask().execute(bidPrice);
+                                collapse();
+                            } catch (NumberFormatException e) {
+                                // invalid bid - continue
+                            }
                         }
                     }
         );
@@ -84,10 +95,13 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             Bid bid = new Bid(
                     prices[0],
                     Session.getInstance(getContext()).getUser());
-            task.addBid(bid);
+
+            User user = Session.getInstance(getContext()).getUser();
+            Bid userBid = task.getBidForUser(user);
+            task.replaceBid(userBid, bid);
 
             TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-            transactionManager.enqueue(new TaskAddBidTransaction(task, bid));
+            transactionManager.enqueue(new TaskAddOrReplaceBidTransaction(task, userBid, bid));
 
             // TODO notify of offline status
             transactionManager.flush(WrkifyClient.getInstance());
