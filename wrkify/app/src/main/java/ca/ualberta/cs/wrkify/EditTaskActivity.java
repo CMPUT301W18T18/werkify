@@ -25,6 +25,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -188,7 +190,16 @@ public class EditTaskActivity extends AppCompatActivity {
     private CheckListEditorView checkListEditorView;
     private Button checkListNewButton;
     private Button checkListAddButton;
+
+    //--------------------------------------------------------------------------------
+    private RecyclerView recyclerView;
     private ImageManager imageManager;
+    private TaskImageListAdapter adapter;
+    private ActionMode currentAction;
+
+    private static final int REQUEST_IMAGE_CAMERA = 1;
+    private static final int REQUEST_IMAGE_GALLERY = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
