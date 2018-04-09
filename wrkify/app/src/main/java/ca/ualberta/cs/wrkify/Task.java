@@ -341,8 +341,9 @@ public class Task extends RemoteObject {
     public void unassign() {
         if (this.status == TaskStatus.ASSIGNED) {
             this.provider = null;
-            this.status = TaskStatus.BIDDED;
+            this.status = TaskStatus.REQUESTED;
             this.acceptedBid = null;
+            this.bidList.clear();
         } else {
             throw new UnsupportedOperationException("cannot unassign when already unassigned");
         }
