@@ -32,6 +32,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ActionMode;
@@ -250,6 +251,11 @@ public class EditTaskActivity extends AppCompatActivity {
                 }
             }
         };
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
 
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
@@ -590,6 +596,43 @@ public class EditTaskActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAMERA && resultCode == RESULT_OK) {
+            try {
+                Uri uri = Uri.fromFile(new File(currentImagePath));
+                Bitmap image = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                if (image != null) {
+                    // https://stackoverflow.com/questions/8560501/android-save-image-into-gallery https://stackoverflow.com/a/8722494 (line below)
+                    MediaStore.Images.Media.insertImage(getContentResolver(), image, "Wrkify image", "Wrkify image");
+
+                    //Add to ImageManager, NOT Task
+                    CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(image, false);
+                    CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(image, false);
+
+                    imageManager.addImagePair(compressedThumbnail, compressedImage);
+                    adapter.notifyDataSetChanged();
+                }
+            } catch (IOException e) {
+                Log.e("EditTaskActivity", e.toString());
+            }
+            //Add the image
+        } else if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                CompressedBitmap compressedImage = ImageUtilities.makeCompressedImage(bm, false);
+                CompressedBitmap compressedThumbnail = ImageUtilities.makeCompressedThumbnail(bm, false);
+                imageManager.addImagePair(compressedThumbnail, compressedImage);
+                adapter.notifyDataSetChanged();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
