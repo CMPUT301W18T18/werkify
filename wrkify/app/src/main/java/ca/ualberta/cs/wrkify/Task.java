@@ -411,6 +411,11 @@ public class Task extends RemoteObject {
         this.remoteImages.remove(image);
     }
 
+    public void addImagePair(RemoteReference<CompressedBitmap> thumb, RemoteReference<CompressedBitmap> full) {
+        this.remoteThumbnails.add(thumb);
+        this.remoteImages.add(full);
+    }
+
 
 
 }

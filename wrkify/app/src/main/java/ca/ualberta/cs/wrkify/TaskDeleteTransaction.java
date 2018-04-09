@@ -17,6 +17,8 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 public class TaskDeleteTransaction extends Transaction<Task> {
@@ -26,6 +28,7 @@ public class TaskDeleteTransaction extends Transaction<Task> {
 
     @Override
     public boolean applyInClient(CachingClient client) throws IOException {
+        Log.i("TASK DELETE TRANSACTION", "Starting");
         Task task = (Task) client.downloadFromRemote(getId(), getType());
         if (task == null) { return false; }
         client.delete(task);

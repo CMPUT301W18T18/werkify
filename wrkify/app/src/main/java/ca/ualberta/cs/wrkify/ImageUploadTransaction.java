@@ -34,9 +34,9 @@ public class ImageUploadTransaction extends Transaction<CompressedBitmap> {
 
 
 
-        Log.i("-->", "id before: " + localBitmap.getId());
+        Log.i("--> (IMAGE UP)", "id before: " + localBitmap.getId());
         client.uploadNew(CompressedBitmap.class, localBitmap);
-        Log.i("-->", "id after: " +localBitmap.getId());
+        Log.i("--> (IMAGE UP)", "id after: " + localBitmap.getId());
         return true;
     }
 }

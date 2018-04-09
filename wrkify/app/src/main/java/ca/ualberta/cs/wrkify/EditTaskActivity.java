@@ -89,6 +89,18 @@ public class EditTaskActivity extends AppCompatActivity {
             return remoteImages.size();
         }
 
+        public int getLocalImagesSize() {
+            return localImages.size();
+        }
+
+        public CompressedBitmap[] getLocalPair(int index) {
+            CompressedBitmap[] arr = new CompressedBitmap[2];
+            int offset = getLocalThumbnailStartId();
+            arr[0] = thumbnails.get(index + offset);
+            arr[1] = localImages.get(index);
+            return arr;
+        }
+
         /**
          * @param list ArrayList of RemoteReferences to CompressedBitmaps
          */
@@ -99,8 +111,12 @@ public class EditTaskActivity extends AppCompatActivity {
         /**
          * @param thumbnails ArrayList of CompressedBitmaps representing thumbnails
          */
-        public void setThumbnails(ArrayList<CompressedBitmap> thumbnails) {
+        public void setThumbnails(ArrayList<CompressedBitmap> thumbnails) { //not documented (DELETE THE PRINTS)
+            Log.i("Set thumbs list", "Size: " + thumbnails.size());
             this.thumbnails = thumbnails;
+            for (int i = 0; i < thumbnails.size(); i++) {
+                Log.i("Set thumbs list", thumbnails.get(i) + "");
+            }
         }
 
         /**
@@ -251,14 +267,15 @@ public class EditTaskActivity extends AppCompatActivity {
                 }
             }
         };
+        this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
+
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-
-        this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
+        this.new DownloadImagesTask().execute();
 
         if (this.task == null) {
             // TODO this may or may not need to be changed to allow server connectivity
@@ -660,6 +677,7 @@ public class EditTaskActivity extends AppCompatActivity {
                         descriptionField.getText().toString()
                 );
                 task.setCheckList(checkList);
+                uploadAndAttachImages();
 
                 TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
                 transactionManager.enqueue(new TaskCreateTransaction(task));
@@ -670,6 +688,8 @@ public class EditTaskActivity extends AppCompatActivity {
                 resultCode = RESULT_TASK_CREATED;
             } else {
                 TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+
+                uploadAndAttachImages();
 
                 transactionManager.enqueue(new TaskTitleTransaction(task, newTitle));
                 transactionManager.enqueue(new TaskDescriptionTransaction(task, newDescription));
@@ -689,6 +709,22 @@ public class EditTaskActivity extends AppCompatActivity {
             return null;
         }
 
+        public void uploadAndAttachImages() { //TODO split this into more functions, make it work too
+            TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+
+            for (int i = 0; i < imageManager.getLocalImagesSize(); i++) {
+                CompressedBitmap[] arr = imageManager.getLocalPair(i);
+
+                transactionManager.enqueue(new ImageUploadTransaction(arr[0])); //thumb
+                transactionManager.enqueue(new ImageUploadTransaction(arr[1])); //image
+
+                transactionManager.enqueue(new ImageAttachTransaction(task, arr[0].<CompressedBitmap>reference(), arr[1].<CompressedBitmap>reference()));
+                task.addImagePair(arr[0].<CompressedBitmap>reference(), arr[1].<CompressedBitmap>reference());
+            }
+            WrkifyClient.getInstance().updateCached(task);
+
+        }
+
         /**
          * when the task has been uploaded, if it was sucessful,
          * finish the activity properly
@@ -703,6 +739,54 @@ public class EditTaskActivity extends AppCompatActivity {
             setResult(resultCode, intent);
 
             finish();
+        }
+    }
+
+    private class DownloadImagesTask extends AsyncTask<Void, Void, Void> { //not documented
+        private int resultCode;
+        /**
+         * change the task and upload it
+         * to the client
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (task == null) {
+                return null;
+            }
+            ArrayList<CompressedBitmap> thumbs = imageManager.thumbnails;
+            ArrayList<RemoteReference<CompressedBitmap>> references = task.getRemoteThumbnails();
+
+            Log.i("Downloading thumbnails", "" + references.size());
+
+            for (int i = 0; i < references.size(); i++) {
+                try {
+                    Log.i("Found in references", "" + references.get(i).getRefId());
+                    CompressedBitmap bitmap = (CompressedBitmap) WrkifyClient.getInstance().download(references.get(i).getRefId(), CompressedBitmap.class);
+                    thumbs.add(bitmap);
+                    Log.i("GOT THUMBNAIL:", "" + bitmap);
+                } catch (IOException e) {
+                    Log.e("DownloadImagesTask", "Failed to get thumbnails");
+                }
+            }
+
+            imageManager.setThumbnails(thumbs);
+            return null;
+        }
+
+        /**
+         * when the task has been uploaded, if it was sucessful,
+         * finish the activity properly
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (task == null) {
+                return;
+            }
+            imageManager.setRemoteImages(task.getRemoteImages());
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -747,4 +831,53 @@ public class EditTaskActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    private class ShowImageTask extends AsyncTask<Void, Void, Void> { //not documented
+        private int resultCode;
+        /**
+         * change the task and upload it
+         * to the client
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (task == null) {
+                return null;
+            }
+            ArrayList<CompressedBitmap> thumbs = imageManager.thumbnails;
+            ArrayList<RemoteReference<CompressedBitmap>> references = task.getRemoteThumbnails();
+
+            Log.i("Downloading thumbnails", "" + references.size());
+
+            for (int i = 0; i < references.size(); i++) {
+                try {
+                    Log.i("Found in references", "" + references.get(i).getRefId());
+                    CompressedBitmap bitmap = (CompressedBitmap) WrkifyClient.getInstance().download(references.get(i).getRefId(), CompressedBitmap.class);
+                    thumbs.add(bitmap);
+                    Log.i("GOT THUMBNAIL:", "" + bitmap);
+                } catch (IOException e) {
+                    Log.e("DownloadImagesTask", "Failed to get thumbnails");
+                }
+            }
+
+            imageManager.setThumbnails(thumbs);
+            return null;
+        }
+
+        /**
+         * when the task has been uploaded, if it was sucessful,
+         * finish the activity properly
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (task == null) {
+                return;
+            }
+            imageManager.setRemoteImages(task.getRemoteImages());
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 }
