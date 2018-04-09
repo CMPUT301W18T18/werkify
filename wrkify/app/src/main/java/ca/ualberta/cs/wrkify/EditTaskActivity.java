@@ -686,10 +686,11 @@ public class EditTaskActivity extends AppCompatActivity {
                         descriptionField.getText().toString()
                 );
                 task.setCheckList(checkList);
-                uploadAndAttachImages();
+
 
                 TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
                 transactionManager.enqueue(new TaskCreateTransaction(task));
+                uploadAndAttachImages();
                 WrkifyClient.getInstance().updateCached(task);
 
                 transactionManager.flush(WrkifyClient.getInstance());
@@ -778,8 +779,14 @@ public class EditTaskActivity extends AppCompatActivity {
                     id = WrkifyClient.getInstance().canonicalize(id);
 
                     CompressedBitmap bitmap = (CompressedBitmap) WrkifyClient.getInstance().download(id, CompressedBitmap.class);
+                    if (bitmap == null) {
+                        bitmap = (CompressedBitmap) WrkifyClient.getInstance().download(references.get(i).getRefId(), CompressedBitmap.class);
+                    }
                     Log.i("GOT THUMBNAIL:", "" + bitmap);
-                    thumbs.add(bitmap);
+                    if (bitmap != null) {
+                        thumbs.add(bitmap);
+                    }
+
                 } catch (IOException e) {
                     Log.e("DownloadImagesTask", "Failed to get thumbnails");
                 }

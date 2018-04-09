@@ -42,7 +42,7 @@ public abstract class StateChangeTransaction<T extends RemoteObject> extends Tra
     }
 
     public final boolean applyInClient(CachingClient client) throws IOException {
-        T obj = (T) client.downloadFromRemote(getId(), getType());
+        T obj = (T) client.downloadFromRemote(client.canonicalize(getId()), getType());
 
         Signal[] signals = generateSignals(client, obj);
 
