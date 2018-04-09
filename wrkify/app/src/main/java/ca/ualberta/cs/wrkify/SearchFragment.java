@@ -147,6 +147,13 @@ public class SearchFragment extends Fragment {
         this.recycler.setAdapter(newAdapter);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        throw new RuntimeException();
+
+    }
+
     /**
      * SearchTask is an AsyncTask that preforms a search and then
      * updates the tasklist.

@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -103,46 +104,57 @@ public class ViewTaskActivity extends AppCompatActivity {
      * @param task task to display
      */
     protected void initializeFromTask(Task task) {
-        this.task = task;
+        new InitializeTaskTask().execute(task);
+    }
 
-        // Determine if the session user owns this task
-        Boolean sessionUserIsRequester;
+    private class InitializeTaskTask extends AsyncTask<Task, Void, Void> {
 
-        try {
-            User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
-            if (remoteRequester == null) {
-                sessionUserIsRequester = false;
-            } else {
-                sessionUserIsRequester = remoteRequester.equals(Session.getInstance(this).getUser());
+        private Boolean sessionUserIsRequester;
+        private Boolean sessionUserIsProvider;
+        private User remoteRequester;
+
+        @Override
+        protected Void doInBackground(Task... tasks) {
+            task = tasks[0];
+
+            try {
+                User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+                if (remoteRequester == null) {
+                    sessionUserIsRequester = false;
+                } else {
+                    sessionUserIsRequester = remoteRequester.equals(Session.getInstance(ViewTaskActivity.this).getUser());
+                }
+            } catch (IOException e) {
+                // TODO handle this correctly
+                return null;
             }
-        } catch (IOException e) {
-            // TODO handle this correctly
-            return;
+
+            try {
+                User remoteProvider = task.getRemoteProvider(WrkifyClient.getInstance());
+                if (remoteProvider == null) {
+                    sessionUserIsProvider = false;
+                } else {
+                    sessionUserIsProvider = remoteProvider.equals(Session.getInstance(ViewTaskActivity.this).getUser());
+                }
+            } catch (IOException e) {
+                // TODO handle this correctly
+                return null;
+            }
+
+            try {
+                remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+            } catch (IOException e) {
+
+            }
+
+            return null;
         }
 
-        // Determine if the task is assigned to the session user
-        Boolean sessionUserIsProvider;
+        @Override
+        protected void onPostExecute(Void result) {
 
-        try {
-            User remoteProvider = task.getRemoteProvider(WrkifyClient.getInstance());
-            if (remoteProvider == null) {
-                sessionUserIsProvider = false;
-            } else {
-                sessionUserIsProvider = remoteProvider.equals(Session.getInstance(this).getUser());
-            }
-        } catch (IOException e) {
-            // TODO handle this correctly
-            return;
-        }
-
-        // Set the task title
-        TextView titleView = findViewById(R.id.taskViewTitle);
-        titleView.setText(task.getTitle());
-
-        // Set the task user view
-        UserView userView = findViewById(R.id.taskViewUser);
-        try {
-            final User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+            // Set the task user view
+            UserView userView = findViewById(R.id.taskViewUser);
             if (remoteRequester != null) {
                 userView.setUserName(remoteRequester.getUsername());
                 userView.setOnClickListener(new View.OnClickListener() {
@@ -155,81 +167,78 @@ public class ViewTaskActivity extends AppCompatActivity {
                     }
                 });
             }
-        } catch (IOException e) {
-            // TODO handle this correctly
-            return;
-        }
 
-        // Set the task description
-        TextView descriptionView = findViewById(R.id.taskViewDescription);
-        descriptionView.setText(task.getDescription());
+            // Set the task description
+            TextView descriptionView = findViewById(R.id.taskViewDescription);
+            descriptionView.setText(task.getDescription());
 
-        // Initialize the checklist view
-        final CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
-        checkListProviderView.setEditingEnabled(sessionUserIsProvider && task.getStatus() == TaskStatus.ASSIGNED);
-        checkListProviderView.setCheckList(task.getCheckList());
-        checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
+            // Initialize the checklist view
+            final CheckListProviderView checkListProviderView = findViewById(R.id.taskViewChecklist);
+            checkListProviderView.setEditingEnabled(sessionUserIsProvider && task.getStatus() == TaskStatus.ASSIGNED);
+            checkListProviderView.setCheckList(task.getCheckList());
+            checkListProviderView.setVisibility(task.getCheckList().itemCount() == 0? View.GONE : View.VISIBLE);
 
-        checkListProviderView.setOnItemToggledListener(new CheckListProviderView.OnItemToggledListener() {
-            @Override
-            public void onItemToggled(final @NonNull CheckList.CheckListItem item) {
-                String confirmationActionString = item.getStatus()? "not completed": "completed";
-                ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
-                        String.format(Locale.US, "Mark \"%s\" as %s?", item.getDescription(), confirmationActionString),
-                        "Cancel",
-                        String.format(Locale.US, "Mark %s", confirmationActionString),
-                        new ConfirmationDialogFragment.OnConfirmListener() {
-                            @Override
-                            public void onConfirm() {
-                                item.setStatus(!item.getStatus());
-
-                                new TransactionAsyncTask().execute(
-                                        ViewTaskActivity.this.task,
-                                        new TaskCheckListTransaction(
-                                                ViewTaskActivity.this.task,
-                                                ViewTaskActivity.this.task.getCheckList()
-                                        ),
-                                        ViewTaskActivity.this
-                                );
-                                checkListProviderView.notifyDataSetChanged();
-                            }
-                        }
-                );
-                dialog.show(getFragmentManager(), null);
-            }
-        });
-
-        // Add the bottom sheet if it doesn't exist already from a previous initialization
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
-        bottomSheet.setArguments(arguments);
-
-        transaction.replace(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
-        transaction.commit();
-
-        // Set up the app bar
-        setTitle("Task");
-
-        // Set up the edit button if appropriate
-        if (sessionUserIsRequester && task.getStatus() == TaskStatus.REQUESTED) {
-            FloatingActionButton editButton = findViewById(R.id.taskViewButtonEdit);
-            editButton.setVisibility(View.VISIBLE);
-            editButton.setOnClickListener(new View.OnClickListener() {
+            checkListProviderView.setOnItemToggledListener(new CheckListProviderView.OnItemToggledListener() {
                 @Override
-                public void onClick(View v) {
-                    // Edit the task
-                    Intent editIntent = new Intent(ViewTaskActivity.this,
-                            EditTaskActivity.class);
-                    editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
-                    startActivityForResult(editIntent, REQUEST_EDIT_TASK);
+                public void onItemToggled(final @NonNull CheckList.CheckListItem item) {
+                    String confirmationActionString = item.getStatus()? "not completed": "completed";
+                    ConfirmationDialogFragment dialog = ConfirmationDialogFragment.makeDialog(
+                            String.format(Locale.US, "Mark \"%s\" as %s?", item.getDescription(), confirmationActionString),
+                            "Cancel",
+                            String.format(Locale.US, "Mark %s", confirmationActionString),
+                            new ConfirmationDialogFragment.OnConfirmListener() {
+                                @Override
+                                public void onConfirm() {
+                                    item.setStatus(!item.getStatus());
+
+                                    new TransactionAsyncTask().execute(
+                                            ViewTaskActivity.this.task,
+                                            new TaskCheckListTransaction(
+                                                    ViewTaskActivity.this.task,
+                                                    ViewTaskActivity.this.task.getCheckList()
+                                            ),
+                                            ViewTaskActivity.this
+                                    );
+                                    checkListProviderView.notifyDataSetChanged();
+                                }
+                            }
+                    );
+                    dialog.show(getFragmentManager(), null);
                 }
             });
+
+            // Add the bottom sheet if it doesn't exist already from a previous initialization
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+            ViewTaskBottomSheetFragment bottomSheet = generateBottomSheetFor(task, sessionUserIsRequester);
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(ViewTaskBottomSheetFragment.ARGUMENT_TARGET_TASK, task);
+            bottomSheet.setArguments(arguments);
+
+            transaction.replace(R.id.taskViewInner, bottomSheet, FRAGMENT_BOTTOM_SHEET);
+            transaction.commit();
+
+            // Set up the app bar
+            setTitle("Task");
+
+            // Set up the edit button if appropriate
+            if (sessionUserIsRequester && task.getStatus() == TaskStatus.REQUESTED) {
+                FloatingActionButton editButton = findViewById(R.id.taskViewButtonEdit);
+                editButton.setVisibility(View.VISIBLE);
+                editButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Edit the task
+                        Intent editIntent = new Intent(ViewTaskActivity.this,
+                                EditTaskActivity.class);
+                        editIntent.putExtra(EditTaskActivity.EXTRA_EXISTING_TASK, ViewTaskActivity.this.task);
+                        startActivityForResult(editIntent, REQUEST_EDIT_TASK);
+                    }
+                });
+            }
         }
     }
 
