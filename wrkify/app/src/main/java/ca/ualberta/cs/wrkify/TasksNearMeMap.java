@@ -88,7 +88,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     }
 
     /**
-     *
+     *Overridden android predefined
      * @param outState
      */
     @Override
@@ -165,6 +165,11 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 //        updateLocationUI();
     }
 
+    /**
+     * Gets the device's current location
+     * if permission is not granted to get location
+     * the location is assumed default.
+     */
     public void getCurrentLocation(){
         try {
             if (mLocationPermissionGranted) {
@@ -221,6 +226,9 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Calls execution of Async task SearchTask
+     */
     private void searchTasksNearMe(){
        //Search for tasks by location
         try{
@@ -234,6 +242,10 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
+    /**
+     * Adds task markers for the list of tasks
+     * within 25 km, given by search results.
+     */
     private void addTaskMarkers(){
         markerTaskHashMap = new HashMap<>();
         for(Task task : tasksNearMe){
@@ -256,6 +268,10 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         return false;
     }
 
+    /**
+     * Starts the view task activity when the marker's task is clicked.
+     * @param marker
+     */
     @Override
     public void onInfoWindowClick(Marker marker) {
         Task task = markerTaskHashMap.get(marker);
@@ -264,6 +280,9 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         startActivity(intent);
     }
 
+    /**
+     * Implements Async task
+     */
     private class SearchTask extends AsyncTask<TaskLocation, Void,List<Task>> {
         @Override
         protected List<Task> doInBackground(TaskLocation... locations) {
