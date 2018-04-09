@@ -146,6 +146,8 @@ public abstract class TaskImageListAdapter extends RecyclerView.Adapter<TaskImag
 
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, final int position) {
+        Log.i("THING BEING ADDED", thumbnails.get(position) + "");
+        Log.i("LIST OF THINGS", "" + thumbnails);
         holder.setImage(thumbnails.get(position).getBitmap());
 
         holder.button.setOnClickListener(new View.OnClickListener() {
