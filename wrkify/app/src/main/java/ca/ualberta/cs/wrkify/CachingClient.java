@@ -40,9 +40,9 @@ import java.util.UUID;
  * will return the cached object. An object can be re-downloaded by
  * calling discardCached on its id.
  *
- * TODO this will ultimately also buffer uploads/deletes/searches.
- *
  * @see Cache
+ * @see RemoteObject
+ * @see RemoteClient
  */
 public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private TClient client;
@@ -53,16 +53,30 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private CachingClientWrapperSearcher searcher = new CachingClientWrapperSearcher(this);
     private CachingClientSearcher localSearcher = new CachingClientSearcher(this);
 
+    /**
+     * creates a CachingClient to wrap an existing RemoteClient.
+     * @param client the client you are wrapping.
+     */
     public CachingClient(TClient client) {
         this.client = client;
         this.cache = new Cache();
         this.transientIdSet = new HashSet<>();
     }
 
+    /**
+     * discard the cached changes to an object.
+     * this will force the use of the wrapped client
+     * to get future references to this object.
+     * @param id the id associated with the object you are discarding.
+     */
     public void discardCached(String id) {
         this.cache.discard(id);
     }
 
+    /**
+     * 
+     * @param obj
+     */
     public void updateCached(RemoteObject obj) {
         cache.put(obj.getId(), obj);
     }

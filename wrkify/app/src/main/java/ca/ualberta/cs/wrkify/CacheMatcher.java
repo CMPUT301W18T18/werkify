@@ -17,6 +17,19 @@
 
 package ca.ualberta.cs.wrkify;
 
+/**
+ * CacheMatcher provides an abstract class to standardize
+ * searching a cache for certain criteria.
+ * @param <RemoteT> the type of RemoteObject we are matching
+ *
+ * @see Cache
+ * @see RemoteObject
+ */
 public abstract class CacheMatcher<RemoteT extends RemoteObject> {
+    /**
+     * checks if the object matches the criteria
+     * @param object the object we are checking
+     * @return true if a match, false otherwise.
+     */
     public abstract boolean isMatch(RemoteT object);
 }

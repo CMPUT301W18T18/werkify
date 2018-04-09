@@ -446,7 +446,17 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         holder.totalCollapse();
     }
 
+    /**
+     * RejectBidTask is an AsyncTask that rejects the
+     * provided bid in the background.
+     */
     private class RejectBidTask extends AsyncTask<Bid, Void, Void> {
+        /**
+         * creates and dispatches a transaction to reject the provided bid.
+         * uses the task of the BidListAdapter.
+         * @param bids the single bid that you are deleting
+         * @return unused.
+         */
         @Override
         protected Void doInBackground(Bid... bids) {
             Bid bid = bids[0];
@@ -489,8 +499,17 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         this.new AcceptBidTask().execute(position);
     }
 
+    /**
+     * AcceptBidTask is an AsyncTask to accept a bid, then finish the
+     * activity with the correct result
+     */
     private class AcceptBidTask extends AsyncTask<Integer, Void, Void> {
 
+        /**
+         * accepts the bid on the server.
+         * @param positions the single position of the task we are accepting
+         * @return unused
+         */
         @Override
         protected Void doInBackground(Integer... positions) {
             int position = positions[0];
@@ -506,6 +525,10 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             return null;
         }
 
+        /**
+         * return the updated task to the parent Activity
+         * @param result unused
+         */
         @Override
         protected void onPostExecute(Void result) {
             Intent resultIntent = context.getIntent();
