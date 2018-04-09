@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -116,7 +117,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             username.setText(user.getUsername());
             email.setText(user.getEmail());
             //TODO phone number formating
-            phonenumber.setText(user.getPhoneNumber());
+            phonenumber.setText(PhoneNumberUtils.formatNumber(user.getPhoneNumber(), "US"));
         }
     }
 }

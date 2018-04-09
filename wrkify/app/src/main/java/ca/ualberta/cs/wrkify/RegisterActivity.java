@@ -94,6 +94,31 @@ public class RegisterActivity extends Activity {
      * @param phoneNumber the phone number to register with
      */
     private void tryRegisterAndFinish(String username, String email, String phoneNumber) {
+        boolean valid = true;
+
+        try {
+            User.verifyUsername(username);
+        } catch (IllegalArgumentException e) {
+            registerField.setError(e.getMessage());
+            valid = false;
+        }
+
+        try {
+            User.verifyEmail(email);
+        } catch (IllegalArgumentException e) {
+            registerEmail.setError(e.getMessage());
+            valid = false;
+        }
+
+        try {
+            User.verifyPhoneNumber(phoneNumber);
+        } catch (IllegalArgumentException e) {
+            registerPhonenumber.setError(e.getMessage());
+            valid = false;
+        }
+
+        if (!valid) { return; }
+
         this.new RegisterTask().execute(username, email, phoneNumber);
     }
 

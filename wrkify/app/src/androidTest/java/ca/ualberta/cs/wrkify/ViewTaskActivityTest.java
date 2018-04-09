@@ -213,7 +213,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      * Place an invalid bid on an unbidded task.
      * Should: fail
      */
-    @Ignore("Not implemented")
     @Test
     public void testInvalidBid() {
         launchActivityWith(otherUser, unbiddedTask);
@@ -231,7 +230,7 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
 
         onView(withId(R.id.taskViewBottomSheetButtonBid)).check(matches(isDisplayed()));
         onView(withId(R.id.taskViewBottomSheetButtonBid)).perform(click());
-        onView(withText("Bid")).check(matches(not(isDisplayed())));
+        onView(withText("Bid")).check(doesNotExist());
 
         closeSoftKeyboard();
 
@@ -301,7 +300,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         show your bid
      *         allow replacing your bid
      */
-    @Ignore("Not implemented")
     @Test
     public void testViewSelfBiddedTask() {
         // TODO This isn't implemented, so not testing
@@ -457,7 +455,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         remove current bids
      * Requires deactivating animations.
      */
-    @Ignore("Bids are not removed")
     @Test
     public void testDeassignTask() {
         testViewOwnAssignedTask();
@@ -510,7 +507,6 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      *         show status CLOSED
      *         show the assignee
      */
-    @Ignore("Checklist is currently shown?")
     @Test
     public void testViewCompletedTask() {
         launchActivityWith(provider, closedTask);
