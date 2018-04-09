@@ -71,6 +71,7 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
         }
         setContentView(R.layout.activity_maps);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -81,9 +82,7 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
-//        if(this.getIntent().getSerializableExtra(TASK_EXTRA)==null) {
             inflater.inflate(R.menu.set_task_location_menu, menu);
-//        }
         return true;
     }
 
@@ -137,8 +136,6 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
                taskLocation = new TaskLocation(latLng.latitude,latLng.longitude);
             }
         });
-//        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(defaultLocation.latitude,defaultLocation.longitude)));
-//        marker.setDraggable(true);
 
 
         if(task!=null){
@@ -146,25 +143,18 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates,DEFAULT_ZOOM));
            marker.setPosition(coordinates);
            taskLocation = new TaskLocation(coordinates.latitude,coordinates.longitude);
-           Log.d("--->","non null task set loc");
             return;
         }
         else {
             getLocationPermission();
-            Log.d("Permission acquired--->","yay");
             getCurrentLocation();
-            Log.d("LOCATION ACQUIRED--->","yes");
             updateLocationUI();
-            Log.d("UI UPDATED --->","yes");
-            Log.d("ON MARKER DRAG SET--->","yes");
+
             if(lastKnownLocation!=null){
-                Log.d("lastKnownLocation--->","not null");
                marker.setPosition(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()));
                taskLocation = new TaskLocation(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
-                Log.d("MARKER ADDED--->","yes");
                 return;
             }
-            Log.d("lastKnownLocation--->","null");
             marker.setPosition(defaultLocation);
             taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
         }
@@ -220,7 +210,6 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Location> task) {
                         lastKnownLocation = task.getResult();
                         if (task.isSuccessful()&&lastKnownLocation!=null) {
-//                            Log.d("Location nonNull-->","yea");
                             // Set the map's camera position to the current location of the devices
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
@@ -260,8 +249,6 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mMap.setOnMarkerDragListener(this);
-//                lastKnownLocation.setLatitude(defaultLocation.latitude);
-//                lastKnownLocation.setLongitude(defaultLocation.longitude);
                 getLocationPermission();
             }
         } catch (SecurityException e)  {

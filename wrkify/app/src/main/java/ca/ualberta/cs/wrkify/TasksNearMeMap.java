@@ -103,37 +103,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         mMap = googleMap;
         mMap.setOnInfoWindowClickListener(this);
         mMap.setInfoWindowAdapter(this.new MarkerInfo());
-//        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-//            @Override
-//            public View getInfoWindow(Marker marker) {
-//                return null;
-//            }
-//
-//            @Override
-//            public View getInfoContents(Marker marker) {
-////                int layout = R.layout.taskcardview;
-////                View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
-////                CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
-////                Task task = markerTaskHashMap.get(marker);
-////                TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
-//////                taskTitle.setText("TestTask");
-////                taskTitle.setText(task.getTitle());
-////                TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
-//////                taskDescription.setText("Test");
-////                taskDescription.setText(task.getDescription());
-////                TextView taskUser = taskCardView.findViewById(R.id.taskUser);
-////                taskUser.setText("User");
-////                try {
-////                    taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
-////                } catch (IOException e){
-////
-////                }
-////                StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
-////                taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
-//                viewMarker(marker);
-//                return taskCardView;
-//            }
-//        });
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
         getLocationPermission();
@@ -141,8 +110,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
         getCurrentLocation();
 
-//        searchTasksNearMe();
-//        addTaskMarkers();
     }
 
     public void viewMarker(Marker marker){
@@ -197,24 +164,18 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Location> task) {
                         lastKnownLocation = task.getResult();
                         if (task.isSuccessful()&&lastKnownLocation!=null) {
-//                            Log.d("Location nonNull-->","yea");
+
                             // Set the map's camera position to the current location of the devices
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
                                             lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             searchTasksNearMe();
-                            Log.d("TASK LIST SIZE--->",Integer.valueOf(tasksNearMe.size()).toString());
-//                            addTaskMarkers();
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                                    new LatLng(45,-112),DEFAULT_ZOOM));
-//                            lastKnownLocation.setLongitude(-112);
-//                            lastKnownLocation.setLatitude(45);
+
                         } else {
                             mMap.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                             searchTasksNearMe();
-//                            addTaskMarkers();
                         }
                     }
                 });
@@ -223,7 +184,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 searchTasksNearMe();
-//                addTaskMarkers();
             }
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
@@ -244,8 +204,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//                lastKnownLocation.setLatitude(defaultLocation.latitude);
-//                lastKnownLocation.setLongitude(defaultLocation.longitude);
                 getLocationPermission();
             }
         } catch (SecurityException e)  {
@@ -259,23 +217,14 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
             TaskLocation taskLocation = new TaskLocation(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
             this.new SearchTask().execute(taskLocation);
         }
-//        catch (IOException e){
-//            return;
-//        }
         catch (NullPointerException e){
             TaskLocation taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
-//            try {
-                this.new SearchTask().execute(taskLocation);
+            this.new SearchTask().execute(taskLocation);
 
-//            }
-//            catch (IOException b){
-//                return;
-//            }
         }
     }
 
     private void addTaskMarkers(){
-        Log.d("TASK SIZE Markers--->",Integer.valueOf(tasksNearMe.size()).toString());
         markerTaskHashMap = new HashMap<>();
         for(Task task : tasksNearMe){
             TaskLocation location = task.getLocation();
@@ -283,8 +232,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.setOnMarkerClickListener(this);
                 markerTaskHashMap.put(mMap.addMarker(new MarkerOptions().position(latLng)),task);
-                Log.d("Task Title--->",task.getTitle());
-                Log.d("Task Location--->",location.toString());
             }
             catch (NullPointerException e){
                 Log.d("Task location null--->","yes");
@@ -296,18 +243,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        Task task = markerTaskHashMap.get(marker);
-//        CardView taskCardView = findViewById(R.id.taskCardView);
-//        TextView taskTitle = new TextView(this);
-//        taskTitle = taskCardView.findViewById(R.id.taskTitle);
-//        taskTitle.setText(task.getTitle());
-//        TextView taskDescription = new TextView(this);
-//        taskDescription.setText(task.getDescription());
-//        StatusView taskStatus = new StatusView(this);
-//        taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
-
         return false;
     }
 
@@ -350,7 +285,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
          */
         @Override
         protected void onPostExecute(List<Task> tasks) {
-//            tasksNearMe.clear();
             tasksNearMe.addAll(tasks);
             addTaskMarkers();
             Log.d("TASK LIST --->",Integer.valueOf(tasksNearMe.size()).toString());
@@ -372,10 +306,8 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
             CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
             Task task = markerTaskHashMap.get(marker);
             TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
-//                taskTitle.setText("TestTask");
             taskTitle.setText(task.getTitle());
             TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
-//                taskDescription.setText("Test");
             taskDescription.setText(task.getDescription());
             TextView taskUser = taskCardView.findViewById(R.id.taskUser);
             taskUser.setText("User");
