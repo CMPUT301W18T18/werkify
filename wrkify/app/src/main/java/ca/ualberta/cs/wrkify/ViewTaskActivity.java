@@ -253,7 +253,11 @@ public class ViewTaskActivity extends AppCompatActivity {
         }
         switch(task.getStatus()) {
             case REQUESTED:
-            case BIDDED: return new ViewTaskOpenBottomSheetFragment();
+            case BIDDED: if (task.getBidForUser(Session.getInstance(this).getUser()) != null) {
+                    return new ViewTaskProviderBiddedBottomSheetFragment();
+                } else {
+                    return new ViewTaskOpenBottomSheetFragment();
+                }
             case ASSIGNED: return new ViewTaskAssignedBottomSheetFragment();
             case DONE: return new ViewTaskDoneBottomSheetFragment();
         }

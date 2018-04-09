@@ -95,10 +95,13 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             Bid bid = new Bid(
                     prices[0],
                     Session.getInstance(getContext()).getUser());
-            task.addBid(bid);
+
+            User user = Session.getInstance(getContext()).getUser();
+            Bid userBid = task.getBidForUser(user);
+            task.replaceBid(userBid, bid);
 
             TransactionManager transactionManager = Session.getInstance(getActivity()).getTransactionManager();
-            transactionManager.enqueue(new TaskAddBidTransaction(task, bid));
+            transactionManager.enqueue(new TaskAddOrReplaceBidTransaction(task, userBid, bid));
 
             // TODO notify of offline status
             transactionManager.flush(WrkifyClient.getInstance());

@@ -302,8 +302,29 @@ public class ViewTaskActivityTest extends AbstractIntentTest<ViewTaskActivity> {
      */
     @Test
     public void testViewSelfBiddedTask() {
-        // TODO This isn't implemented, so not testing
-        fail();
+        launchActivityWith(provider, biddedTask);
+
+        checkTaskDetails(biddedTask);
+        assertNoEditButton();
+        assertChecklistStatic();
+        assertBottomSheetCollapsed();
+        assertHasStatus("Bidded", "2 bids", "$10.00", "Your bid: $10.00");
+
+        placeBid("8.00");
+
+        pressBackUnconditionally();
+        assertActivityFinished();
+
+        try {
+            Task editedTask = getClient().download(biddedTask.getId(), Task.class);
+
+            assertEquals(TaskStatus.BIDDED, editedTask.getStatus());
+            assertEquals(2, editedTask.getBidList().size());
+            assertEquals(new Price("8.00"), editedTask.getBidForUser(provider).getValue());
+            assertEquals(new Price(12.00), editedTask.getBidForUser(otherBidder).getValue());
+        } catch (IOException e) {
+            fail();
+        }
     }
 
     /**

@@ -273,6 +273,16 @@ public class Task extends RemoteObject {
         }
     }
 
+    public void replaceBid(Bid target, Bid bid) {
+        if (target != null) {
+            int index = bidList.indexOf(target);
+            bidList.remove(target);
+            bidList.add(index, bid);
+        } else {
+            addBid(bid);
+        }
+    }
+
     @Nullable
     public Bid getBidForUser(User user) {
         for (Bid bid: this.bidList) {
