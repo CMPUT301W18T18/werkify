@@ -47,6 +47,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText loginField;
 
+    /**
+     * create the login view and
+     * process the session
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

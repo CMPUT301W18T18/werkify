@@ -58,6 +58,11 @@ public class NotificationCollector {
         }
     }
 
+    /**
+     * put a List of notifications in the
+     * NotificationCollector via putNotification.
+     * @param notifications the notifications to put.
+     */
     public void putNotifications(List<NotificationInfo> notifications) {
         for (NotificationInfo notification: notifications) {
             this.putNotification(notification);

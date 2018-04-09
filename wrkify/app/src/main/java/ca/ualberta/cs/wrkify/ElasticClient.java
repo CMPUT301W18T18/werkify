@@ -68,6 +68,10 @@ public class ElasticClient extends RemoteClient {
         this.index = index;
     }
 
+    /**
+     * get this clients sercher.
+     * @return the searcher.
+     */
     @Override
     Searcher<ElasticClient> getSearcher() {
         return searcher;
@@ -94,6 +98,14 @@ public class ElasticClient extends RemoteClient {
         return this.uploadNew(type, instance);
     }
 
+    /**
+     * upload an new RemoteObject to the ElasticSearch server. giving it
+     * a new id.
+     * @param type the type of the object we are uplaoding.
+     * @param instance the object we are uploading
+     * @param <T> the generic type of the object
+     * @return the object, with it's correct id.
+     */
     @Override
     public <T extends RemoteObject> T uploadNew(Class<T> type, T instance) {
         Log.i("elastic", "NEW " + type);

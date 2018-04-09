@@ -29,13 +29,27 @@ import static ca.ualberta.cs.wrkify.JSONConstructor.jo;
 import static ca.ualberta.cs.wrkify.JSONConstructor.makeJSONObject;
 
 /**
- * Collection of static methods to perform pre-defined searches.
+ * object to preform pre-defined searches on a client
+ *
+ * @see Searcher
  */
 public class ElasticSearcher extends Searcher<ElasticClient> {
+    /**
+     * set the client to search on
+     * @param client the client to search on
+     */
     public ElasticSearcher(ElasticClient client) {
         super(client);
     }
 
+    /**
+     * find all the tasks where the requester is requester and the status
+     * is one of statuses.
+     * @param requester User to search for.
+     * @param statuses the statuses that are valid in your search.
+     * @return the List<Task> of results
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksByRequester(User requester, TaskStatus... statuses) throws IOException {
         String query = makeJSONObject(
@@ -61,12 +75,26 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Task.class);
     }
 
+    /**
+     * find the tasks by a requester.
+     * @param requester User to search for
+     * @return the List <Task> of result
+     * @throws IOException when elastic search fails
+     */
     @Override
     public List<Task> findTasksByRequester(User requester) throws IOException {
         return findTasksByRequester(requester,
                 TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
+    /**
+     * finds all of the tasks of a given provider with the status being one
+     * of the statuses.
+     * @param provider User to search for
+     * @param statuses the statuses you want in your search.
+     * @return the List<Task> of results
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksByProvider(User provider, TaskStatus... statuses) throws IOException {
         String query = makeJSONObject(
@@ -92,12 +120,26 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Task.class);
     }
 
+    /**
+     * finds all of the tasks of a given provider.
+     * @param provider User to search for
+     * @return the List<Task> of results
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksByProvider(User provider) throws IOException {
         return findTasksByProvider(provider,
                 TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
+    /**
+     * finds all of the tasks of a given bidder with the status being one
+     * of the statuses.
+     * @param bidder User to search for
+     * @param statuses the statuses you want in your search.
+     * @return the List<Task> of results
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksByBidder(User bidder, TaskStatus... statuses) throws IOException {
         String query = makeJSONObject(
@@ -123,12 +165,24 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Task.class);
     }
 
+    /**
+     * finds all of the tasks of a given bidder.
+     * @param bidder User to search for
+     * @return the List<Task> of results
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksByBidder(User bidder) throws IOException {
         return findTasksByBidder(bidder,
                 TaskStatus.BIDDED, TaskStatus.REQUESTED, TaskStatus.ASSIGNED, TaskStatus.DONE);
     }
 
+    /**
+     * search for tasks by keywords.
+     * @param keywords Keywords to search for
+     * @return the List<Task> of results.
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksByKeywords(String keywords) throws IOException {
         String query = makeJSONObject(
@@ -154,6 +208,12 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Task.class);
     }
 
+    /**
+     * find tasks that are near a Location
+     * @param location the Location we are searching around
+     * @return the List<Task> of results
+     * @throws IOException when elasticsearch fails
+     */
     @Override
     public List<Task> findTasksNear(TaskLocation location) throws IOException {
         String query = makeJSONObject(
@@ -174,6 +234,12 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Task.class);
     }
 
+    /**
+     * find all the signals (notifications) for a specific user.
+     * @param user the user to find signals near
+     * @return the List<Signal> of results
+     * @throws IOException
+     */
     @Override
     public List<Signal> findSignalsByUser(User user) throws IOException {
         String query = makeJSONObject(
@@ -191,6 +257,13 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Signal.class);
     }
 
+    /**
+     * find signals that are related to a user and a target object.
+     * @param userId the user associated with the signals.
+     * @param targetId the target associated with the signals.
+     * @return the List<Signal> of the results.
+     * @throws IOException when elasticsearch fails.
+     */
     @Override
     public List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException {
         String query = makeJSONObject(
@@ -219,6 +292,12 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         return client.executeQuery(query, Signal.class);
     }
 
+    /**
+     * gets a User by the username.
+     * @param username the username of the user
+     * @return the User
+     * @throws IOException when elasticsearch fails.
+     */
     @Override
     public User getUser(String username) throws IOException {
         String query = makeJSONObject(
@@ -235,8 +314,6 @@ public class ElasticSearcher extends Searcher<ElasticClient> {
         }
         return results.get(0);
     }
-
-    // TODO findTasksByLocation?
 
     /**
      * generates an elasticsearch bool query to match

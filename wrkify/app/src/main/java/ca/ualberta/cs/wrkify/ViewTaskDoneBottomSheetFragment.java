@@ -29,16 +29,29 @@ import java.util.Locale;
  * Has no content.
  */
 public class ViewTaskDoneBottomSheetFragment extends ViewTaskBottomSheetFragment {
+    /**
+     * gets the status string
+     * @return always "Done"
+     */
     @Override
     protected String getStatusString() {
         return "Done";
     }
 
+    /**
+     * gets the color of the bottomsheet
+     * @return always colorStatusDone
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusDone;
     }
 
+    /**
+     * initialize the bottomsheet from a task
+     * @param container ViewGroup containing the header and content frame
+     * @param task task object to initialize from
+     */
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
         User assignee;
@@ -54,6 +67,11 @@ public class ViewTaskDoneBottomSheetFragment extends ViewTaskBottomSheetFragment
         }
     }
 
+    /**
+     * gets the content layout
+     * @param root
+     * @return always null
+     */
     @Override
     protected View getContentLayout(ViewGroup root) {
         return null;

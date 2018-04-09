@@ -18,8 +18,6 @@
 package ca.ualberta.cs.wrkify;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
-
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -161,10 +159,18 @@ public class RemoteList<T extends RemoteObject> extends AbstractList<T> {
         return list;
     }
 
+    /**
+     * sort the items in the list by their
+     * creation date.
+     */
     private void sortByTimestamp() {
         Collections.sort(items);
     }
 
+    /**
+     * a RemoteListItem is an item in a RemoteList
+     * @param <U> the specific type of RemoteObject in the list
+     */
     private static class RemoteListItem<U extends RemoteObject> implements Comparable<RemoteListItem<U>> {
         public RemoteReference<U> reference;
         public U object;

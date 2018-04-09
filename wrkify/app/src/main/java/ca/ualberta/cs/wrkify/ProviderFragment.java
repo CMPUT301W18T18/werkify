@@ -24,8 +24,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

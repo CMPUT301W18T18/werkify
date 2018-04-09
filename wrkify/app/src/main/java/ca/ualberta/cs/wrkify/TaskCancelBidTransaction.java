@@ -54,6 +54,13 @@ public class TaskCancelBidTransaction extends StateChangeTransaction<Task> {
         return true;
     }
 
+    /**
+     * generate the Signals for canceling a bid
+     * @param client the client to apply to.
+     * @param task the task that has it's bid canceled
+     * @return the array of generated signals
+     * @throws IOException according to client
+     */
     @NonNull
     @Override
     protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {

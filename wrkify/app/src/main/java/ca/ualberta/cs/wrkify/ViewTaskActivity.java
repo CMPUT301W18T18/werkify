@@ -81,6 +81,13 @@ public class ViewTaskActivity extends AppCompatActivity {
         this.initializeFromTask((Task) intent.getSerializableExtra(EXTRA_TARGET_TASK));
     }
 
+    /**
+     * update the views when EditTaskActivity finishes
+     * and finishes if the task was deleted
+     * @param requestCode the requestcode
+     * @param resultCode the requestCode
+     * @param data the intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -113,6 +120,11 @@ public class ViewTaskActivity extends AppCompatActivity {
         private Boolean sessionUserIsProvider;
         private User remoteRequester;
 
+        /**
+         * fetch the new Task info from the client
+         * @param tasks the task to update
+         * @return unused
+         */
         @Override
         protected Void doInBackground(Task... tasks) {
             task = tasks[0];
@@ -150,6 +162,10 @@ public class ViewTaskActivity extends AppCompatActivity {
             return null;
         }
 
+        /**
+         * udpate the views after we fetch the new task info.
+         * @param result
+         */
         @Override
         protected void onPostExecute(Void result) {
 

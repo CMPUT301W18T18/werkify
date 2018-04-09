@@ -21,8 +21,11 @@ package ca.ualberta.cs.wrkify;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
+/**
+ * RemoteClient represent the interface to some kind
+ * of id based data storage.
+ */
 abstract class RemoteClient {
     /**
      * Create a new RemoteObject from its constructor, and upload it.
@@ -60,6 +63,11 @@ abstract class RemoteClient {
      */
     abstract <T extends RemoteObject> T download(String id, Class<T> type) throws IOException;
 
+    /**
+     * returns the Searcher instance that will be used
+     * to search the array.
+     * @return the searcher instance.
+     */
     abstract Searcher getSearcher();
 
     /**

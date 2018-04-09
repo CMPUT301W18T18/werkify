@@ -21,14 +21,28 @@ import android.util.Log;
 
 import java.io.IOException;
 
+/**
+ * TaskCreateTransaction is a Transaction for creating
+ * a task
+ */
 public class TaskCreateTransaction extends Transaction<Task> {
     private Task localTask;
 
+    /**
+     * create a TaskCreateTransaction from a local task
+     * @param localTask the task to create.
+     */
     public TaskCreateTransaction(Task localTask) {
         super(localTask, Task.class);
         this.localTask = localTask;
     }
 
+    /**
+     * apply the creation to the client
+     * @param client the client we are uploading to
+     * @return true if sucessful, false otherwise.
+     * @throws IOException according the client
+     */
     @Override
     public boolean applyInClient(CachingClient client) throws IOException {
         // TODO images etc. will have to be uploaded and canonicalized before uploadNew

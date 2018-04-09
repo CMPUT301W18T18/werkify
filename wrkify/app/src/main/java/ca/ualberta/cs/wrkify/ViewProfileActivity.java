@@ -43,6 +43,10 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     private User user;
 
+    /**
+     * creates buttons of the ViewProfileActivity
+     * @param savedInstanceState unused
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +72,12 @@ public class ViewProfileActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * refresh the Activity when the Editing the profile returned
+     * @param requestCode the requestCode
+     * @param resultCode the resultCode
+     * @param data the intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_EDIT_PROFILE && resultCode == RESULT_OK) {
@@ -76,6 +86,10 @@ public class ViewProfileActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * create the display the profile from the user
+     * @param user the user to display the info of
+     */
     private void initializeFromUser(User user) {
         this.user = user;
         this.new InitializeFromUserTask().execute();

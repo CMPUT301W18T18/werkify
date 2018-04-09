@@ -21,6 +21,16 @@ import android.content.Context;
 
 import java.io.Serializable;
 
+/**
+ * NotificationAction is an interface for what happens
+ * when a notification button is selected.
+ */
 public interface NotificationAction extends Serializable {
+    /**
+     * run when a notfcation is selected
+     * @param context the android contex
+     * @param notification the notification that has been presses
+     * @return a boolean
+     */
     boolean launch(Context context, NotificationInfo notification);
 }

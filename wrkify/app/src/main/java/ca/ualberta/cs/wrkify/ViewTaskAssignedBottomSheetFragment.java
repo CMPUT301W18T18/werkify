@@ -28,6 +28,12 @@ import java.util.Locale;
  * themself or to someone else.) Contains no controls.
  */
 public class ViewTaskAssignedBottomSheetFragment extends ViewTaskBottomSheetFragment {
+
+    /**
+     * initialize the bottomsheet with the task.
+     * @param container ViewGroup containing the header and content frame
+     * @param task task object to initialize from
+     */
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
         User assignee;
@@ -43,16 +49,29 @@ public class ViewTaskAssignedBottomSheetFragment extends ViewTaskBottomSheetFrag
         }
     }
 
+    /**
+     * return the status string.
+     * @return always "assigned"
+     */
     @Override
     protected String getStatusString() {
         return "Assigned";
     }
 
+    /**
+     * return the background color of the bottomsheet
+     * @return always colorStatusAssigned.
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusAssigned;
     }
 
+    /**
+     * gets the contentLayout
+     * @param root
+     * @return always null
+     */
     @Override
     protected View getContentLayout(ViewGroup root) {
         return null;

@@ -34,9 +34,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -153,6 +151,10 @@ public class SearchFragment extends Fragment {
         startActivity(intent);
     }
 
+    /**
+     * refresh the search results when
+     * the activity resumes.
+     */
     @Override
     public void onResume() {
         super.onResume();

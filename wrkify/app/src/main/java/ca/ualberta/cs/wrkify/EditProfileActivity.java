@@ -48,6 +48,10 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText emailField;
     private EditText phoneField;
 
+    /**
+     * create the view and populate fields and appbar
+     * @param savedInstanceState unused
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,11 @@ public class EditProfileActivity extends AppCompatActivity {
         if (actionBar != null) { actionBar.setTitle("Editing profile"); }
     }
 
+    /**
+     * setup the options menu to display the save option
+     * @param menu the menu to inflate
+     * @return always true.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_profile, menu);
@@ -84,6 +93,10 @@ public class EditProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * end the activity when the user tries to go up.
+     * @return always true.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();

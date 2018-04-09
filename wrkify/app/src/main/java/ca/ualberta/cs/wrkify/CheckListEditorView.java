@@ -96,6 +96,9 @@ public class CheckListEditorView extends CheckListView {
             super(context, attrs, defStyleAttr);
         }
 
+        /**
+         * create the views
+         */
         @Override
         protected void createViews() {
             inflate(getContext(), R.layout.view_checkitem_edit, this);
@@ -104,6 +107,10 @@ public class CheckListEditorView extends CheckListView {
             this.deleteButton = findViewById(R.id.checkitemEditButtonDelete);
         }
 
+        /**
+         * setup the checklist item and define behaviors
+         * @param item new item to display in the view
+         */
         @Override
         public void setItem(final CheckList.CheckListItem item) {
             this.descriptionField.setText(item.getDescription());

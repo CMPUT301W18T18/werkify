@@ -17,28 +17,38 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
+import android.view.ViewGroup;
+
+
+/**
+ * ViewTaskProviderBidderBottomSheetFragment is the bottomsheet that
+ * a user will see if they are the provider or bidder.
+ */
 public class ViewTaskProviderBiddedBottomSheetFragment extends ViewTaskOpenBottomSheetFragment {
+    /**
+     * gets the status string
+     * @return always "Bidded"
+     */
     @Override
     protected String getStatusString() {
         return "Bidded";
     }
 
+    /**
+     * gets the bottom sheet color
+     * @return always colorStatusBidded
+     */
     @Override
     protected int getBackgroundColor() {
         return R.color.colorStatusBidded;
     }
 
+    /**
+     * reinitializes the view with the provided task
+     * @param container ViewGroup containing the header and content frame
+     * @param task task object to initialize from.
+     */
     @Override
     protected void initializeWithTask(ViewGroup container, Task task) {
         super.initializeWithTask(container, task);

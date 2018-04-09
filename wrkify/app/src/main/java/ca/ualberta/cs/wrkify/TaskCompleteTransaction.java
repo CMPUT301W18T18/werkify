@@ -55,6 +55,13 @@ public class TaskCompleteTransaction extends StateChangeTransaction<Task> {
         }
     }
 
+    /**
+     * generate the Signals for marking a task completed
+     * @param client the client to apply to.
+     * @param task the task that's being completed
+     * @return the array of generated signals
+     * @throws IOException according to client
+     */
     @NonNull
     @Override
     protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {

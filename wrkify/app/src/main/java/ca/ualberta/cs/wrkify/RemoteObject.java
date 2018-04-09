@@ -17,12 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
-import android.util.Log;
-
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-
 import io.searchbox.annotations.JestId;
 
 
@@ -37,6 +32,9 @@ public abstract class RemoteObject implements Serializable {
 
     private final long timestamp;
 
+    /**
+     * create the remoteObject with the current timestamp.
+     */
     protected RemoteObject() {
         timestamp = System.currentTimeMillis();
     }

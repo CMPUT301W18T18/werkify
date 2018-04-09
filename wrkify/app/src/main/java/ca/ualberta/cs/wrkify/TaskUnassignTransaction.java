@@ -52,6 +52,13 @@ public class TaskUnassignTransaction extends StateChangeTransaction<Task> {
         }
     }
 
+    /**
+     * generates the signals for unassigning a task
+     * @param client the client to apply to.
+     * @param task the task to unassing
+     * @return the array of Signals
+     * @throws IOException according to client
+     */
     @NonNull
     @Override
     protected Signal[] generateSignals(CachingClient client, Task task) throws IOException {
