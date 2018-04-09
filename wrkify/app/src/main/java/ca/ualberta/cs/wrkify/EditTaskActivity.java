@@ -78,7 +78,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private CheckListEditorView checkListEditorView;
     private Button checkListNewButton;
     private Button checkListAddButton;
-    private TextView locationField;
+    private Button locationField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +167,7 @@ public class EditTaskActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==RESULT_LOCATION){
            TaskLocation taskcoordinates = (TaskLocation) data.getSerializableExtra(SetTaskLocationActivity.LOCATION_EXTRA);
+           task.setLocation(taskcoordinates);
            String locationStr = Double.valueOf(taskcoordinates.getLatitude()).toString() + ", " + Double.valueOf(taskcoordinates.getLongitude()).toString();
            this.locationField.setText(locationStr);
         }

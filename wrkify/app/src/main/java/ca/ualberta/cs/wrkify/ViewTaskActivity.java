@@ -243,6 +243,14 @@ public class ViewTaskActivity extends AppCompatActivity {
                     }
                 });
             }
+
+            TextView locationView = findViewById(R.id.taskViewLocation);
+            locationView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewTaskLocation();
+                }
+            });
         }
 
     }
