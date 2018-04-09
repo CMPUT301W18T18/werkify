@@ -67,6 +67,8 @@ public class SearchFragment extends Fragment {
     private TaskListAdapter<Task> adapter;
     private RecyclerView recycler;
 
+    private String query;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +102,8 @@ public class SearchFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    searchTasks(searchBar.getText().toString());
+                    SearchFragment.this.query = searchBar.getText().toString();
+                    searchTasks(SearchFragment.this.query);
                     handled = true;
                 }
                 return handled;
@@ -145,6 +148,15 @@ public class SearchFragment extends Fragment {
         this.taskList = newList;
         TaskListAdapter<Task> newAdapter = new TaskListAdapter<>(new AppCompatActivity(),this.taskList);
         this.recycler.setAdapter(newAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (this.query != null) {
+            searchTasks(this.query);
+        }
     }
 
     /**
