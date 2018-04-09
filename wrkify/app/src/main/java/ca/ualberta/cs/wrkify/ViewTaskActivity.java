@@ -245,20 +245,6 @@ public class ViewTaskActivity extends AppCompatActivity {
             }
         }
 
-        TextView locationView = findViewById(R.id.taskViewLocation);
-        try {
-            String locationStr = Double.valueOf(task.getLocation().getLatitude()).toString() + ", " + Double.valueOf(task.getLocation().getLongitude()).toString();
-            locationView.setText(locationStr);
-            locationView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    viewTaskLocation();
-                }
-            });
-        }
-        catch(NullPointerException e){
-            return;
-        }
     }
 
     private void viewTaskLocation(){
