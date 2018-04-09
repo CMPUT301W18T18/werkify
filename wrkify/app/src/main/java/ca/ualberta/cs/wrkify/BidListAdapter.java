@@ -491,7 +491,6 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
 
     private class AcceptBidTask extends AsyncTask<Integer, Void, Void> {
 
-        private int resultCode;
         @Override
         protected Void doInBackground(Integer... positions) {
             int position = positions[0];
@@ -501,12 +500,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
             TransactionManager transactionManager = Session.getInstance(context).getTransactionManager();
             transactionManager.enqueue(new TaskAcceptBidTransaction(task, data.get(position)));
 
-            if (transactionManager.flush(WrkifyClient.getInstance())) {
-                resultCode = RESULT_OK;
-            } else {
-                resultCode = RESULT_UNSYNCED_CHANGES;
-            }
-
+            transactionManager.flush(WrkifyClient.getInstance());
             WrkifyClient.getInstance().updateCached(task);
 
             return null;
@@ -516,7 +510,7 @@ public class BidListAdapter extends RecyclerView.Adapter<BidViewHolder> {
         protected void onPostExecute(Void result) {
             Intent resultIntent = context.getIntent();
             resultIntent.putExtra(EXTRA_RETURNED_TASK, task);
-            context.setResult(resultCode, resultIntent);
+            context.setResult(RESULT_OK, resultIntent);
             context.finish();
         }
     }

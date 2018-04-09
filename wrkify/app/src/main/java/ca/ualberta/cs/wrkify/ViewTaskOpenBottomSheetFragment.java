@@ -109,6 +109,11 @@ public class ViewTaskOpenBottomSheetFragment extends ViewTaskBottomSheetFragment
             WrkifyClient.getInstance().updateCached(task);
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            ((ViewTaskActivity) getActivity()).initializeFromTask(task);
+        }
     }
 
     @Override
