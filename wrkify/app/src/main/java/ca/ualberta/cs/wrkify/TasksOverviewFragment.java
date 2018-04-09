@@ -19,14 +19,17 @@ package ca.ualberta.cs.wrkify;
 
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.transition.Slide;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.transition.Slide;
-import android.transition.TransitionManager;
+import android.support.transition.TransitionManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,10 +37,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * TasksOverviewFragment displays a set of tab pages, each containing a
@@ -51,7 +57,10 @@ abstract class TasksOverviewFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager pager;
     private FloatingActionButton addButton;
-    
+
+    private boolean addButtonVisible;
+    private ViewGroup offlineIndicator;
+
     // From https://developer.android.com/guide/components/fragments.html (2018-03-11)
     // (basic structure)
     @Override
@@ -62,7 +71,8 @@ abstract class TasksOverviewFragment extends Fragment {
         this.tabLayout = view.findViewById(R.id.overviewTabBar);
         this.pager = view.findViewById(R.id.overviewPager);
         this.addButton = view.findViewById(R.id.overviewAddButton);
-        
+        this.offlineIndicator = view.findViewById(R.id.overviewOfflineIndicator);
+
         UserView userView = view.findViewById(R.id.overviewSelfView);
         Toolbar toolbar = view.findViewById(R.id.overviewToolbar);
         
@@ -105,20 +115,14 @@ abstract class TasksOverviewFragment extends Fragment {
                 popup.show();
             }
         });
-        
-        // Create tabs
-        for (String tabTitle: getTabTitles()) {
-            TabLayout.Tab tab = tabLayout.newTab();
-            tab.setText(tabTitle);
-            this.tabLayout.addTab(tab);
-        }
 
         // Bind adapter to pager
         // (getChildFragmentManager via https://stackoverflow.com/questions/15196596/ (2018-03-17))
-        pager.setAdapter(new TaskListFragmentPagerAdapter(getChildFragmentManager(), getTaskLists()));
+        pager.setAdapter(getFragmentPagerAdapter(getChildFragmentManager()));
 
         // Initialize add button
-        addButton.setVisibility(isAddButtonEnabled(0)? View.VISIBLE : View.GONE);
+        addButtonVisible = isAddButtonEnabled(0);
+        addButton.setVisibility(addButtonVisible? View.VISIBLE : View.GONE);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,38 +130,14 @@ abstract class TasksOverviewFragment extends Fragment {
             }
         });
 
-        // Switch pager pages on tab move
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Log.i("-->", "switching to tab " + tab.getPosition());
-                pager.setCurrentItem(tab.getPosition());
-                pager.forceLayout();
-                Log.i("-->", "now: " + pager.getCurrentItem());
-            }
+        // Bind tab layout to pager
+        tabLayout.setupWithViewPager(pager);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // ignored
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // ignored
-            }
-        });
-
-        // Switch tabs on pager page
+        // Show/hide add button on appropriate pages
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                tabLayout.setScrollPosition(position, 0, true);
-
-                if (isAddButtonEnabled(position)) {
-                    showAddButton();
-                } else {
-                    hideAddButton();
-                }
+                // ignored
             }
 
             @Override
@@ -167,11 +147,11 @@ abstract class TasksOverviewFragment extends Fragment {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                tabLayout.setScrollPosition(position, positionOffset, true);
-
-                if (positionOffset != 0 && addButton.getVisibility() == View.VISIBLE) {
+                if (positionOffset != 0 && addButtonVisible) {
+                    addButtonVisible = false;
                     hideAddButton();
-                } else if (positionOffset == 0 && isAddButtonEnabled(position)) {
+                } else if (positionOffset == 0 && isAddButtonEnabled(position) && !addButtonVisible) {
+                    addButtonVisible = true;
                     showAddButton();
                 }
             }
@@ -180,11 +160,62 @@ abstract class TasksOverviewFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        this.new NotificationFetchTask().execute();
+    }
+
+    private class NotificationFetchTask extends AsyncTask<Void, Void, Void> {
+
+        private boolean offlineIndicator;
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Session session = Session.getInstance(getActivity());
+            TransactionManager transactionManager = session.getTransactionManager();
+            if (transactionManager.hasPendingTransactions()) {
+                if (transactionManager.flush(WrkifyClient.getInstance())) {
+                    offlineIndicator = false;
+                } else {
+                    offlineIndicator = true;
+                }
+
+                refreshTaskLists();
+            } else {
+                offlineIndicator = false;
+            }
+
+            Session.getInstance(getActivity()).downloadSignals(WrkifyClient.getInstance());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (offlineIndicator) {
+                showOfflineIndicator();
+            } else {
+                hideOfflineIndicator();
+            }
+
+            View view = getView();
+            if (view != null) {
+                updateNotificationDisplay(getView());
+            }
+        }
+    }
+
+    private void refreshTaskLists() {
+        // TODO not implemented
+    }
+
     /**
      * Hides the add button.
      * TODO add transition
      */
     private void hideAddButton() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.GONE);
     }
 
@@ -193,7 +224,16 @@ abstract class TasksOverviewFragment extends Fragment {
      * TODO add transition
      */
     private void showAddButton() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), new Slide(Gravity.BOTTOM));
         addButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOfflineIndicator() {
+        offlineIndicator.setVisibility(View.GONE);
+    }
+
+    private void showOfflineIndicator() {
+        offlineIndicator.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -204,25 +244,8 @@ abstract class TasksOverviewFragment extends Fragment {
         return this.pager;
     }
 
-    /**
-     * Selects which tasks to display in the task lists. Each element
-     * in the outer list is a list of tasks that will be displayed in a tab.
-     * Length of the list should be the same as the length of the list
-     * returned by getTabTitles for correct behaviour.
-     * @return list of task lists
-     */
-    protected abstract List<ArrayList<Task>> getTaskLists();
+    protected abstract FragmentPagerAdapter getFragmentPagerAdapter(FragmentManager fragmentManager);
 
-    /**
-     * Determines the titles of the tabs (and the number of tabs).
-     * Each string in the returned list is used as a tab title from
-     * first to last. Length of the returned list should be the same
-     * as the length of the list returned by getTaskLists for
-     * correct behaviour.
-     * @return list of tab titles
-     */
-    protected abstract String[] getTabTitles();
-    
     /**
      * Determines the 'activity title' shown when viewing this Fragment.
      * (It appears in the override app bar.)
@@ -242,5 +265,48 @@ abstract class TasksOverviewFragment extends Fragment {
      */
     protected void onAddButtonClick(View v) {
 
+    }
+
+
+    /**
+     * Updates the notification display.
+     * @param view root view of the fragment
+     */
+    private void updateNotificationDisplay(final View view) {
+        Log.i("-->", "und");
+        ViewGroup notificationContainer = view.findViewById(R.id.overviewNotificationContainer);
+        ViewGroup notificationTarget = view.findViewById(R.id.overviewNotificationTarget);
+        ViewGroup notificationOverflow = view.findViewById(R.id.overviewNotificationOverflowIndicator);
+        TextView notificationOverflowLabel = view.findViewById(R.id.overviewNotificationOverflowLabel);
+
+        NotificationCollector collector = Session.getInstance(getContext()).getNotificationCollector();
+        NotificationInfo notification = collector.getFirstNotification();
+
+        if (notification != null) {
+            notificationContainer.setVisibility(View.VISIBLE);
+
+            NotificationView notificationView = new NotificationView(getContext());
+            notificationView.setNotification(notification);
+            notificationView.setOnDismissListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateNotificationDisplay(view);
+                }
+            });
+
+            notificationTarget.addView(notificationView);
+
+            // Show overflow indicator if more than one notification
+            int extraNotificationCount = collector.getNotificationCount() - 1;
+            if (extraNotificationCount > 0) {
+                notificationOverflow.setVisibility(View.VISIBLE);
+                notificationOverflowLabel.setText(
+                        String.format(Locale.US, "%d more notifications", extraNotificationCount));
+            } else {
+                notificationOverflow.setVisibility(View.GONE);
+            }
+        } else {
+            notificationContainer.setVisibility(View.GONE);
+        }
     }
 }

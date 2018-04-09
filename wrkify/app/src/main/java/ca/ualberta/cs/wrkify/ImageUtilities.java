@@ -101,9 +101,9 @@ public abstract class ImageUtilities {
         CompressedBitmap bm;
 
         if (remote) {
-            bm = WrkifyClient.getInstance().create(CompressedBitmap.class, data);
+            bm = (CompressedBitmap) WrkifyClient.getInstance().create(CompressedBitmap.class, data);
         } else {
-            bm = new CompressedBitmap(data);
+            bm = (CompressedBitmap) WrkifyClient.getInstance().createLocal(CompressedBitmap.class, data);
         }
         return bm;
     }
@@ -115,10 +115,6 @@ public abstract class ImageUtilities {
 
     public static CompressedBitmap makeCompressedImage(Bitmap image, boolean remote) {
         return makeCompressedBitmap(image, remote, 65536, 10, Bitmap.CompressFormat.JPEG);
-    }
-
-    public static CompressedBitmap convertToRemote(CompressedBitmap compressedBitmap){
-        return WrkifyClient.getInstance().create(CompressedBitmap.class, compressedBitmap.getData());
     }
 
 }

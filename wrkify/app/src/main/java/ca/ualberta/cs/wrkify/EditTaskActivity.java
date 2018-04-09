@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
@@ -82,6 +83,10 @@ public class EditTaskActivity extends AppCompatActivity {
             localImages = new ArrayList<>();
             thumbnails = new ArrayList<>();
             toDelete = new ArrayList<>();
+        }
+
+        public int getLocalThumbnailStartId(){
+            return remoteImages.size();
         }
 
         /**
@@ -177,12 +182,12 @@ public class EditTaskActivity extends AppCompatActivity {
         private void uploadLocalImages(Task task) {
             int thumbnailIndexOffset = remoteImages.size();
             for (int i = 0; i < localImages.size(); i++) {
-                CompressedBitmap uploadedImage = ImageUtilities.convertToRemote(localImages.get(i));
-                remoteImages.add(uploadedImage.<CompressedBitmap>reference());
+                //CompressedBitmap uploadedImage = ImageUtilities.convertToRemote(localImages.get(i));
+                //remoteImages.add(uploadedImage.<CompressedBitmap>reference());
 
                 int thumbnailIndex = i + thumbnailIndexOffset;
-                CompressedBitmap uploadedThumbnail = ImageUtilities.convertToRemote(thumbnails.get(thumbnailIndex));
-                thumbnails.set(thumbnailIndex, uploadedThumbnail);
+                //CompressedBitmap uploadedThumbnail = ImageUtilities.convertToRemote(thumbnails.get(thumbnailIndex));
+                //thumbnails.set(thumbnailIndex, uploadedThumbnail);
             }
             localImages.clear();
             ArrayList<RemoteReference<CompressedBitmap>> newRemoteThumbnails = new ArrayList<>();
@@ -193,6 +198,8 @@ public class EditTaskActivity extends AppCompatActivity {
             task.setRemoteImages(remoteImages);
             task.setRemoteThumbnails(newRemoteThumbnails);
         }
+
+
     }
 
     /** Task being passed in to EditTaskActivity */
@@ -206,6 +213,9 @@ public class EditTaskActivity extends AppCompatActivity {
 
     /** The task being edited was deleted and should be removed from its context */
     public static final int RESULT_TASK_DELETED = 12;
+
+    /** The task was edited, but the changes were not synced successfully. */
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
 
 
     private Task task;
@@ -625,6 +635,7 @@ public class EditTaskActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
         finish();
+        this.new DeleteTaskTask().execute();
     }
 
     /**
@@ -642,20 +653,22 @@ public class EditTaskActivity extends AppCompatActivity {
         if (focus != null) { focus.clearFocus(); }
 
         if (this.taskIsNew) {
-            this.task = WrkifyClient.getInstance()
+            /*this.task = WrkifyClient.getInstance()
                     .create(Task.class,
                             this.titleField.getText().toString(),
                             Session.getInstance(this).getUser(),
                             this.descriptionField.getText().toString()
                     );
+
+            */
             imageManager.save(this.task);
             task.setCheckList(this.checkList);
-            WrkifyClient.getInstance().upload(task);
+            //WrkifyClient.getInstance().upload(task);
         } else {
             imageManager.save(this.task);
             task.setTitle(titleField.getText().toString());
             task.setDescription(descriptionField.getText().toString());
-            WrkifyClient.getInstance().upload(this.task);
+            //WrkifyClient.getInstance().upload(this.task);
         }
 
         if (task == null){
@@ -670,6 +683,7 @@ public class EditTaskActivity extends AppCompatActivity {
         else setResult(RESULT_OK, intent);
 
         finish();
+        this.new EditTaskTask().execute();
     }
 
     /**
@@ -690,4 +704,170 @@ public class EditTaskActivity extends AppCompatActivity {
         checkListNewButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * EditTaskTask is an AsyncTask for completing the editing
+     * of a task.
+     */
+    private class EditTaskTask extends AsyncTask<Void, Void, Void> {
+        private int resultCode;
+        /**
+         * change the task and upload it
+         * to the client
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String newTitle = titleField.getText().toString();
+            String newDescription = descriptionField.getText().toString();
+            TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+
+
+            if (taskIsNew) {
+                // TODO This will probably fail if offline
+                task = (Task) WrkifyClient.getInstance().createLocal(Task.class,
+                        titleField.getText().toString(),
+                        Session.getInstance(EditTaskActivity.this).getUser(),
+                        descriptionField.getText().toString()
+                );
+                task.setCheckList(checkList);
+
+
+
+                this.uploadImages();
+                transactionManager.enqueue(new TaskCreateTransaction(task));
+
+                WrkifyClient.getInstance().updateCached(task);
+
+                transactionManager.flush(WrkifyClient.getInstance());
+
+                resultCode = RESULT_TASK_CREATED;
+            } else {
+
+                transactionManager.enqueue(new TaskTitleTransaction(task, newTitle));
+                transactionManager.enqueue(new TaskDescriptionTransaction(task, newDescription));
+                transactionManager.enqueue(new TaskCheckListTransaction(task, checkList));
+
+                task.setTitle(newTitle);
+                task.setDescription(newDescription);
+                task.setCheckList(checkList);
+                WrkifyClient.getInstance().updateCached(task);
+
+                if (transactionManager.flush(WrkifyClient.getInstance())) {
+                    resultCode = RESULT_OK;
+                } else {
+                    resultCode = RESULT_UNSYNCED_CHANGES;
+                }
+            }
+            return null;
+        }
+
+        protected void uploadImages() {
+            TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+            //Upload local images
+            ArrayList<CompressedBitmap> images = imageManager.localImages;
+            ArrayList<CompressedBitmap> thumbnails = imageManager.thumbnails;
+            int thumbnailOffset = imageManager.getLocalThumbnailStartId();
+            for (int i = 0; i < images.size(); i++) {
+                CompressedBitmap im = images.get(i);
+                CompressedBitmap tn = thumbnails.get(i + thumbnailOffset);
+                transactionManager.enqueue(new ImageCreateTransaction(im));
+                transactionManager.enqueue(new ImageCreateTransaction(tn));
+                transactionManager.enqueue(new TaskAddImagesTransaction(task, tn, im));
+                //upload the images
+            }
+            attachImages(task);
+            WrkifyClient.getInstance().updateCached(task);
+        }
+
+        public void attachImages(Task task) {
+            ArrayList<RemoteReference<CompressedBitmap>> allRemoteImages = new ArrayList<>();
+            ArrayList<RemoteReference<CompressedBitmap>> remoteThumbnails = new ArrayList<>();
+            for (int i = 0; i < imageManager.remoteImages.size(); i++) {
+                allRemoteImages.add(imageManager.remoteImages.get(i));
+            }
+            for (int i = 0; i < imageManager.localImages.size(); i++) {
+                allRemoteImages.add(imageManager.localImages.get(i).<CompressedBitmap>reference());
+            }
+            for (int i = 0; i < imageManager.thumbnails.size(); i++) {
+                remoteThumbnails.add(imageManager.thumbnails.get(i).<CompressedBitmap>reference());
+            }
+            task.setRemoteImages(allRemoteImages);
+            task.setRemoteThumbnails(remoteThumbnails);
+        }
+
+        /**
+         * when the task has been uploaded, if it was sucessful,
+         * finish the activity properly
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (task == null) return;
+
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_RETURNED_TASK, task);
+            setResult(resultCode, intent);
+
+            finish();
+        }
+    }
+
+    /**
+     * DeleteTaskTask is an AsyncTask that deletes the given task
+     * and returns.
+     */
+    public class DeleteTaskTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * delete the task from the server
+         * @param voids unused
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            TransactionManager transactionManager = Session.getInstance(EditTaskActivity.this).getTransactionManager();
+
+            ArrayList<RemoteReference<CompressedBitmap>> thumbnailList = task.getRemoteThumbnails();
+            ArrayList<RemoteReference<CompressedBitmap>> imageList = task.getRemoteImages();
+
+            //Remove images, then delete them
+
+            int offset = imageManager.getLocalThumbnailStartId();
+            for (int i = 0; i < imageList.size(); i++) {
+                RemoteReference<CompressedBitmap> thumb = thumbnailList.get(i + offset);
+                RemoteReference<CompressedBitmap> image = imageList.get(i);
+
+                transactionManager.enqueue(new TaskRemoveImagesTransaction(task, thumb, image));
+                transactionManager.enqueue(new DeleteTransaction(thumb, CompressedBitmap.class));
+                transactionManager.enqueue(new DeleteTransaction(image, CompressedBitmap.class));
+            }
+
+            transactionManager.enqueue(new DeleteTransaction(task, Task.class));
+
+            WrkifyClient.getInstance().discardCached(task.getId());
+
+            // TODO notify of offline status
+            transactionManager.flush(WrkifyClient.getInstance());
+            return null;
+        }
+
+        /**
+         * after the task has been delete from the server,
+         * return to the correct activity.
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+
+
+            setResult(RESULT_TASK_DELETED);
+            View view = EditTaskActivity.this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+            finish();
+        }
+    }
 }

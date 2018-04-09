@@ -64,7 +64,7 @@ public class RemoteUserIntegrationTest {
 
     @Test
     public void testSearch() {
-        RemoteClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
+        ElasticClient rc = new ElasticClient(WrkifyClient.URL, "cmput301w18t18-test");
 
         User use1 = rc.create(User.class, "john", "john@example.com", "(780) 666-6666");
         User use2 = rc.create(User.class, "peter", "peter@example.com", "(780) 555-5555");
@@ -79,7 +79,7 @@ public class RemoteUserIntegrationTest {
         try {
             // give elasticsearch time to index
             Thread.sleep(1000);
-            arr = rc.search(
+            arr = rc.executeQuery(
                     "{\"query\": {\"match\": {\"username\": \"peter\"}}}",
                     User.class
             );

@@ -51,4 +51,14 @@ public class RemoteReference<T extends RemoteObject> implements Serializable {
     public String getId(){
         return refId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null && obj instanceof RemoteReference) {
+            RemoteReference other = (RemoteReference) obj;
+            return (refId == null && other.refId == null) ||
+                    (refId != null && other.refId != null && other.refId.equals(refId));
+        }
+        return super.equals(obj);
+    }
 }

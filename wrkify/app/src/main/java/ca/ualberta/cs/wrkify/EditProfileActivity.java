@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import android.widget.TextView;
  * cancelled, EXTRA_RETURNED_USER will not be set.
  */
 public class EditProfileActivity extends AppCompatActivity {
+    public static final int RESULT_UNSYNCED_CHANGES = 20;
+
     /** User being passed in to EditProfileActivity */
     public static final String EXTRA_TARGET_USER = "ca.ualberta.cs.wrkify.EXTRA_TARGET_USER";
 
@@ -95,33 +98,78 @@ public class EditProfileActivity extends AppCompatActivity {
     private void saveAndFinish() {
         boolean valid = true;
 
+        String newEmail = emailField.getText().toString();
+        String newPhoneNumber = phoneField.getText().toString();
+
         try {
-            user.setEmail(emailField.getText().toString());
+            user.setEmail(newEmail);
         } catch (IllegalArgumentException e) {
             emailField.setError("Not a valid email address");
             valid = false;
         }
 
         try {
-            user.setPhoneNumber(phoneField.getText().toString());
+            user.setPhoneNumber(newPhoneNumber);
         } catch (IllegalArgumentException e) {
             phoneField.setError("Not a valid phone number");
             valid = false;
         }
 
-        if (!valid) { return; }
+        if (valid) {
+            this.new UploadProfileTask().execute(newEmail, newPhoneNumber);
+        }
+    }
 
-        WrkifyClient.getInstance().upload(user);
+    /**
+     * UploadProfileTask is an AsyncTask that uploads the User
+     * and then returns to the previous activity.
+     */
+    private class UploadProfileTask extends AsyncTask<String, Void, Void> {
+        private int resultCode;
+        /**
+         * upload the user and save it if it is the session user
+         * user should always be the session user
+         * @param emailphone the email and the phone number
+         * @return unused
+         */
+        @Override
+        protected Void doInBackground(String... emailphone) {
+            String newEmail = emailphone[0];
+            String newPhoneNumber = emailphone[1];
 
-        Session session = Session.getInstance(this);
-        if (session.getUser().equals(user)) {
-            session.setUser(user, this);
+            Session session = Session.getInstance(EditProfileActivity.this);
+
+            TransactionManager transactionManager = session.getTransactionManager();
+            transactionManager.enqueue(new UserSetEmailTransaction(user, newEmail));
+            transactionManager.enqueue(new UserSetPhoneNumberTransaction(user, newPhoneNumber));
+
+            if (transactionManager.flush(WrkifyClient.getInstance())) {
+                resultCode = RESULT_OK;
+            } else {
+                resultCode = RESULT_UNSYNCED_CHANGES;
+            }
+
+            if (session.getUser().equals(user)) {
+                session.setUser(user, EditProfileActivity.this);
+            }
+
+            WrkifyClient.getInstance().updateCached(user);
+
+            return null;
         }
 
-        Intent intent = getIntent();
-        intent.putExtra(EXTRA_RETURNED_USER, user);
+        /**
+         * after we finish uploading the user,
+         * finish the activity.
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            Intent intent = getIntent();
+            intent.putExtra(EXTRA_RETURNED_USER, user);
 
-        setResult(RESULT_OK, intent);
-        finish();
+            setResult(resultCode, intent);
+            finish();
+        }
     }
 }

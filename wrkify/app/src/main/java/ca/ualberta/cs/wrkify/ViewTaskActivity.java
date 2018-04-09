@@ -22,7 +22,6 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -69,7 +68,6 @@ public class ViewTaskActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_task);
 
@@ -146,9 +144,18 @@ public class ViewTaskActivity extends AppCompatActivity {
         // Set the task user view
         UserView userView = findViewById(R.id.taskViewUser);
         try {
-            User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
+            final User remoteRequester = task.getRemoteRequester(WrkifyClient.getInstance());
             if (remoteRequester != null) {
                 userView.setUserName(remoteRequester.getUsername());
+                userView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // View user profile from the user view
+                        Intent viewUserIntent = new Intent(ViewTaskActivity.this, ViewProfileActivity.class);
+                        viewUserIntent.putExtra(ViewProfileActivity.USER_EXTRA, remoteRequester);
+                        startActivity(viewUserIntent);
+                    }
+                });
             }
         } catch (IOException e) {
             // TODO handle this correctly
@@ -177,7 +184,15 @@ public class ViewTaskActivity extends AppCompatActivity {
                             @Override
                             public void onConfirm() {
                                 item.setStatus(!item.getStatus());
-                                WrkifyClient.getInstance().upload(ViewTaskActivity.this.task);
+
+                                new TransactionAsyncTask().execute(
+                                        ViewTaskActivity.this.task,
+                                        new TaskCheckListTransaction(
+                                                ViewTaskActivity.this.task,
+                                                ViewTaskActivity.this.task.getCheckList()
+                                        ),
+                                        ViewTaskActivity.this
+                                );
                                 checkListProviderView.notifyDataSetChanged();
                             }
                         }

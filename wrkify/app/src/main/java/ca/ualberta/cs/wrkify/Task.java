@@ -17,6 +17,7 @@ package ca.ualberta.cs.wrkify;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -36,7 +37,7 @@ public class Task extends RemoteObject {
     private String title;
     private String description;
     private ArrayList<Bitmap> imageList;
-    private Location location;
+    private TaskLocation location;
     private CheckList checkList;
     private ArrayList<Bid> bidList;
     private RemoteReference<User> requester;
@@ -101,7 +102,7 @@ public class Task extends RemoteObject {
         this(title, requester.<User>reference(), description);
     }
 
-    // begin the setters
+    // begin the getters
 
     /**
      * gets the title
@@ -135,7 +136,7 @@ public class Task extends RemoteObject {
      *
      * @return the location or null
      */
-    public Location getLocation() {
+    public TaskLocation getLocation() {
         return location;
     }
 
@@ -207,7 +208,11 @@ public class Task extends RemoteObject {
      * @param title the title
      */
     public void setTitle(String title) {
-        internalSetTitle(title);
+        if (this.status == TaskStatus.REQUESTED) {
+            internalSetTitle(title);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -216,7 +221,11 @@ public class Task extends RemoteObject {
      * @param description the description
      */
     public void setDescription(String description) {
-        internalSetDescription(description);
+        if (this.status == TaskStatus.REQUESTED) {
+            internalSetDescription(description);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -224,8 +233,12 @@ public class Task extends RemoteObject {
      *
      * @param location the location
      */
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocation(TaskLocation location) {
+        if (this.status == TaskStatus.REQUESTED) {
+            this.location = location;
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -241,7 +254,9 @@ public class Task extends RemoteObject {
      * sets the provider
      *
      * @param provider the provider
+     * @deprecated use acceptBid instead.
      */
+    @Deprecated
     public void setProvider(User provider) {
         this.provider = provider.reference();
     }
@@ -255,11 +270,26 @@ public class Task extends RemoteObject {
      * @param bid the new bid
      */
     public void addBid(Bid bid) {
-        bidList.add(bid);
-        Collections.sort(this.bidList);
-        if (this.status == TaskStatus.REQUESTED) {
-            this.status = TaskStatus.BIDDED;
+        if (this.status == TaskStatus.REQUESTED || this.status == TaskStatus.BIDDED) {
+            bidList.add(bid);
+            Collections.sort(this.bidList);
+            if (this.status == TaskStatus.REQUESTED) {
+                this.status = TaskStatus.BIDDED;
+            }
+        } else {
+            throw new UnsupportedOperationException("cannot bid on assigned or done task");
         }
+    }
+
+    @Nullable
+    public Bid getBidForUser(User user) {
+        for (Bid bid: this.bidList) {
+            if (bid.getBidderReference().equals(user.<User>reference())) {
+                return bid;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -282,16 +312,23 @@ public class Task extends RemoteObject {
      * @param image the image you want to add
      */
     public void addImage(Bitmap image) {
-        this.imageList.add(image);
+        if (this.status == TaskStatus.REQUESTED) {
+            this.imageList.add(image);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
-     * deletes an image fromthe image list
-     *
+     * deletes an image from the image list
      * @param image the image that is being removed
      */
     public void delImage(Bitmap image) {
-        this.imageList.remove(image);
+        if (this.status == TaskStatus.REQUESTED) {
+            this.imageList.remove(image);
+        } else {
+            throw new UnsupportedOperationException("cannot edit task after bidding");
+        }
     }
 
     /**
@@ -300,25 +337,37 @@ public class Task extends RemoteObject {
      * @param bid the bid that is being accepted
      */
     public void acceptBid(Bid bid) {
-        this.acceptedBid = bid;
-        this.status = TaskStatus.ASSIGNED;
-        this.provider = bid.getBidderReference();
+        if (this.status == TaskStatus.REQUESTED || this.status == TaskStatus.BIDDED) {
+            this.acceptedBid = bid;
+            this.status = TaskStatus.ASSIGNED;
+            this.provider = bid.getBidderReference();
+        } else {
+            throw new UnsupportedOperationException("cannot accept bid when already accepted");
+        }
     }
 
     /**
      * unassign the bid and revert the status
      */
     public void unassign() {
-        this.provider = null;
-        this.status = TaskStatus.BIDDED;
-        this.acceptedBid = null;
+        if (this.status == TaskStatus.ASSIGNED) {
+            this.provider = null;
+            this.status = TaskStatus.BIDDED;
+            this.acceptedBid = null;
+        } else {
+            throw new UnsupportedOperationException("cannot unassign when already unassigned");
+        }
     }
 
     /**
      * marks the task as complete
      */
     public void complete() {
-        this.status = TaskStatus.DONE;
+        if (this.status == TaskStatus.ASSIGNED) {
+            this.status = TaskStatus.DONE;
+        } else {
+            throw new UnsupportedOperationException("cannot complete un assigned task");
+        }
     }
 
     /**
@@ -394,6 +443,29 @@ public class Task extends RemoteObject {
                 WrkifyClient.getInstance().deleteByReference(remoteImages.get(i), CompressedBitmap.class);
             }
             remoteImages.clear();
+        }
+    }
+
+    public void addReferencePair(RemoteReference<CompressedBitmap> thumbRef, RemoteReference<CompressedBitmap> fullRef) {
+        remoteThumbnails.add(thumbRef);
+        remoteImages.add(fullRef);
+    }
+
+    public void removeThumbnailById(String id) {
+        for (int i = remoteThumbnails.size() - 1; i >= 0; i--) {
+            if (remoteThumbnails.get(i).getId() == id) {
+                remoteThumbnails.remove(i);
+                return;
+            }
+        }
+    }
+
+    public void removeImageById(String id) {
+        for (int i = remoteImages.size() - 1; i >= 0; i--) {
+            if (remoteImages.get(i).getId() == id) {
+                remoteImages.remove(i);
+                return;
+            }
         }
     }
 

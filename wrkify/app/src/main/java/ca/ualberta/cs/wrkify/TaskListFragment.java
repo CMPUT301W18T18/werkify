@@ -17,6 +17,7 @@
 
 package ca.ualberta.cs.wrkify;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,51 +28,38 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
- * Fragment that displays a list of tasks.
- * This is used as the pages of a TaskListFragmentPagerAdapter,
- * but can probably be used in other contexts as well.
- * Receives an ArrayList of Tasks as ARGUMENT_TASK_LIST,
- * and displays those tasks.
+ * TaskListFragment is an abstract class that handles the
+ * behavior of a List of tasks it defines the behavior
+ * of scrolling as well as selecting tasks.
  *
- * TODO adapter is currently not implemented.
+ * @see Fragment
  */
-public class TaskListFragment extends Fragment {
-    public static final String ARGUMENT_TASK_LIST = "ca.ualberta.cs.wrkify.ARGUMENT_TASK_LIST";
-    
-    /**
-     * Creates a TaskListFragment for a list of tasks. This is a simplifying
-     * factory wrapper around TaskListFragment.
-     * @param tasks list of tasks
-     * @return TaskListFragment to display the list of tasks
-     */
-    public static TaskListFragment makeTaskList(ArrayList<Task> tasks) {
-        TaskListFragment fragment = new TaskListFragment();
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_TASK_LIST, tasks);
-        fragment.setArguments(arguments);
-        return fragment;
-    }
+public abstract class TaskListFragment extends Fragment {
 
-    private ArrayList<Task> tasks;
+    private RemoteList<Task> tasks;
+    private TaskListAdapter<Task> taskListAdapter;
 
     /**
-     * Requisite null constructor
+     * create our TaskListFragment
+     * @param savedInstanceState
      */
-    public TaskListFragment() { }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.tasks = (ArrayList<Task>) this.getArguments().getSerializable(ARGUMENT_TASK_LIST);
+        this.tasks = getTaskList();
+        this.refresh();
     }
 
+    /**
+     * create the view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,7 +70,7 @@ public class TaskListFragment extends Fragment {
             view.findViewById(R.id.taskListEmptyMessage).setVisibility(View.VISIBLE);
         }
 
-        TaskListAdapter<Task> taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
+        this.taskListAdapter = new TaskListAdapter<Task>(getContext(), tasks);
         RecyclerView recyclerView = view.findViewById(R.id.taskListView);
         recyclerView.setAdapter(taskListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -90,12 +78,63 @@ public class TaskListFragment extends Fragment {
         return view;
     }
 
+    /**
+     * refresh the view when the you go aaway and look back.
+     */
     @Override
     public void onResume() {
         super.onResume();
-        if (this.getView() != null) {
-            this.getView().findViewById(R.id.taskListView).setVisibility(tasks.size() == 0? View.GONE : View.VISIBLE);
-            this.getView().findViewById(R.id.taskListEmptyMessage).setVisibility(tasks.size() == 0? View.VISIBLE : View.GONE);
+
+        this.refresh();
+
+    }
+
+    /**
+     * refresh the view
+     */
+    protected void refresh() {
+        this.new RefreshTask().execute();
+    }
+
+    /**
+     * allow the subclass to define the creation of the TaskList
+     * this function will be run in an AsyncTask
+     * @return a List of the tasks for the activity to display
+     */
+    protected abstract RemoteList getTaskList();
+
+
+    /**
+     * RefreshTask is an AsyncTask that updates the list,
+     * then triggers the adapter to redraw
+     */
+    private class RefreshTask extends AsyncTask<Void, Void, Void> {
+        /**
+         * refresh the list in the background
+         * @param voids
+         * @return
+         */
+        @Override
+        protected Void doInBackground(Void... voids) {
+            tasks.refresh();
+            return null;
+        }
+
+        /**
+         * update the view after the list is refreshed
+         * @param result unused
+         */
+        @Override
+        protected void onPostExecute(Void result) {
+            if (taskListAdapter != null) {
+                taskListAdapter.notifyDataSetChanged();
+                if (getView() != null) {
+                    getView().findViewById(R.id.taskListView).setVisibility(
+                            tasks.size() == 0? View.GONE : View.VISIBLE);
+                    getView().findViewById(R.id.taskListEmptyMessage).setVisibility(
+                            tasks.size() == 0? View.VISIBLE : View.GONE);
+                }
+            }
         }
     }
 }

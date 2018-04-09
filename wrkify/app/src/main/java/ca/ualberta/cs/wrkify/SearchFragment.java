@@ -22,7 +22,9 @@ import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +106,19 @@ public class SearchFragment extends Fragment {
                 return handled;
             }
         });
+
+        // Make search results dodge search bar
+        searchBar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) v.getLayoutParams();
+                int marginTotal = params.topMargin + params.bottomMargin;
+
+                recycler.setPadding(0, bottom - top + marginTotal, 0, 0);
+            }
+        });
+
+
         return rootView;
     }
 
@@ -112,22 +128,9 @@ public class SearchFragment extends Fragment {
      * to a search query. Uses Searcher for searching.
      *
      * @param query String search query.
-     * @return
      */
-    public boolean searchTasks(String query){
-        List<Task> tasks;
-        try {
-            tasks = Searcher.findTasksByKeywords(WrkifyClient.getInstance(), query);
-        } catch (IOException e){
-            tasks = new ArrayList<>();
-            return false;
-        }
-        if(tasks==null){
-            this.taskList = new ArrayList<>();
-            return true;
-        }
-        updateDataSet(tasks);
-        return true;
+    public void searchTasks(String query){
+        this.new SearchTask().execute(query);
     }
 
 
@@ -142,5 +145,48 @@ public class SearchFragment extends Fragment {
         this.taskList = newList;
         TaskListAdapter<Task> newAdapter = new TaskListAdapter<>(new AppCompatActivity(),this.taskList);
         this.recycler.setAdapter(newAdapter);
+    }
+
+    /**
+     * SearchTask is an AsyncTask that preforms a search and then
+     * updates the tasklist.
+     */
+    private class SearchTask extends AsyncTask<String, Void, List<Task>> {
+        /**
+         * preforms the search
+         * @param strings a single string that is the query.
+         * @return the list of tasks from the query.
+         */
+        @Override
+        protected List<Task> doInBackground(String... strings) {
+            if (strings.length != 1) {
+                throw new IllegalArgumentException("exactly one query must be provided");
+            }
+
+            String query = strings[0];
+
+            List<Task> tasks;
+            try {
+                tasks = WrkifyClient.getInstance().getSearcher().findTasksByKeywords(query);
+            } catch (IOException e){
+                tasks = new ArrayList<>();
+            }
+
+            if(tasks==null){
+                tasks = new ArrayList<>();
+            }
+
+            return tasks;
+        }
+
+        /**
+         * after the tasks have been fetched,
+         * update the data set
+         * @param tasks the tasks of our search
+         */
+        @Override
+        protected void onPostExecute(List<Task> tasks) {
+            updateDataSet(tasks);
+        }
     }
 }

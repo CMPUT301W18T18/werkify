@@ -20,6 +20,8 @@ package ca.ualberta.cs.wrkify;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 import io.searchbox.annotations.JestId;
 
@@ -32,6 +34,12 @@ import io.searchbox.annotations.JestId;
 public abstract class RemoteObject implements Serializable {
     @JestId
     private String id;
+
+    private final long timestamp;
+
+    protected RemoteObject() {
+        timestamp = System.currentTimeMillis();
+    }
 
     /**
      * sets the id of the RemoteObject.
@@ -48,6 +56,14 @@ public abstract class RemoteObject implements Serializable {
      */
     public String getId() {
         return this.id;
+    }
+
+    /**
+     * Gets the object creation timestamp.
+     * @return timestamp
+     */
+    public long getTimestamp() {
+        return timestamp;
     }
 
     /**

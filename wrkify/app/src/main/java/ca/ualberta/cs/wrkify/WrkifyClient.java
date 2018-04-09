@@ -34,14 +34,14 @@ public class WrkifyClient {
      */
     public static final String INDEX = "cmput301w18t18";
 
-    private static RemoteClient instance;
+    private static CachingClient instance;
 
     /**
      * gets the one instance of RemoteClient
      * used throughout the wrkify app
      * @return the one true instance
      */
-    public static RemoteClient getInstance() {
+    public static CachingClient getInstance() {
         if (instance == null) {
             instance = new CachingClient<>(new ElasticClient(URL, INDEX));
         }
@@ -52,7 +52,7 @@ public class WrkifyClient {
      * Overrides the global instance.
      * @param instance new RemoteClient to use as the global instance
      */
-    public static void setInstance(RemoteClient instance) {
+    public static void setInstance(CachingClient instance) {
         WrkifyClient.instance = instance;
     }
 

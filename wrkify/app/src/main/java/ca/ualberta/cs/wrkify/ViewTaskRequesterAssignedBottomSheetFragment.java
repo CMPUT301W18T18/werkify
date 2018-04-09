@@ -18,6 +18,7 @@
 package ca.ualberta.cs.wrkify;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.FragmentManager;
@@ -65,8 +66,13 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             @Override
                             public void onConfirm() {
                                 task.complete();
-                                WrkifyClient.getInstance().upload(task);
+
+                                new TransactionAsyncTask().execute(
+                                        task, new TaskCompleteTransaction(task), getContext());
+
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+
+                                collapse();
                             }
                         });
                 dialog.show(fm, null);
@@ -82,8 +88,12 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
                             @Override
                             public void onConfirm() {
                                 task.unassign();
-                                WrkifyClient.getInstance().upload(task);
+
+                                new TransactionAsyncTask().execute(
+                                        task, new TaskUnassignTransaction(task), getContext());
+
                                 ((ViewTaskActivity) getActivity()).replaceTask(task);
+                                collapse();
                             }
                         }
                 );
@@ -91,6 +101,8 @@ public class ViewTaskRequesterAssignedBottomSheetFragment extends ViewTaskBottom
             }
         });
     }
+
+
 
     @Override
     protected String getStatusString() {

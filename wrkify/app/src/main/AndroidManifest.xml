@@ -15,29 +15,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewBidsActivity" />
+        <activity android:name=".ViewBidsActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ViewTaskActivity" />
-        <activity android:name=".ViewProfileActivity" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|screenSize">
+        </activity>
+        <activity android:name=".ViewTaskActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".ViewProfileActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
         </activity>
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".EditProfileActivity"
-            android:parentActivityName=".ViewProfileActivity" />
+            android:parentActivityName=".ViewProfileActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".EditTaskActivity"
             android:parentActivityName=".ViewTaskActivity"

@@ -39,4 +39,7 @@
         <item>Gallery</item>
     </string-array>
     
+    <string name="login_fail">Account not found.</string>
+    <string name="no_internet">Cannot connect to server.</string>
+    <string name="bad_user_info">Invalid name, email, or phone number</string>
 </resources>

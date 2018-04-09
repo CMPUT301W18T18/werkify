@@ -18,8 +18,9 @@
 package ca.ualberta.cs.wrkify;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -48,19 +49,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         getSupportActionBar().hide();
 
-        User sessionuser = Session.getInstance(this).getUser();
-
-        if (sessionuser != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
+        this.new LoginSessionTask().execute();
 
         this.loginField = findViewById(R.id.loginField);
         Button loginButton = findViewById(R.id.loginButton);
@@ -103,19 +97,8 @@ public class LoginActivity extends AppCompatActivity {
      * @param username username to log in as
      */
     private void trySubmitAndFinish(String username) {
-        // TODO actually look up user on the server
-        Session session = Session.getInstance(this);
-
-        try {
-            User user = Searcher.getUser(WrkifyClient.getInstance(), username);
-            if (user != null) {
-                session.setUser(user, this);
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
-            }
-        } catch (IOException e) {
-
-        }
+        // submit asynchronously
+        this.new LoginUsernameTask().execute(username);
     }
 
     /**
@@ -126,10 +109,113 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REGISTER && resultCode == RESULT_OK) {
-            User sessionuser = Session.getInstance(this).getUser();
-            if (sessionuser != null) {
-                startActivity(new Intent(this, MainActivity.class));
+            this.new LoginSessionTask().execute();
+        }
+    }
+
+    /**
+     * LoginSessionTask is an AsyncTask to get the sessionUser and
+     * end the Activity.
+     */
+    private class LoginSessionTask extends AsyncTask<Void, Void, User> {
+        /**
+         * runs in the background the get the session user
+         * @param voids unused
+         * @return the sessionUser
+         */
+        @Override
+        protected User doInBackground(Void... voids) {
+            User sessionUser = Session.getInstance(LoginActivity.this).getUser();
+            return sessionUser;
+        }
+
+        /**
+         * starts the MainActivity when we get our session
+         * @param sessionUser the user that is our result
+         */
+        @Override
+        protected void onPostExecute(User sessionUser) {
+            if (sessionUser != null) {
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 finish();
+            }
+        }
+    }
+
+    /**
+     * the enum returned by LoginUsernameTask
+     * to trigger various ui responses
+     *
+     * @see LoginUsernameTask
+     */
+    private enum LoginResult {
+        SUCCESS,
+        NOINTERNET,
+        NOTFOUND,
+    }
+
+    /**
+     * LoginUsernameTask offers an asyncronys way of loging in with a username.
+     */
+    private class LoginUsernameTask extends AsyncTask<String, Void, LoginResult> {
+
+        private User user;
+        private Session session;
+
+        /**
+         * gets the user and processes the result that should happen.
+         * @param usernames an array of length 1 containing the username
+         * @return the LoginResult indicating what to do.
+         */
+        @Override
+        protected LoginResult doInBackground(String... usernames) {
+            if (usernames.length != 1) {
+                throw new IllegalArgumentException("Exactly one username can be provided");
+            }
+            String username = usernames[0];
+
+            this.session = Session.getInstance(LoginActivity.this);
+
+            try {
+                this.user = WrkifyClient.getInstance().getSearcher().getUser(username);
+                if (user != null) {
+                    return LoginResult.SUCCESS;
+                } else {
+                    return LoginResult.NOTFOUND;
+                }
+            } catch (IOException e) {
+                return LoginResult.NOINTERNET;
+            }
+        }
+
+        /**
+         * runs to notify the user or start MainActivity after the user has
+         * been downloaded
+         * @param result the LoginResult telling us what to do
+         */
+        @Override
+        protected void onPostExecute(LoginResult result) {
+            if (result == LoginResult.SUCCESS) {
+                session.setUser(this.user, LoginActivity.this);
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+                return;
+            }
+
+            if (result == LoginResult.NOINTERNET) {
+                Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                        R.string.no_internet, Snackbar.LENGTH_LONG);
+                snack.setAction("Action", null);
+                snack.show();
+                return;
+            }
+
+            if (result == LoginResult.NOTFOUND) {
+                Snackbar snack = Snackbar.make(findViewById(android.R.id.content),
+                        R.string.login_fail, Snackbar.LENGTH_LONG);
+                snack.setAction("Action", null);
+                snack.show();
+                return;
             }
         }
     }

@@ -17,95 +17,89 @@
 
 package ca.ualberta.cs.wrkify;
 
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Collection of static methods to perform pre-defined searches.
- */
-public class Searcher {
+abstract class Searcher<TClient extends RemoteClient> {
+    protected TClient client;
+
+    public Searcher(TClient client) {
+        this.client = client;
+    }
+
+    /**
+     * Find all tasks where the given User is the task requester and
+     * the status of the task is one of the provided statuses.
+     * @param requester User to search for
+     * @param statuses the statuses that are valid in your search
+     * @return List of tasks matching the search (may be empty)
+     * @throws IOException if RemoteClient is disconnected
+     */
+    public abstract List<Task> findTasksByRequester(User requester, TaskStatus... statuses) throws IOException;
 
     /**
      * Find all tasks where the given User is the task requester.
-     * @param client RemoteClient to search in
      * @param requester User to search for
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
-    static List<Task> findTasksByRequester(RemoteClient client, User requester) throws IOException {
-        String query = "{\"query\":{\"nested\":{\"path\":\"requester\",\"query\":"
-                + "{\"match\":{\"requester.refId\":\"" + requester.getId() + "\"}}}}}";
-        return client.search(query, Task.class);
-    }
+    public abstract List<Task> findTasksByRequester(User requester) throws IOException;
+
+    /**
+     * Find all tasks where the given User is the assigned task provider and
+     * the status of the task is one of the provided statuses.
+     * @param provider User to search for
+     * @param statuses the statuses you want in your search
+     * @return List of tasks matching the search (may be empty)
+     * @throws IOException if RemoteClient is disconnected
+     */
+    public abstract List<Task> findTasksByProvider(User provider, TaskStatus... statuses) throws IOException;
 
     /**
      * Find all tasks where the given User is the assigned task provider.
-     * @param client RemoteClient to search in
      * @param provider User to search for
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
-    static List<Task> findTasksByProvider(RemoteClient client, User provider) throws IOException {
-        String query = "{\"query\":{\"nested\":{\"path\":\"provider\",\"query\":"
-                + "{\"match\":{\"provider.refId\":\"" + provider.getId() + "\"}}}}}";
-        return client.search(query, Task.class);
-    }
+    public abstract List<Task> findTasksByProvider(User provider) throws IOException;
+
+    /**
+     * Find all tasks where the given User has placed a bid and
+     * the status of the task is one of the provided statuses.
+     * @param bidder User to search for
+     * @param statuses the statuses you want in your search
+     * @return List of tasks matching the search (may be empty)
+     * @throws IOException if RemoteClient is disconnected
+     */
+    public abstract List<Task> findTasksByBidder(User bidder, TaskStatus... statuses) throws IOException;
 
     /**
      * Find all tasks where the given User has placed a bid.
-     * @param client RemoteClient to search in
      * @param bidder User to search for
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
-    static List<Task> findTasksByBidder(RemoteClient client, User bidder) throws IOException {
-        String query = "{\"query\":{\"nested\":{\"path\": \"bidList.bidder\",\"query\":"
-                +"{\"match\":{\"bidList.bidder.refId\": \"" + bidder.getId() + "\"}}}}}";
-        return client.search(query, Task.class);
-    }
+    public abstract List<Task> findTasksByBidder(User bidder) throws IOException;
 
     /**
      * Find all tasks matching a search string.
-     * @param client RemoteClient to search in
      * @param keywords Keywords to search for
      * @return List of tasks matching the search (may be empty)
      * @throws IOException if RemoteClient is disconnected
      */
-    static List<Task> findTasksByKeywords(RemoteClient client, String keywords) throws IOException {
-     // from https://stackoverflow.com/questions/7899525/ (2018-03-18)
-        String[] splited = keywords.split("\\s+");
+    public abstract List<Task> findTasksByKeywords(String keywords) throws IOException;
 
-        // from http://www.appsdeveloperblog.com/java-into-json-json-into-java-all-possible-examples/ (2018-03-18)
-        Gson gsonBuilder = new GsonBuilder().create();
-        String json = gsonBuilder.toJson(splited);
+    public abstract List<Task> findTasksNear(TaskLocation location) throws IOException;
 
-        String query = String.format(
-                "{\"query\":{\"bool\":{\"should\":[{\"terms\":{\"title\":%s}},"
-                        +"{\"terms\":{\"description\":%s}}]}}}",
-                json, json);
-        return client.search(query, Task.class);
-    }
+    public abstract List<Signal> findSignalsByUser(User user) throws IOException;
+
+    public abstract List<Signal> findSignalsByUserAndTargetIds(String userId, String targetId) throws IOException;
 
     /**
      * gets a user by its username
-     * @param client RemoteClient to search in
      * @param username the username of the user
      * @return the User associated with username
      * @throws IOException if RemoteClient is disconnected
      */
-    static User getUser(RemoteClient client, String username) throws IOException {
-        String query = "{\"query\":{\"match\":{\"username\": \"" + username + "\"}}}";
-        List<User> results = client.search(query, User.class);
-        if (results.size() == 0) {
-            return null;
-        }
-        return results.get(0);
-    }
-
-    // TODO findTasksByLocation?
+    public abstract User getUser(String username) throws IOException;
 }
