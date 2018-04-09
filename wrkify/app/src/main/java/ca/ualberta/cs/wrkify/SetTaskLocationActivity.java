@@ -43,7 +43,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 
-public class SetTaskLocationActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+public class SetTaskLocationActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
 
     private GoogleMap mMap;
     private CameraPosition cameraPosition;
@@ -60,6 +60,7 @@ public class SetTaskLocationActivity extends FragmentActivity implements OnMapRe
     public static final String LOCATION_EXTRA = "location_extra";
     private static int RESULT_LOCATION_SAVED = 25;
     private TaskLocation taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
+    private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,36 +128,40 @@ public class SetTaskLocationActivity extends FragmentActivity implements OnMapRe
         mMap.setOnMarkerDragListener(this);
         Intent intent = this.getIntent();
         Task task = (Task)intent.getSerializableExtra(TASK_EXTRA);
+        marker = mMap.addMarker(new MarkerOptions().position(defaultLocation));
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+               marker.setPosition(latLng);
+            }
+        });
+//        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(defaultLocation.latitude,defaultLocation.longitude)));
+//        marker.setDraggable(true);
 
-        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(defaultLocation.latitude,defaultLocation.longitude)));
-        marker.setDraggable(true);
 
-
-//        if(task!=null){
-//            LatLng coordinates = new LatLng(task.getLocation().getLatitude(),task.getLocation().getLongitude());
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates,DEFAULT_ZOOM));
-//            mMap.addMarker(new MarkerOptions().position(coordinates).draggable(true));
-//            return;
-//        }
-//        else {
+        if(task!=null){
+            LatLng coordinates = new LatLng(task.getLocation().getLatitude(),task.getLocation().getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates,DEFAULT_ZOOM));
+           marker.setPosition(coordinates);
+            return;
+        }
+        else {
             getLocationPermission();
             Log.d("Permission acquired--->","yay");
             getCurrentLocation();
             Log.d("LOCATION ACQUIRED--->","yes");
-//            updateLocationUI();
+            updateLocationUI();
             Log.d("UI UPDATED --->","yes");
             Log.d("ON MARKER DRAG SET--->","yes");
-//            if(lastKnownLocation!=null){
-//                Log.d("lastKnownLocation--->","not null");
-//                mMap.addMarker(new MarkerOptions().position(
-//                        new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude())
-//                ).draggable(true));
-//                Log.d("MARKER ADDED--->","yes");
-//                return;
-//            }
-//            Log.d("lastKnownLocation--->","null");
-//            mMap.addMarker(new MarkerOptions().position(defaultLocation).draggable(true));
-//        }
+            if(lastKnownLocation!=null){
+                Log.d("lastKnownLocation--->","not null");
+               marker.setPosition(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()));
+                Log.d("MARKER ADDED--->","yes");
+                return;
+            }
+            Log.d("lastKnownLocation--->","null");
+            marker.setPosition(defaultLocation);
+        }
 
     }
 
@@ -214,13 +219,12 @@ public class SetTaskLocationActivity extends FragmentActivity implements OnMapRe
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
                                             lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-//                           mMap.addMarker(new MarkerOptions().position(
-//                            new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude())).draggable(true));
+                          marker.setPosition(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()));
                         } else {
                             mMap.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//                            mMap.addMarker(new MarkerOptions().position(defaultLocation).draggable(true));
+                           marker.setPosition(defaultLocation);
                         }
                     }
                 });

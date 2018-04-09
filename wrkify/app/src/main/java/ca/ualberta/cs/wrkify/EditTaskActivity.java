@@ -155,10 +155,10 @@ public class EditTaskActivity extends AppCompatActivity {
     }
 
     public void setTaskLocation(){
-//        Intent intent = new Intent(this,SetTaskLocationActivity.class);
-//        startActivityForResult(intent,RESULT_LOCATION);
-        Intent intent = new Intent(this,TestMapsActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this,SetTaskLocationActivity.class);
+        startActivityForResult(intent,RESULT_LOCATION);
+//        Intent intent = new Intent(this,TestMapsActivity.class);
+//        startActivity(intent);
     }
 
     @Override
