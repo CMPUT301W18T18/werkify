@@ -19,6 +19,7 @@ import android.location.Location;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -42,6 +43,9 @@ public class Task extends RemoteObject {
     private RemoteReference<User> provider;
     private TaskStatus status;
     private Bid acceptedBid;
+
+    private ArrayList<RemoteReference<CompressedBitmap>> remoteThumbnails;
+    private ArrayList<RemoteReference<CompressedBitmap>> remoteImages;
 
     public static void verifyTitle(String title) {
         if (title.length() > 32) {
@@ -104,6 +108,9 @@ public class Task extends RemoteObject {
         this.checkList = new CheckList();
         this.imageList = new ArrayList<Bitmap>();
         this.bidList = new ArrayList<Bid>();
+
+        this.remoteThumbnails = new ArrayList<>();
+        this.remoteImages = new ArrayList<>();
     }
     
     public Task(String title, User requester, String description) {
@@ -382,4 +389,28 @@ public class Task extends RemoteObject {
             return this.getBidList().get(0).getValue();
         }
     }
+
+    public ArrayList<RemoteReference<CompressedBitmap>> getRemoteThumbnails() {
+        return remoteThumbnails;
+    }
+
+    public void setRemoteThumbnails(ArrayList<RemoteReference<CompressedBitmap>> thumbs) {
+        this.remoteThumbnails = thumbs;
+    }
+
+    public ArrayList<RemoteReference<CompressedBitmap>> getRemoteImages() {
+        return remoteImages;
+    }
+
+    public void setRemoteImages(ArrayList<RemoteReference<CompressedBitmap>> images) {
+        this.remoteImages = images;
+    }
+
+    public void removeImagePair(RemoteReference<CompressedBitmap> thumbnail, RemoteReference<CompressedBitmap> image) {
+        this.remoteThumbnails.remove(thumbnail);
+        this.remoteImages.remove(image);
+    }
+
+
+
 }

@@ -25,6 +25,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Activity for a task requester to edit a task that they own
@@ -48,6 +51,118 @@ import java.io.IOException;
  * actual deletion of the task in this case.
  */
 public class EditTaskActivity extends AppCompatActivity {
+    /**
+     *Class for separating local and remote images
+     */
+    public class ImageManager {
+        private ArrayList<RemoteReference<CompressedBitmap>> remoteImages;
+        private ArrayList<CompressedBitmap> localImages;
+        private ArrayList<CompressedBitmap> thumbnails;
+        private ArrayList<RemoteReference<CompressedBitmap>> toDelete;
+
+        /**
+         * Constructor for ImageManager, initializes all the lists
+         */
+        public ImageManager() {
+            remoteImages = new ArrayList<>();
+            localImages = new ArrayList<>();
+            thumbnails = new ArrayList<>();
+            toDelete = new ArrayList<>();
+        }
+
+        public int getLocalThumbnailStartId() {
+            return remoteImages.size();
+        }
+
+        /**
+         * @param list ArrayList of RemoteReferences to CompressedBitmaps
+         */
+        public void setRemoteImages(ArrayList<RemoteReference<CompressedBitmap>> list) {
+            this.remoteImages = list;
+        }
+
+        /**
+         * @param thumbnails ArrayList of CompressedBitmaps representing thumbnails
+         */
+        public void setThumbnails(ArrayList<CompressedBitmap> thumbnails) {
+            this.thumbnails = thumbnails;
+        }
+
+        /**
+         * Add an image to the list, as a (thumbnail, image) pair
+         *
+         * @param thumbnail CompressedBitmap representing thumbnail
+         * @param image     CompressedBitmap representing full-size image
+         */
+        public void addImagePair(CompressedBitmap thumbnail, CompressedBitmap image) {
+            localImages.add(image);
+            thumbnails.add(thumbnail);
+        }
+
+        /**
+         * Deletes images specified by the IDs in the list. Local images are deleted, while
+         * remote images are removed from the list and queued for deletion upon saving changes
+         *
+         * @param idList ArrayList of IDs whose images you want to delete from the list
+         */
+        public void deleteFromIds(ArrayList<Integer> idList) {
+            Collections.sort(idList);
+
+            for (int i = idList.size() - 1; i >= 0; i--) {
+                int id = idList.get(i);
+
+                if (id < remoteImages.size()) {
+                    toDelete.add(remoteImages.get(id));
+                    remoteImages.remove(id);
+                    toDelete.add(thumbnails.get(id).<CompressedBitmap>reference());
+                    thumbnails.remove(id);
+                } else {
+                    thumbnails.remove(id);
+                    localImages.remove(id - remoteImages.size());
+                }
+            }
+        }
+
+        /**
+         * @param index Position of the image you want to get
+         * @return CompressedBitmap representing full-size image
+         */
+        public CompressedBitmap getImage(int index) {
+            if (index >= remoteImages.size()) {
+                return localImages.get(index - remoteImages.size());
+            } else {
+                try {
+                    return remoteImages.get(index).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class);
+                } catch (IOException e) {
+                    Log.e("Didn't work", "couldn't get image from image list in activity");
+                    return null;
+                }
+            }
+        }
+
+        /**
+         * Applies queued deletions, then uploads local images
+         *
+         * @param task
+         */
+        public void save(Task task) {
+            flushDeletions();
+        }
+
+        /**
+         * Deletes remote image from the server, where deletions were queued
+         */
+        private void flushDeletions() {
+            for (int i = 0; i < toDelete.size(); i++) {
+                try {
+                    WrkifyClient.getInstance().delete(toDelete.get(i).getRemote(WrkifyClient.getInstance(), CompressedBitmap.class));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /** Task being passed in to EditTaskActivity */
     public static final String EXTRA_EXISTING_TASK = "ca.ualberta.cs.wrkify.EXTRA_EXISTING_TASK";
 
@@ -73,6 +188,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private CheckListEditorView checkListEditorView;
     private Button checkListNewButton;
     private Button checkListAddButton;
+    private ImageManager imageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +203,7 @@ public class EditTaskActivity extends AppCompatActivity {
         this.checkListNewButton = findViewById(R.id.editTaskButtonChecklistNew);
         this.checkListAddButton = findViewById(R.id.editTaskButtonChecklistAdd);
 
+        imageManager = new ImageManager();
         this.task = (Task) getIntent().getSerializableExtra(EXTRA_EXISTING_TASK);
 
         if (this.task == null) {
