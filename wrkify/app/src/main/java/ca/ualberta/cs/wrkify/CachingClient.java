@@ -49,6 +49,7 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
     private Cache cache;
 
     private Set<String> transientIdSet;
+    private Map<String, String> transientIdMap;
 
     private CachingClientWrapperSearcher searcher = new CachingClientWrapperSearcher(this);
     private CachingClientSearcher localSearcher = new CachingClientSearcher(this);
@@ -79,6 +80,14 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    public String canonicalize(String id) {
+        while (transientIdMap.containsKey(id)) {
+            id = transientIdMap.get(id);
+        }
+
+        return id;
     }
 
     @Override
@@ -116,10 +125,14 @@ public class CachingClient<TClient extends RemoteClient> extends RemoteClient {
 
     @Override
     <T extends RemoteObject> T uploadNew(Class<T> type, T obj) throws IOException {
+        String priorId = obj.getId();
         if (client.uploadNew(type, obj) == null) {
             throw new IOException();
         }
         cache.put(obj.getId(), obj);
+        if (priorId != null && !priorId.equals(obj.getId())) {
+            transientIdMap.put(priorId, obj.getId());
+        }
         return obj;
     }
 
