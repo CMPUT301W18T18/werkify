@@ -166,7 +166,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==RESULT_LOCATION&&resultCode==RESULT_OK){
+        if(requestCode==RESULT_LOCATION){
            TaskLocation taskcoordinates = (TaskLocation) data.getSerializableExtra(SetTaskLocationActivity.LOCATION_EXTRA);
            this.location = taskcoordinates;
            String locationStr = Double.valueOf(taskcoordinates.getLatitude()).toString() + ", " + Double.valueOf(taskcoordinates.getLongitude()).toString();

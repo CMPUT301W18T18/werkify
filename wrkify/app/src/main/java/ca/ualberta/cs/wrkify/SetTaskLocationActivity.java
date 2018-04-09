@@ -110,7 +110,9 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
         Intent intent = new Intent(this,EditTaskActivity.class);
         intent.putExtra(LOCATION_EXTRA,taskLocation);
         Log.d("location --->",Double.valueOf(taskLocation.getLatitude()).toString());
-        setResult(RESULT_LOCATION_SAVED,intent);
+        if(taskLocation!=null) {
+            setResult(RESULT_LOCATION_SAVED, intent);
+        }
         finish();
     }
     /**
