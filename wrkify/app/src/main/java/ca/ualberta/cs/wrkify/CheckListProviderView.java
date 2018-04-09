@@ -75,6 +75,11 @@ public class CheckListProviderView extends CheckListView {
         this.onItemToggledListener = onItemToggledListener;
     }
 
+    /**
+     * create CheckListItemView from a CheckListItem
+     * @param item the item you are creating a view around
+     * @return the new View
+     */
     @Override
     protected CheckListItemView makeItemView(CheckList.CheckListItem item) {
         CheckListItemView itemView = new CheckListItemView(getContext());
@@ -133,6 +138,10 @@ public class CheckListProviderView extends CheckListView {
             this.editingEnabled = editingEnabled;
         }
 
+        /**
+         * setup the CheckList item and define behaviors
+         * @param item new item to display in the view
+         */
         @Override
         public void setItem(final CheckList.CheckListItem item) {
             this.descriptionField.setText(item.getDescription());
@@ -154,6 +163,9 @@ public class CheckListProviderView extends CheckListView {
             }
         }
 
+        /**
+         * create all the views.
+         */
         @Override
         protected void createViews() {
             inflate(getContext(), R.layout.view_checkitem, this);
