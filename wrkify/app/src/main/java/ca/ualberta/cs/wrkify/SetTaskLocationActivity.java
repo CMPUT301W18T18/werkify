@@ -111,6 +111,7 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
     private void save(){
         Intent intent = new Intent(this,EditTaskActivity.class);
         intent.putExtra(LOCATION_EXTRA,taskLocation);
+        Log.d("location --->",Double.valueOf(taskLocation.getLatitude()).toString());
         setResult(RESULT_LOCATION_SAVED,intent);
         finish();
     }
@@ -133,6 +134,7 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
             @Override
             public void onMapClick(LatLng latLng) {
                marker.setPosition(latLng);
+               taskLocation = new TaskLocation(latLng.latitude,latLng.longitude);
             }
         });
 //        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(defaultLocation.latitude,defaultLocation.longitude)));
@@ -143,6 +145,8 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
             LatLng coordinates = new LatLng(task.getLocation().getLatitude(),task.getLocation().getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates,DEFAULT_ZOOM));
            marker.setPosition(coordinates);
+           taskLocation = new TaskLocation(coordinates.latitude,coordinates.longitude);
+           Log.d("--->","non null task set loc");
             return;
         }
         else {
@@ -156,11 +160,13 @@ public class SetTaskLocationActivity extends AppCompatActivity implements OnMapR
             if(lastKnownLocation!=null){
                 Log.d("lastKnownLocation--->","not null");
                marker.setPosition(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()));
+               taskLocation = new TaskLocation(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude());
                 Log.d("MARKER ADDED--->","yes");
                 return;
             }
             Log.d("lastKnownLocation--->","null");
             marker.setPosition(defaultLocation);
+            taskLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
         }
 
     }

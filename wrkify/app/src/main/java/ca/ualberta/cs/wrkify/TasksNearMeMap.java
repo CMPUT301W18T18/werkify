@@ -62,7 +62,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
     private List<Task> tasksNearMe = new ArrayList<>();
-    private HashMap<Marker,Task> markerTaskHashMap = new HashMap<>();
+    private HashMap<Marker,Task> markerTaskHashMap;
     private CardView taskCardView;
 
 
@@ -79,11 +79,6 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-//        User testUser = new User("Stefan","stefan@gmail.com","7809352501");
-//        Task testTask = new Task("Mow my fucking lawn boss.",testUser,"memes");
-//        TaskLocation testLocation = new TaskLocation(defaultLocation.latitude,defaultLocation.longitude);
-//        testTask.setLocation(testLocation);
-//        tasksNearMe.add(testTask);
     }
 
     @Override
@@ -107,37 +102,38 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnInfoWindowClickListener(this);
-        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-//                int layout = R.layout.taskcardview;
-//                View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
-//                CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
-//                Task task = markerTaskHashMap.get(marker);
-//                TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
-////                taskTitle.setText("TestTask");
-//                taskTitle.setText(task.getTitle());
-//                TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
-////                taskDescription.setText("Test");
-//                taskDescription.setText(task.getDescription());
-//                TextView taskUser = taskCardView.findViewById(R.id.taskUser);
-//                taskUser.setText("User");
-//                try {
-//                    taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
-//                } catch (IOException e){
+        mMap.setInfoWindowAdapter(this.new MarkerInfo());
+//        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//            @Override
+//            public View getInfoWindow(Marker marker) {
+//                return null;
+//            }
 //
-//                }
-//                StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
-//                taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
-                viewMarker(marker);
-                return taskCardView;
-            }
-        });
+//            @Override
+//            public View getInfoContents(Marker marker) {
+////                int layout = R.layout.taskcardview;
+////                View rootView = LayoutInflater.from(getApplicationContext()).inflate(layout,null,false);
+////                CardView taskCardView = (CardView) rootView.findViewById(R.id.taskCardView);
+////                Task task = markerTaskHashMap.get(marker);
+////                TextView taskTitle = taskCardView.findViewById(R.id.taskTitle);
+//////                taskTitle.setText("TestTask");
+////                taskTitle.setText(task.getTitle());
+////                TextView taskDescription = taskCardView.findViewById(R.id.taskDescription);
+//////                taskDescription.setText("Test");
+////                taskDescription.setText(task.getDescription());
+////                TextView taskUser = taskCardView.findViewById(R.id.taskUser);
+////                taskUser.setText("User");
+////                try {
+////                    taskUser.setText(task.getRemoteRequester(WrkifyClient.getInstance()).getUsername());
+////                } catch (IOException e){
+////
+////                }
+////                StatusView taskStatus = taskCardView.findViewById(R.id.taskStatus);
+////                taskStatus.setStatus(task.getStatus(),task.getBidList().get(0).getValue());
+//                viewMarker(marker);
+//                return taskCardView;
+//            }
+//        });
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,DEFAULT_ZOOM));
         getLocationPermission();
@@ -280,11 +276,11 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
 
     private void addTaskMarkers(){
         Log.d("TASK SIZE Markers--->",Integer.valueOf(tasksNearMe.size()).toString());
+        markerTaskHashMap = new HashMap<>();
         for(Task task : tasksNearMe){
             TaskLocation location = task.getLocation();
             try {
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(latLng));
                 mMap.setOnMarkerClickListener(this);
                 markerTaskHashMap.put(mMap.addMarker(new MarkerOptions().position(latLng)),task);
                 Log.d("Task Title--->",task.getTitle());
@@ -361,7 +357,7 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         }
     }
 
-    private class MarkerInfo extends AsyncTask<Marker,Void,CardView>{
+    private class MarkerInfo extends AsyncTask<Marker,Void,CardView> implements GoogleMap.InfoWindowAdapter {
 
         @Override
         protected CardView doInBackground(Marker... markers) {
@@ -402,6 +398,17 @@ public class TasksNearMeMap extends FragmentActivity implements OnMapReadyCallba
         @Override
         protected void onPostExecute(CardView cv) {
             taskCardView = cv;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return this.doInBackground(marker);
+
         }
     }
 }
